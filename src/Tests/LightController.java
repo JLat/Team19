@@ -1,4 +1,5 @@
-package CaptureTheFlag;
+
+package Tests;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorModes;
