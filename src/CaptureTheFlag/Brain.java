@@ -3,7 +3,7 @@ package CaptureTheFlag;
 public class Brain {
 	
 	private static Odometer odo;
-	private static Navigator navi;
+	private static Navigation navi;
 	private static Localizer local;
 	private static Identifier iden;
 	private static UltrasonicPoller usPoller;

@@ -4,7 +4,7 @@ package CaptureTheFlag;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
-public class Navigator {
+public class Navigation {
 	static int FAST, SLOW;
 	private double degError, cmError;
 	private Odometer odo;
@@ -14,7 +14,7 @@ public class Navigator {
 	 * Navigator constructor
 	 * @param odo
 	 */
-	public Navigator(Odometer odo) {
+	public Navigation (Odometer odo) {
 		
 	}
 
@@ -83,6 +83,7 @@ public class Navigator {
 	 * @return
 	 */
 	private static int convertAngle(double turningAngle) {
+		int angle = 0;
 		return angle;
 	}
 

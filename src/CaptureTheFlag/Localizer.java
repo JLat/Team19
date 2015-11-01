@@ -2,7 +2,7 @@ package CaptureTheFlag;
 
 public class Localizer {
 	
-	private static Navigator navi;
+	private static Navigation navi;
 	private static UltrasonicPoller usPoller;
 	
 	/**
