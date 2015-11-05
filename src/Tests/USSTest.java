@@ -8,20 +8,18 @@ import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 
-public class LightSensorTest {
+public class USSTest {
 	public static void main(String[] args)
 			throws FileNotFoundException, UnsupportedEncodingException, InterruptedException {
-		LightController Light = new LightController("S4", "RGB");
-		Light.start();
-
+		USSController USS = new USSController(10, 10, 10, 100, 0);
+		USS.start();
 		Collect col = new Collect();
+		col.printData("DATE", "NOV 3");
+		col.printData("Title: ", "Distance of block before error");
 
-		int distance = 2;
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		int buttonChoice = 0;
-
-		col.printData("DATE:", "NOV 3");
-		col.printData("Title: ", "Opperational distance of light sensor");
+		int distance = 0;
 		while (true) {
 			do {
 				// clear the display
@@ -33,10 +31,9 @@ public class LightSensorTest {
 				buttonChoice = Button.waitForAnyPress();
 			} while (buttonChoice != Button.ID_ENTER && buttonChoice != Button.ID_ESCAPE);
 
+			col.printData("Block Distance:", distance);
 			if (buttonChoice == Button.ID_ENTER) {
-				col.printData("Block Distance" + distance, String.format(",Red:,%.2f,Blue:,%.2f,Cond:,%b",
-						Light.getRedValue(), Light.getBlueValue(), Light.seesBlueBlock()));
-
+				col.printData("Raw Distance ", "," + USS.getRawDistance());
 			} else {
 				col.writer.close();
 				System.exit(0);

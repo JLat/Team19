@@ -17,7 +17,7 @@ import lejos.robotics.SampleProvider;
 
 public class USSController extends Thread {
 
-	private static final Port usPort = LocalEV3.get().getPort("S1");
+	private static final Port usPort = LocalEV3.get().getPort("S4");
 	private SampleProvider us;
 	private float[] usData;
 
