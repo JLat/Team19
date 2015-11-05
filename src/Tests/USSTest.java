@@ -11,7 +11,7 @@ import lejos.hardware.lcd.TextLCD;
 public class USSTest {
 	public static void main(String[] args)
 			throws FileNotFoundException, UnsupportedEncodingException, InterruptedException {
-		USSController USS = new USSController(10, 10, 10, 100, 0);
+		UltrasonicPoller USS = new UltrasonicPoller(10, 10, 10, 100, 0);
 		USS.start();
 		Collect col = new Collect();
 		col.printData("DATE", "NOV 3");

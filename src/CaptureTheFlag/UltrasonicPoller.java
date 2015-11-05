@@ -1,5 +1,6 @@
 package CaptureTheFlag;
 
+
 import java.util.LinkedList;
 
 import lejos.hardware.ev3.LocalEV3;
@@ -7,17 +8,12 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
-/*
- * Copyright:
- * This class makes use of our own code from assignments 1 and 2 as well as parts of some demo code provided in these assignments.
- * 
- * 
- * 
- */
 
-public class USSController extends Thread {
 
-	private static final Port usPort = LocalEV3.get().getPort("S4");
+
+public class UltrasonicPoller extends Thread {
+
+	private static final Port usPort = LocalEV3.get().getPort("S1");
 	private SampleProvider us;
 	private float[] usData;
 
@@ -42,7 +38,14 @@ public class USSController extends Thread {
 			// offset bound values from previousAverage to the next accept
 			plusOffset, minusOffset;
 
-	public USSController(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound) {
+	/**
+	 * @param recentListSize Size of date points to be stored
+	 * @param PlusOffset Positive offset bound values from previous average
+	 * @param MinusOffset Minus offset bound values from previous average
+	 * @param UpperBound Upper absolute bound of sensor
+	 * @param LowerBound Lower absolute bound of sensor
+	 */
+	public UltrasonicPoller(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound) {
 
 		this.recent = new LinkedList<Integer>();
 
@@ -82,7 +85,17 @@ public class USSController extends Thread {
 			} // Poor man's timed sampling
 		}
 	}
+
 	
+	/**
+	 * Change parameters of the USSPoller after it had already been instantiated
+	 * 
+	 * @param recentListSize Size of date points to be stored
+	 * @param PlusOffset Positive offset bound values from previous average
+	 * @param MinusOffset Minus offset bound values from previous average
+	 * @param UpperBound Upper absolute bound of sensor
+	 * @param LowerBound Lower absolute bound of sensor
+	 */
 	public void setParameters(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound){
 		this.recentListSize = recentListSize;
 		this.plusOffset = PlusOffset;
@@ -91,6 +104,10 @@ public class USSController extends Thread {
 		this.lowerBound = LowerBound;
 	}
 
+	/**
+	 * Filters past recorded distances and updates ProcessedDistance
+	 * 
+	 */
 	public void processDistance() {
 		// the distance is constrained as to remove unpleasant values.
 		// note: we use the rawDistance in the first call to min() in order
@@ -145,7 +162,13 @@ public class USSController extends Thread {
 
 	}
 
-	// simple method to get the average of a Linked list of integers.
+	/**
+	 * Find the average value of a list of values
+	 * 
+	 * 
+	 * @param list array to find average of
+	 * @return average of the list
+	 */
 	public int getAverage(LinkedList<Integer> list) {
 		int result = 0;
 		if (list.isEmpty()) {
@@ -157,27 +180,50 @@ public class USSController extends Thread {
 		return (result) / list.size();
 	}
 
+	/**
+	 * @return processed distance of sensor
+	 */
 	public int getProcessedDistance() {
 		return this.processedDistance;
 	}
 
+	/**
+	 * @return raw distance of sensor
+	 */
 	public int getRawDistance() {
 		return this.rawDistance;
 	}
 	
+	/**
+	 * Clears values stored inside sensor poller
+	 */
 	public void clear() {
 		this.recent.clear();
 	}
 
+	/**
+	 * @return current number of values stored in poller
+	 */
 	public int getCurrentListSize() {
 		return this.recent.size();
 	}
 
+	/**
+	 * @return List size of sensor poller
+	 */
 	public int getListSize() {
 		return this.recentListSize;
 	}
 
+	/**
+	 * @return If sensor poller has max number of values
+	 */
 	public boolean isFull() {
 		return this.recent.size() == this.recentListSize;
 	}
+
+
+
+
+
 }
