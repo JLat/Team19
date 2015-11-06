@@ -9,19 +9,20 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 
-
-
 public class UltrasonicPoller extends Thread {
 
+	/**
+	 * this class is to be a wrapper for the US sensor, effectively smoothing
+	 * out the values and allowing control of the smoothing from an exterior
+	 * class, as well as a mean of getting the processed value.
+	 * 
+	 */
 	private static final Port usPort = LocalEV3.get().getPort("S1");
 	private SampleProvider us;
 	private float[] usData;
 
-	// this class is to be a wrapper for the US sensor, effectively smoothing
-	// out the values and allowing control of the smoothing from an exterior
-	// class, as well as a mean of getting the processed value.
 
-	// list containing the recent processed distance values.
+	
 	private LinkedList<Integer> recent;
 	private int
 	// original distance
@@ -39,6 +40,8 @@ public class UltrasonicPoller extends Thread {
 			plusOffset, minusOffset;
 
 	/**
+	 * Main Constructor
+	 * 
 	 * @param recentListSize Size of date points to be stored
 	 * @param PlusOffset Positive offset bound values from previous average
 	 * @param MinusOffset Minus offset bound values from previous average
