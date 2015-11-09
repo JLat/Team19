@@ -1,7 +1,6 @@
 package CaptureTheFlag;
 
 import java.util.Stack;
-import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorModes;
@@ -12,6 +11,7 @@ public class LightPoller extends Thread {
 	private SampleProvider sensor;
 	private float[] colorData;
 	private Stack<Float> colorStack;
+	public boolean colorChanged;
 	
 	
 	/**
@@ -31,6 +31,16 @@ public class LightPoller extends Thread {
 	 * while the thread is running, reads and process the data from sampler
 	 */
 	public void run() {
+		while (true) {
+			if (colorChange()) {
+				this.colorChanged = true;
+			}
+			try {
+				Thread.sleep(50);
+			} catch (Exception e) {
+
+			}
+		}
 		
 	}
 	
@@ -39,7 +49,6 @@ public class LightPoller extends Thread {
 		colorSensor.fetchSample(colorData, 0);
 		return colorData[0];
 	}
-	
 	
 	/*
 	 * Returns the boolean value of whether or not a color change has been detected 

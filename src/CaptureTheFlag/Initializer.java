@@ -33,6 +33,5 @@ public class Initializer {
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier detector = new Identifier(identifierPort, "RGB");
 		
-		
 	}
 }
