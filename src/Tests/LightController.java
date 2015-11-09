@@ -13,7 +13,7 @@ public class LightController extends Thread {
 
 	private double rValue, gValue, bValue;
 
-	public LightController(String port, String mode) {
+	public LightController (String port, String mode) {
 		this.colorSensor = new EV3ColorSensor(LocalEV3.get().getPort(port));
 		this.sensor = colorSensor.getMode(mode);
 		this.colorData = new float[sensor.sampleSize()];

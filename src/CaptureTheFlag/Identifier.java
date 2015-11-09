@@ -24,11 +24,11 @@ public class Identifier extends LightPoller {
 	 * @param sampler
 	 * @param colorData
 	 */
-	public Identifier(Port identifierPort, String mode) {
+	public Identifier (Port identifierPort, String mode, String flag) {
 		super(identifierPort, mode);
 		this.objectInspected = false;
 		this.flagDetected = false;
-		this.flag = "blue";
+		this.flag = flag;
 
 		blockID.put("blue", Arrays.asList(new Double[] {19.05, 71.96, 52.25}));
 		//TODO: add all the block colors and their average RBG values here 

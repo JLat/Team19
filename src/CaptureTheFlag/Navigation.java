@@ -15,9 +15,12 @@ public class Navigation {
 	 * @param odo
 	 */
 	public Navigation (Odometer odo) {
-		
+
 	}
 
+	public Odometer getOdometer() {
+		return this.odo;
+	}
 
 	/**
 	 * Functions to set the motor speeds jointly
