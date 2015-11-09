@@ -8,9 +8,9 @@ import lejos.robotics.SampleProvider;
 
 
 public class Initializer {
-	private static Port usPort;		
-	private static Port colorPort;
-	private static Port gyroPort;
+	private static String usPort = "S1";		
+	private static Port colorPort = LocalEV3.get().getPort("S2");
+	private static Port identifierPort = LocalEV3.get().getPort("S3");
 	private static EV3LargeRegulatedMotor leftMotor;
 	private static EV3LargeRegulatedMotor rightMotor;
 	private static EV3LargeRegulatedMotor clawMotor;
@@ -29,6 +29,10 @@ public class Initializer {
 	 * @param args
 	 */
 	public static void main(String [] args) {
+		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 100, 0);
+		LightPoller colorPoller = new LightPoller(colorPort, "Red");
+		Identifier detector = new Identifier(identifierPort, "RGB");
+		
 		
 	}
 }

@@ -1,5 +1,6 @@
 package CaptureTheFlag;
 
+import lejos.hardware.port.Port;
 import lejos.robotics.SampleProvider;
 
 public class Identifier extends LightPoller {
@@ -12,8 +13,8 @@ public class Identifier extends LightPoller {
 	 * @param sampler
 	 * @param colorData
 	 */
-	public Identifier(SampleProvider sampler, float[] colorData) {
-		super(sampler, colorData);
+	public Identifier(Port identifierPort, String mode) {
+		super(identifierPort, mode);
 		this.objectInspected = false;
 		this.flagDetected = false;
 	}
