@@ -1,21 +1,24 @@
 package CaptureTheFlag;
 
-
-import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
-public class Navigation {
+public class Navigation extends Thread{
 	static int FAST, SLOW;
 	private double degError, cmError;
-	private Odometer odo;
-	private EV3LargeRegulatedMotor leftMotor, rightMotor;
+	private static Odometer odo;
+	private static EV3LargeRegulatedMotor leftMotor, rightMotor;
+	private static double x, y, deltaX, deltaY, xfinal,yfinal;
+	public static final double WHEEL_RADIUS = 2.1;
+	public static final double TRACK = 9.85;
+	public static final int motorHigh = 250;
+	public static final int motorLow = 150;
 
 	/**
 	 * Navigator constructor
 	 * @param odo
 	 */
 	public Navigation (Odometer odo) {
-
+		this.odo = odo;
 	}
 
 	public Odometer getOdometer() {
@@ -35,11 +38,29 @@ public class Navigation {
 	 * TravelTo function which takes as arguments the x and y position in cm
 	 * Will travel to designated position, while constantly updating it's
 	 * heading
-	 * @param x
-	 * @param y
+	 * @param xfinal
+	 * @param yfinal
 	 */
-	public void travelTo(double x, double y) {
+	public static void travelTo(double xfinal, double yfinal) {
+		x=odo.getX(); //current positions
+		y=odo.getY();
+		deltaX = xfinal - x; //difference between current and final positions
+		deltaY = yfinal - y;
+		
+		Navigation.xfinal = xfinal;
+		Navigation.yfinal = yfinal;
+		
+		double newDeg, distance;
 
+		newDeg = calculateNewDegree(xfinal,yfinal,deltaX,deltaY); //absolute Theta that it needs to turn to
+		turnTo(newDeg, false);
+		distance = Math.sqrt(deltaX*deltaX + deltaY*deltaY); //calculates distance from final position
+
+		leftMotor.setSpeed(motorHigh);
+		rightMotor.setSpeed(motorHigh);
+		leftMotor.rotate(convertDistance(WHEEL_RADIUS, distance), true); //tells motor how many times each wheel should turn
+		rightMotor.rotate(convertDistance(WHEEL_RADIUS, distance), false); //convertDistance is converting distance to
+																		   // angle (number of rotations)
 	}
 
 	/**
@@ -48,7 +69,7 @@ public class Navigation {
 	 * @param angle
 	 * @param stop
 	 */
-	public void turnTo(double angle, boolean stop) {
+	public static void turnTo(double angle, boolean stop) {
 
 	}
 	
@@ -63,6 +84,27 @@ public class Navigation {
 
 	}
 
+	/* Based on current and final positions, what is the absolute angle of the final position*/
+	public static double calculateNewDegree(double x, double y, double dx, double dy){ 
+		if (dx >= 0) {
+			if (dy >= 0) {
+				return Math.atan(Math.abs(dx) / Math.abs(dy));
+			} else {
+				return Math.PI/2 + Math.atan(Math.abs(dy) / Math.abs(dx));
+			}
+		} else {
+			if (dy >= 0) {
+				return Math.PI*3/2 + Math.atan(Math.abs(dy) / Math.abs(dx));
+			} else {
+				return Math.PI + Math.atan(Math.abs(dx) / Math.abs(dy));
+			}
+		}
+	}
+	
+	private static int convertDistance(double radius, double distance) { //converts distance to angle
+		return (int) ((180.0 * distance) / (Math.PI * radius));
+	}
+	
 	/**
 	 * Go foward a set distance in cm
 	 * @param distance
