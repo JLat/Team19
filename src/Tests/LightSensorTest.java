@@ -16,32 +16,42 @@ public class LightSensorTest {
 
 		Collect col = new Collect();
 
-		int distance = 2;
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		int buttonChoice = 0;
+		
+		String Colors[] = {"RED","YELLOW","WHITE","DARK BLUE", "LIGHT BLUE", "HALF BLUE", "WOOD"};
+		int i = 0;
 
-		col.printData("DATE:", "NOV 3");
-		col.printData("Title: ", "Opperational distance of light sensor");
+		col.printData("DATE:", "NOV 9");
+		col.printData("Title: ", "Light Sensor Values For Different Blocks");
+		col.printData("Block Color", ",RED,BLUE,GREEN");
 		while (true) {
 			do {
 				// clear the display
 				t.clear();
-				t.drawString(" Block Dist: " + distance, 0, 0);
-				t.drawString("   Press Enter  ", 0, 2);
-				t.drawString(" Escape to Exit ", 0, 4);
-
+				t.drawString("BLOCK COLOR:", 0, 0);
+				t.drawString( Colors[i], 0, 1);
+				t.drawString("ESC - EXIT", 0, 5);
 				buttonChoice = Button.waitForAnyPress();
+				if (buttonChoice == Button.ID_DOWN){
+					i ++;
+				}
+				else if (buttonChoice == Button.ID_UP){
+					i --;
+				}
+				
 			} while (buttonChoice != Button.ID_ENTER && buttonChoice != Button.ID_ESCAPE);
 
-			if (buttonChoice == Button.ID_ENTER) {
-				col.printData("Block Distance" + distance, String.format(",Red:,%.2f,Blue:,%.2f,Cond:,%b",
-						Light.getRedValue(), Light.getBlueValue(), Light.seesBlueBlock()));
 
-			} else {
+			
+			if (buttonChoice == Button.ID_ENTER) {
+				col.printData(Colors[i], String.format(",%.2f,%.2f,%.2f",
+						Light.getRedValue(), Light.getBlueValue(), Light.getGreenValue()));
+			}
+			else {
 				col.writer.close();
 				System.exit(0);
 			}
-			distance += 2;
 			LocalEV3.get().getAudio().systemSound(0);
 		}
 	}
