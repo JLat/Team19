@@ -15,13 +15,15 @@ public class Odometer implements TimerListener {
 	private double[] oldDH, dDH;
 	
 	// constructor
-	public Odometer (EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, int INTERVAL, boolean autostart) {
+	public Odometer (EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, 
+					 int INTERVAL, boolean autostart) {
 		
 		this.leftMotor = leftMotor;
 		this.rightMotor = rightMotor;
 		
 		// default values, modify for your robot
 		//original value: 2.1, 14.84
+		//TODO change these values to match our final design 
 		this.rightRadius = 2.093;
 		this.leftRadius = 2.093;
 		this.width = 14.84;
