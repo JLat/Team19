@@ -26,7 +26,7 @@ public class Odometer implements TimerListener {
 		//TODO change these values to match our final design 
 		this.rightRadius = 2.093;
 		this.leftRadius = 2.093;
-		this.width = 14.84;
+		this.width = 9;
 		
 		this.x = 0.0;
 		this.y = 0.0;

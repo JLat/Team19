@@ -26,7 +26,7 @@ public class Brain {
 	 * which is the main function of the robot
 	 */
 	public void search(){
-		
+		Brain.local.doLocalization();
 	}
 	
 }
