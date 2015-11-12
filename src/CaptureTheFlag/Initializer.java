@@ -32,10 +32,11 @@ public class Initializer {
 		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 100, 0);
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
-		Odometer odometer = new Odometer(leftMotor, rightMotor, 20, true);
-		Navigation navigator = new Navigation(odometer);
+		Odometer odometer = new Odometer(leftMotor, rightMotor);
+		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		Localization localizer = new Localization(navigator, usPoller);
-		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, t);
+		Search search = new Search (odometer, navigator, usPoller);
+		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, t, search);
 		controller.search();
 	 
 	}

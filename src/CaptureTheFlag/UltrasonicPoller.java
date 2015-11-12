@@ -17,7 +17,7 @@ public class UltrasonicPoller extends Thread {
 	 * class, as well as a mean of getting the processed value.
 	 * 
 	 */
-	private static final Port usPort = LocalEV3.get().getPort("S1");
+	private static final Port usPort = LocalEV3.get().getPort("S2");
 	private SampleProvider us;
 	private float[] usData;
 

@@ -1,25 +1,35 @@
 package CaptureTheFlag;
 
-
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
-public class Navigation {
+public class Navigation extends Thread{
 	static int FAST, SLOW;
-	private double degError, cmError;
-	private Odometer odo;
-	private EV3LargeRegulatedMotor leftMotor, rightMotor;
+	private static Odometer odo;
+	private static EV3LargeRegulatedMotor leftMotor;
+	private static EV3LargeRegulatedMotor rightMotor;
+	private static double x, y, deltaX, deltaY, xfinal,yfinal;
+	public static final double WHEEL_RADIUS = 2.1;
+	public static final double TRACK = 9.85;
+	public static final int motorHigh = 250;
+	public static final int motorLow = 150;
+
+	public static boolean isNavigating = false;
 
 	/**
 	 * Navigator constructor
 	 * @param odo
 	 */
-	public Navigation (Odometer odo) {
-
+	public Navigation (Odometer odo, EV3LargeRegulatedMotor left, EV3LargeRegulatedMotor right) {
+		Navigation.odo = odo;
+		leftMotor = left;
+		rightMotor = right;
+		leftMotor.setAcceleration(500);
+		rightMotor.setAcceleration(500);
 	}
 
 	public Odometer getOdometer() {
-		return this.odo;
+		return Navigation.odo;
 	}
 
 	/**
@@ -27,19 +37,85 @@ public class Navigation {
 	 * @param lSpd
 	 * @param rSpd
 	 */
-	public void setSpeeds(int lSpd, int rSpd) {
+	public static void setSpeeds(float lSpd, float rSpd) {
+		Navigation.leftMotor.setSpeed(lSpd);
+		Navigation.rightMotor.setSpeed(rSpd);
+		if (lSpd < 0)
+			Navigation.leftMotor.backward();
+		else
+			Navigation.leftMotor.forward();
+		if (rSpd < 0)
+			Navigation.rightMotor.backward();
+		else
+			Navigation.rightMotor.forward();
+	}
 
+	public static void setSpeeds(int lSpd, int rSpd) {
+		Navigation.leftMotor.setSpeed(lSpd);
+		Navigation.rightMotor.setSpeed(rSpd);
+		if (lSpd < 0)
+			Navigation.leftMotor.backward();
+		else
+			Navigation.leftMotor.forward();
+		if (rSpd < 0)
+			Navigation.rightMotor.backward();
+		else
+			Navigation.rightMotor.forward();
 	}
 
 	/**
 	 * TravelTo function which takes as arguments the x and y position in cm
 	 * Will travel to designated position, while constantly updating it's
 	 * heading
-	 * @param x
-	 * @param y
+	 * @param xfinal
+	 * @param yfinal
 	 */
-	public void travelTo(double x, double y) {
+	public static void travelTo(double xfinal, double yfinal) {
+		isNavigating = true;
+		x=odo.getX(); //current positions
+		y=odo.getY();
+		deltaX = xfinal - x; //difference between current and final positions
+		deltaY = yfinal - y;
+		
+		Navigation.xfinal = xfinal;
+		Navigation.yfinal = yfinal;
+		
+		double newDeg, distance;
 
+		newDeg = calculateNewDegree(xfinal,yfinal,deltaX,deltaY); //absolute Theta that it needs to turn to
+		turnTo(newDeg, false);
+		isNavigating = true;
+		distance = Math.sqrt(deltaX*deltaX + deltaY*deltaY); //calculates distance from final position
+
+		leftMotor.setSpeed(motorHigh);
+		rightMotor.setSpeed(motorHigh);
+		leftMotor.rotate(convertDistance(WHEEL_RADIUS, distance), true); //tells motor how many times each wheel should turn
+		rightMotor.rotate(convertDistance(WHEEL_RADIUS, distance), false); //convertDistance is converting distance to
+																		   // angle (number of rotations)
+		isNavigating = false;
+	}
+	
+	public void travelToReverse(double xfinal, double yfinal) {
+		isNavigating = true;
+		double x=this.odo.getX(); /*current positions*/
+		double y=this.odo.getY();
+		double deltaX = xfinal - x; /*difference between current and final positions*/
+		double deltaY = yfinal - y;
+		
+		double newDeg, newDegReverse, distance;
+
+		newDeg = calculateNewDegree(xfinal,yfinal,deltaX,deltaY); /*absolute Theta that it needs to turn to*/
+		newDegReverse = (newDeg+Math.PI)%(2*Math.PI);
+		this.turnTo(newDegReverse, true);				/*since we pass a degree into this function,*/
+																/*we convert it into radius*/
+		isNavigating = true;
+		distance = Math.sqrt(deltaX*deltaX + deltaY*deltaY); /*calculates distance from final position*/
+
+		leftMotor.setSpeed(SLOW);
+		rightMotor.setSpeed(SLOW);
+		leftMotor.rotate(-convertDistance(WHEEL_RADIUS, distance), true); /*tells motor how many times each wheel should turn*/
+		rightMotor.rotate(-convertDistance(WHEEL_RADIUS, distance), true); /*convertDistance is converting distance to*/
+																		   /* angle (number of rotations)*/
 	}
 
 	/**
@@ -48,8 +124,35 @@ public class Navigation {
 	 * @param angle
 	 * @param stop
 	 */
-	public void turnTo(double angle, boolean stop) {
+	public static void turnTo(double theta, boolean stop) {
+		double turnDeg, currentDeg = odo.getTheta(); //initiate variables
+		boolean isTurningClockwise;
+		int leftAngle,rightAngle;
 
+		isNavigating = true; //the method has been called therefore isNavigating is set to true
+		
+		if ((2*Math.PI + theta - currentDeg) % (2*Math.PI) < Math.PI) { /* turn clockwise*/
+			turnDeg = (2*Math.PI + theta - currentDeg) % (2*Math.PI);
+			isTurningClockwise = true;
+		} else { 														/* turn counter clockwise */
+			turnDeg = (2*Math.PI - theta + currentDeg) % (2*Math.PI);
+			isTurningClockwise = false;
+		}
+		leftMotor.setSpeed(motorLow);
+		rightMotor.setSpeed(motorLow);
+		
+		leftAngle = convertAngle(WHEEL_RADIUS, TRACK, turnDeg); //converts robots turning degrees to the wheels turn degree
+		rightAngle = leftAngle;
+
+		if(isTurningClockwise) rightAngle *= -1; //orient directions of wheel rotation
+		else leftAngle *= -1;
+		
+		leftMotor.rotate(leftAngle, true); 		//turn
+		rightMotor.rotate(rightAngle, false);
+		isNavigating = false;
+		if(stop){
+			Navigation.setSpeeds(0, 0);
+		}
 	}
 	
 	/**
@@ -63,21 +166,50 @@ public class Navigation {
 
 	}
 
+	/* Based on current and final positions, what is the absolute angle of the final position*/
+	public static double calculateNewDegree(double x, double y, double dx, double dy){ 
+		if (dx >= 0) {
+			if (dy >= 0) {
+				return Math.atan(Math.abs(dx) / Math.abs(dy));
+			} else {
+				return Math.PI/2 + Math.atan(Math.abs(dy) / Math.abs(dx));
+			}
+		} else {
+			if (dy >= 0) {
+				return Math.PI*3/2 + Math.atan(Math.abs(dy) / Math.abs(dx));
+			} else {
+				return Math.PI + Math.atan(Math.abs(dx) / Math.abs(dy));
+			}
+		}
+	}
+	
+	private static int convertDistance(double radius, double distance) { //converts distance to angle
+		return (int) ((180.0 * distance) / (Math.PI * radius));
+	}
+	
+	public boolean isMoving(){
+		if (leftMotor.isMoving() || rightMotor.isMoving()){return true;}
+		else{return false;}
+	}
+	
+	
 	/**
-	 * Go foward a set distance in cm
+	 * Go forward/backward a set distance in cm
 	 * @param distance
 	 */
 	public void goForward(double distance) {
-
+		System.out.println("go forward called");
+		leftMotor.rotate(convertDistance(WHEEL_RADIUS, distance), true); 
+		rightMotor.rotate(convertDistance(WHEEL_RADIUS, distance), false);
 	}
 
-	/**
-	 * Go backwards a set distance in cm (used to grab block)
-	 * @param distance
-	 */
-	public void goBackward(double distance) {
-		
-	}
+//	/**
+//	 * Go backwards a set distance in cm (used to grab block)
+//	 * @param distance
+//	 */
+//	public void goBackward(double distance) {
+//		
+//	}
 	
 	/**
 	 * convertAngle function takes a angle as input and calculate/return
@@ -85,9 +217,52 @@ public class Navigation {
 	 * @param turningAngle
 	 * @return
 	 */
-	private static int convertAngle(double turningAngle) {
-		int angle = 0;
-		return angle;
+	private static int convertAngle(double radius, double width, double angle) { //converts rotations of robot to
+		return convertDistance(radius, Math.PI * width * angle / (2*Math.PI)); //the required angle rotation of the wheel
+	}
+	
+	public static EV3LargeRegulatedMotor getLeftMotor() {	// get left and right motor
+		return leftMotor;
+	}
+	
+	public static EV3LargeRegulatedMotor getRightMotor() {
+		return rightMotor;
+	}
+
+	public static double getRadius() { 	// get TRACK and RADIUS value
+		return WHEEL_RADIUS;
+	}
+
+	public static double getTrack() {
+		return TRACK;
+	}
+	
+	public static double getX(){
+		return odo.getX();
+	}
+	
+	public static double getY(){
+		return odo.getY();
+	}
+	
+	public static double getTheta(){
+		return odo.getTheta();
+	}
+	
+	public static double getDeltaX(){
+		return deltaX;
+	}
+	
+	public static double getDeltaY(){
+		return deltaY;
+	}
+	
+	public static double getXFinal(){
+		return Navigation.xfinal;
+	}
+
+	public static double getYFinal(){
+		return Navigation.yfinal;
 	}
 
 }

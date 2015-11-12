@@ -10,23 +10,27 @@ public class Brain {
 	private static Identifier iden;
 	private static UltrasonicPoller usPoller;
 	private static TextLCD lcd;
-	
+	private static Search search;
 	public Brain (Odometer odo, Navigation navi, Localization local, 
-				  Identifier iden, UltrasonicPoller usPoller, TextLCD l) {
+				  Identifier iden, UltrasonicPoller usPoller, TextLCD l,Search search ) {
 		Brain.odo = odo;
 		Brain.navi = navi;
 		Brain.local = local;
 		Brain.iden = iden;
 		Brain.usPoller = usPoller;
 		Brain.lcd = l;
+		Brain.search = search;
 	}
+	
+	private Scanner scanner = new Scanner();
 	
 	/**
 	 * After initialization, the robot start searching
 	 * which is the main function of the robot
 	 */
-	public void search(){
 		
+	public void search(){
+		search.search(0,0);
 	}
 	
 }
