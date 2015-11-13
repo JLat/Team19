@@ -28,9 +28,10 @@ public class Initializer {
 	 * 		2- LightPoller
 	 * 		3- Identifier
 	 * 		4- Odometer
-	 *		5- Navigator
-	 *		6- Localizer
-	 *		7- Brain
+	 * 		5- LCDdisplay
+	 *		6- Navigator
+	 *		7- Localizer
+	 *		8- Brain
 	 * @param args
 	 */
 	public static void main(String [] args) {
@@ -41,6 +42,7 @@ public class Initializer {
 		usPoller.start();
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
+		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
 		Localization localizer = new Localization(navigator, usPoller);
 		Search search = new Search (odometer, navigator, usPoller);
 		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, t, search);
