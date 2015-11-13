@@ -1,13 +1,11 @@
 package CaptureTheFlag;
 
-import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigation extends Thread{
 	static int FAST, SLOW;
 	private static Odometer odo;
-	private static EV3LargeRegulatedMotor leftMotor;
-	private static EV3LargeRegulatedMotor rightMotor;
+	private static EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private static double x, y, deltaX, deltaY, xfinal,yfinal;
 	public static final double WHEEL_RADIUS = 2.1;
 	public static final double TRACK = 9.85;
@@ -20,10 +18,10 @@ public class Navigation extends Thread{
 	 * Navigator constructor
 	 * @param odo
 	 */
-	public Navigation (Odometer odo, EV3LargeRegulatedMotor left, EV3LargeRegulatedMotor right) {
+	public Navigation (Odometer odo, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
 		Navigation.odo = odo;
-		leftMotor = left;
-		rightMotor = right;
+		Navigation.leftMotor = leftMotor;
+		Navigation.rightMotor = rightMotor;
 		leftMotor.setAcceleration(500);
 		rightMotor.setAcceleration(500);
 	}
@@ -37,7 +35,7 @@ public class Navigation extends Thread{
 	 * @param lSpd
 	 * @param rSpd
 	 */
-	public static void setSpeeds(float lSpd, float rSpd) {
+	public void setSpeeds(float lSpd, float rSpd) {
 		Navigation.leftMotor.setSpeed(lSpd);
 		Navigation.rightMotor.setSpeed(rSpd);
 		if (lSpd < 0)
@@ -50,7 +48,7 @@ public class Navigation extends Thread{
 			Navigation.rightMotor.forward();
 	}
 
-	public static void setSpeeds(int lSpd, int rSpd) {
+	public void setSpeeds(int lSpd, int rSpd) {
 		Navigation.leftMotor.setSpeed(lSpd);
 		Navigation.rightMotor.setSpeed(rSpd);
 		if (lSpd < 0)
@@ -70,7 +68,7 @@ public class Navigation extends Thread{
 	 * @param xfinal
 	 * @param yfinal
 	 */
-	public static void travelTo(double xfinal, double yfinal) {
+	public void travelTo(double xfinal, double yfinal) {
 		isNavigating = true;
 		x=odo.getX(); //current positions
 		y=odo.getY();
@@ -97,8 +95,8 @@ public class Navigation extends Thread{
 	
 	public void travelToReverse(double xfinal, double yfinal) {
 		isNavigating = true;
-		double x=this.odo.getX(); /*current positions*/
-		double y=this.odo.getY();
+		double x=odo.getX(); /*current positions*/
+		double y=odo.getY();
 		double deltaX = xfinal - x; /*difference between current and final positions*/
 		double deltaY = yfinal - y;
 		
@@ -106,7 +104,7 @@ public class Navigation extends Thread{
 
 		newDeg = calculateNewDegree(xfinal,yfinal,deltaX,deltaY); /*absolute Theta that it needs to turn to*/
 		newDegReverse = (newDeg+Math.PI)%(2*Math.PI);
-		this.turnTo(newDegReverse, true);				/*since we pass a degree into this function,*/
+		turnTo(newDegReverse, true);				/*since we pass a degree into this function,*/
 																/*we convert it into radius*/
 		isNavigating = true;
 		distance = Math.sqrt(deltaX*deltaX + deltaY*deltaY); /*calculates distance from final position*/
@@ -124,7 +122,7 @@ public class Navigation extends Thread{
 	 * @param angle
 	 * @param stop
 	 */
-	public static void turnTo(double theta, boolean stop) {
+	public void turnTo(double theta, boolean stop) {
 		double turnDeg, currentDeg = odo.getTheta(); //initiate variables
 		boolean isTurningClockwise;
 		int leftAngle,rightAngle;
@@ -151,7 +149,7 @@ public class Navigation extends Thread{
 		rightMotor.rotate(rightAngle, false);
 		isNavigating = false;
 		if(stop){
-			Navigation.setSpeeds(0, 0);
+			this.setSpeeds(0, 0);
 		}
 	}
 	
@@ -167,7 +165,7 @@ public class Navigation extends Thread{
 	}
 
 	/* Based on current and final positions, what is the absolute angle of the final position*/
-	public static double calculateNewDegree(double x, double y, double dx, double dy){ 
+	public double calculateNewDegree(double x, double y, double dx, double dy){ 
 		if (dx >= 0) {
 			if (dy >= 0) {
 				return Math.atan(Math.abs(dx) / Math.abs(dy));
@@ -183,7 +181,7 @@ public class Navigation extends Thread{
 		}
 	}
 	
-	private static int convertDistance(double radius, double distance) { //converts distance to angle
+	private int convertDistance(double radius, double distance) { //converts distance to angle
 		return (int) ((180.0 * distance) / (Math.PI * radius));
 	}
 	
@@ -198,7 +196,6 @@ public class Navigation extends Thread{
 	 * @param distance
 	 */
 	public void goForward(double distance) {
-		System.out.println("go forward called");
 		leftMotor.rotate(convertDistance(WHEEL_RADIUS, distance), true); 
 		rightMotor.rotate(convertDistance(WHEEL_RADIUS, distance), false);
 	}
@@ -217,7 +214,7 @@ public class Navigation extends Thread{
 	 * @param turningAngle
 	 * @return
 	 */
-	private static int convertAngle(double radius, double width, double angle) { //converts rotations of robot to
+	private int convertAngle(double radius, double width, double angle) { //converts rotations of robot to
 		return convertDistance(radius, Math.PI * width * angle / (2*Math.PI)); //the required angle rotation of the wheel
 	}
 	

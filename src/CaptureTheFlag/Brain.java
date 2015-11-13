@@ -22,7 +22,7 @@ public class Brain {
 		Brain.search = search;
 	}
 	
-	private Scanner scanner = new Scanner();
+	private Scanner scanner = new Scanner(Initializer.getSensorMotor());
 	
 	/**
 	 * After initialization, the robot start searching

@@ -1,5 +1,6 @@
 package CaptureTheFlag;
 
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.utility.Delay;
 
@@ -21,7 +22,7 @@ public class Search {
 		this.USS = USS;
 	}
 
-	Scanner scan = new Scanner();
+	Scanner scan = new Scanner(Initializer.getSensorMotor());
 
 	/**
 	 * Run method for the Thread. Contains the searching algorithm
@@ -40,8 +41,8 @@ public class Search {
 			if (search(startX, startY + 30 * i))
 				return true;
 		}
-		Navigation.travelTo(startX + 65, startY + 82);
-		Navigation.turnTo(Math.PI, true);
+		nav.travelTo(startX + 65, startY + 82);
+		nav.turnTo(Math.PI, true);
 		
 		for (int i = 0; i < 2; i++) {
 			if (search(startX + 65, startY + 82 - (30*i)))
@@ -83,7 +84,7 @@ public class Search {
 			double offY = 12 + minVal * Math.cos(Math.toRadians(minAngle));
 			double offX = minVal * Math.sin(Math.toRadians(minAngle));
 			double error = Math.atan(offX / offY);
-			Navigation.turnTo(odo.getTheta() + error, true);
+			nav.turnTo(odo.getTheta() + error, true);
 			return approachBlock();
 			// Turn to block (Relate angle of sensor to angle of block
 		}
@@ -96,21 +97,21 @@ public class Search {
 		while (Math.abs(odo.getX() -xCorner) < 30 && Math.abs(  yCorner - odo.getY()) < 30) {
 			LocalEV3.get().getTextLCD().clear();
 			LocalEV3.get().getTextLCD().drawInt(USS.getProcessedDistance(), 4, 4);
-			Navigation.setSpeeds(100, 100);
+			nav.setSpeeds(100, 100);
 
 			if (USS.getProcessedDistance() < 25) {
-			try{
-				Thread.sleep(1500);
-			}
-			catch(Exception e){
-				
-			}
-			Navigation.setSpeeds(0, 0);
-				Navigation.turnTo(odo.getTheta() + Math.PI/2, true);
+				nav.setSpeeds(0, 0);
+				Sound.twoBeeps();
+				Delay.msDelay(1000);
+			nav.goForward(30);
+			
+			Delay.msDelay(2000);
+			nav.setSpeeds(0, 0);
+				nav.turnTo(odo.getTheta() + Math.PI/2, true);
 				return approachBlock();
 			}
 		}
-		Navigation.setSpeeds(0, 0);
+		nav.setSpeeds(0, 0);
 		return false;
 
 	}
@@ -118,11 +119,11 @@ public class Search {
 	public boolean approachBlock() {
 		LocalEV3.get().getAudio().systemSound(0);
 		scan.turnTo(0);
-		Navigation.setSpeeds(50, 50);
+		nav.setSpeeds(50, 50);
 		while (USS.getProcessedDistance() > 2) {
 
 		}
-		Navigation.setSpeeds(0, 0);
+		nav.setSpeeds(0, 0);
 		// if (detector.isFlagDetected())
 		// return true;
 		return false;

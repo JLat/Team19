@@ -12,7 +12,7 @@ public class ScannerTest {
 
 
 	public static void main(String[] args){
-		Scanner scan = new Scanner();
+		Scanner scan = new Scanner(Initializer.getSensorMotor());
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		int buttonChoice = 0;
 		while (true) {

@@ -3,6 +3,7 @@ package CaptureTheFlag;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
+import lejos.hardware.port.Port;
 
 public class Avoid {
 
@@ -17,31 +18,31 @@ public class Avoid {
 	public boolean startStop = false;
 	private double lastDegree;
 	private boolean firstTimeEnter, XorY;
+	private static Navigation navi;
 
-	public Avoid(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, int bandCenter,
-			int bandwidth) {
+	public Avoid(EV3LargeRegulatedMotor leftmotor, EV3LargeRegulatedMotor rightmotor, int bandCenter,
+			int bandwidth, Navigation navi, EV3MediumRegulatedMotor sensorMotor) {
 		// Default Constructor
+		this.leftMotor = leftmotor;
+		this.rightMotor = rightmotor;
 		this.bandCenter = bandCenter;
 		this.bandwidth = bandwidth;
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
 		leftMotor.setSpeed(motorStraight); // Initialize motor rolling forward
 		rightMotor.setSpeed(motorStraight);
-		leftMotor.forward();
-		rightMotor.forward();
 		filterControl = 0;
 		pathFilter = 0;
 		turnFilter = 20;
 		lastDegree = 0;
 		firstTimeEnter = true;
-		sensorMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
+		this.sensorMotor = sensorMotor;
 		XorY = false;
+		Avoid.navi = navi;
 	}
 
 	public void processUSData(int distance) {
 		/*processUSData is called every time by the thread therefore we needed to create
 		 * two large IF cases: (a) is there a wall -- use PController and (b) is there no wall -- travel regular path*/
-		if (distance < 20 && distance > 0 && firstTimeEnter) {
+		if (distance < 2 && distance > 0 && firstTimeEnter) {
 			startStop = true;
 			firstTimeEnter = false; //when the robot is already in PController, prevents the robot from entering
 									// this code block every iteration
@@ -143,7 +144,7 @@ public class Avoid {
 					sensorMotor.setSpeed(500);
 					sensorMotor.rotate(-250, true); //Our sensor was mounted onto a motor so that it could turn smoothly
 												  //This resets the sensor to face forward
-					Navigation.travelTo(Navigation.getXFinal(), Navigation.getYFinal()); //once it escapes pcontroller, resets
+					navi.travelTo(Navigation.getXFinal(), Navigation.getYFinal()); //once it escapes pcontroller, resets
 												//final position and calls TravelTo again to ensure it gets there accurately
 				}
 			}

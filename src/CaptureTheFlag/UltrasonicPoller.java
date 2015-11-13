@@ -17,9 +17,10 @@ public class UltrasonicPoller extends Thread {
 	 * class, as well as a mean of getting the processed value.
 	 * 
 	 */
-	private static final Port usPort = LocalEV3.get().getPort("S2");
+	private static Port usPort;
 	private SampleProvider us;
 	private float[] usData;
+	private Avoid p;
 
 
 	
@@ -48,7 +49,7 @@ public class UltrasonicPoller extends Thread {
 	 * @param UpperBound Upper absolute bound of sensor
 	 * @param LowerBound Lower absolute bound of sensor
 	 */
-	public UltrasonicPoller(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound) {
+	public UltrasonicPoller(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound, Avoid p, Port usport) {
 
 		this.recent = new LinkedList<Integer>();
 
@@ -57,6 +58,8 @@ public class UltrasonicPoller extends Thread {
 		this.minusOffset = MinusOffset;
 		this.upperBound = UpperBound;
 		this.lowerBound = LowerBound;
+		this.p = p;
+		UltrasonicPoller.usPort = usport;
 
 		@SuppressWarnings("resource")
 
@@ -64,9 +67,9 @@ public class UltrasonicPoller extends Thread {
 		SensorModes usSensor = new EV3UltrasonicSensor(usPort);
 		this.us = usSensor.getMode("Distance");
 
-		SampleProvider usDistance = usSensor.getMode("Distance");
+		//SampleProvider usDistance = usSensor.getMode("Distance");
 		// usDistance provides samples from this instance
-		this.usData = new float[usDistance.sampleSize()];
+		this.usData = new float[us.sampleSize()];
 		// usData is the buffer in which data are returned
 
 	}
@@ -81,6 +84,7 @@ public class UltrasonicPoller extends Thread {
 			this.rawDistance = (int) (usData[0] * 100.0);
 
 			processDistance();
+			p.processUSData(getProcessedDistance());
 
 			try {
 				Thread.sleep(50);

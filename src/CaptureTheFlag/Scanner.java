@@ -7,9 +7,10 @@ public class Scanner {
 
 	private int SPEED = 100;
 	public double angleRatio = -90./300;
-	public EV3MediumRegulatedMotor scannerMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
+	public EV3MediumRegulatedMotor scannerMotor;
 	
-	public Scanner(){
+	public Scanner(EV3MediumRegulatedMotor scannerMotor){
+		this.scannerMotor = scannerMotor;
 		this.scannerMotor.resetTachoCount();
 	}
 
