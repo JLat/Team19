@@ -100,8 +100,7 @@ public class Search {
 			nav.setSpeeds(100, 100);
 
 			if (USS.getProcessedDistance() < 25) {
-				nav.setSpeeds(0, 0);
-			nav.goForward(30);
+			nav.goForward(12);
 			nav.setSpeeds(0, 0);
 				nav.turnTo(odo.getTheta() + Math.PI/2, true);
 				return approachBlock();
