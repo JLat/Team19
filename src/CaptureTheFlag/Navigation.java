@@ -2,9 +2,9 @@ package CaptureTheFlag;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
-public class Navigation extends Thread{
-	static int FAST, SLOW;
-	private double degError, cmError;
+public class Navigation {
+	static int FAST = 300, SLOW = 30, ACCELERATION = 3000;
+	private double degError = 3.0, cmError = 1.5;
 	private static Odometer odo;
 	private static EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private static double x, y, deltaX, deltaY, xfinal,yfinal;
@@ -19,6 +19,12 @@ public class Navigation extends Thread{
 	 */
 	public Navigation (Odometer odo) {
 		Navigation.odo = odo;
+		EV3LargeRegulatedMotor[] motors = Navigation.odo.getMotors();
+		Navigation.leftMotor = motors[0];
+		Navigation.rightMotor = motors[1];
+		
+		Navigation.leftMotor.setAcceleration(ACCELERATION);
+		Navigation.rightMotor.setAcceleration(ACCELERATION);
 	}
 
 	public Odometer getOdometer() {
@@ -31,6 +37,16 @@ public class Navigation extends Thread{
 	 * @param rSpd
 	 */
 	public void setSpeeds(int lSpd, int rSpd) {
+		Navigation.leftMotor.setSpeed(lSpd);
+		Navigation.rightMotor.setSpeed(rSpd);
+		if (lSpd < 0)
+			Navigation.leftMotor.backward();
+		else
+			Navigation.leftMotor.forward();
+		if (rSpd < 0)
+			Navigation.rightMotor.backward();
+		else
+			Navigation.rightMotor.forward();
 
 	}
 
@@ -70,12 +86,12 @@ public class Navigation extends Thread{
 	 * @param stop
 	 */
 	public void turnTo(double angle, boolean stop) {
-
-		double error = angle - this.odo.getAng();
+		
+		double error = angle - Navigation.odo.getAng();
 
 		while (Math.abs(error) > degError) {
 
-			error = angle - this.odo.getAng();
+			error = angle - Navigation.odo.getAng();
 
 			if (error < -180.0) {
 				this.setSpeeds(-SLOW, SLOW);
@@ -136,7 +152,7 @@ public class Navigation extends Thread{
 	 * @param distance
 	 */
 	public void goForward(double distance) {
-
+		
 	}
 
 	/**

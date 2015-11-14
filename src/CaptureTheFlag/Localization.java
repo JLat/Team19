@@ -1,6 +1,8 @@
 package CaptureTheFlag;
 
+import lejos.hardware.Button;
 import lejos.hardware.Sound;
+import lejos.hardware.lcd.TextLCD;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
@@ -10,28 +12,36 @@ public class Localization implements TimerListener{
 	private static UltrasonicPoller usPoller;
 	private static Odometer odo;
 	private double previousDistance;
-	private double angleA, angleB, angleDifference;
+	private double angleA = 0, angleB = 0, angleDifference = 0;
 	private double maxA, maxB;
 	private Timer clock;
+	private TextLCD t;
 	
-	public Localization (Navigation navigator, UltrasonicPoller usPoller) {
+	public Localization (Navigation navigator, UltrasonicPoller usPoller, TextLCD t) {
 		Localization.navi = navigator;
 		Localization.usPoller = usPoller;
 		Localization.odo = navi.getOdometer();
-		this.clock = new Timer(25, this);
+		this.t = t;
+		this.clock = new Timer(20, this);
 	}
+	
 	/**
 	 * Let the robot do localization and goes to origin
 	 */
 	public void doLocalization(){
-		navi.setSpeeds(navi.SLOW, navi.SLOW);
-		navi.turn();
-		while(usPoller.getProcessedDistance() < 50);
+		Sound.beepSequenceUp();
+		navi.turn();	
+		while(usPoller.getProcessedDistance() < 30);
 		navi.setSpeeds(0, 0);
 		odo.setPosition(new double [] {0,0,0}, new boolean[] {true, true, true});
 		this.clock.start();
+		Sound.beepSequence();
 		navi.turnBy(-360, true);
 		this.clock.stop();
+//		this.t.drawString("Diff: "+ angleDifference, 0, 3);
+//		this.t.drawString("MaxA: "+ maxA, 0, 4);
+//		this.t.drawString("MaxB: "+ maxB, 0, 5);
+//		this.t.drawString("turn: "+ (this.maxA + this.maxB)/2, 0, 6);
 		navi.turnTo((this.maxA + this.maxB)/2, true);
 		odo.setPosition(new double[] {0, 0, 225}, new boolean[] {true, true, true});
 		navi.turnTo(0, true);
@@ -39,13 +49,14 @@ public class Localization implements TimerListener{
 	@Override
 	public void timedOut() {
 		double currentAngle = odo.getAng();
-		double currentDistance = usPoller.getProcessedDistance();
-		if(currentDistance < 50 && this.previousDistance > 50) {
-			Sound.beep();
+		int currentDistance = usPoller.getProcessedDistance();
+		t.clear();
+		t.drawString("D: "+currentDistance, 0, 0);
+		t.drawString("P: "+this.previousDistance, 0, 1);
+		if(currentDistance < 60 && this.previousDistance >= 60) {
 			this.angleA = currentAngle;
 		}
-		else if (currentDistance > 50 && this.previousDistance < 50) {
-			Sound.beep();
+		else if (currentDistance >= 60 && this.previousDistance < 60) {
 			this.angleB = currentAngle;
 			if(this.angleB - this.angleA > this.angleDifference) {
 				this.angleDifference = this.angleB - this.angleA;

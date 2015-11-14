@@ -10,8 +10,10 @@ public class LightPoller extends Thread {
 	private SensorModes colorSensor;
 	private SampleProvider sensor;
 	private float[] colorData;
-	private Stack<Float> colorStack;
-	public boolean colorChanged;
+	private float rawColor;
+	private boolean colorChanged;
+	private Stack<Float> colorStack = new Stack<Float>();
+	
 	
 	
 	/**
@@ -32,13 +34,12 @@ public class LightPoller extends Thread {
 	 */
 	public void run() {
 		while (true) {
-			if (colorChange()) {
-				this.colorChanged = true;
-			}
+			colorSensor.fetchSample(colorData, 0);
+			this.rawColor = colorData[0];
+			this.colorChanged = colorChange();
 			try {
 				Thread.sleep(50);
 			} catch (Exception e) {
-
 			}
 		}
 		
@@ -56,7 +57,8 @@ public class LightPoller extends Thread {
 	 */
 	public boolean colorChange() {
 		boolean change = false;
-		float currentSample = getSensorSample();
+		float currentSample = this.rawColor;
+//		float currentSample = getSensorSample();
 		if(!colorStack.isEmpty()){
 			float previousSample = colorStack.pop();
 			if(previousSample - currentSample > 0.05) {

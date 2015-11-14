@@ -7,13 +7,13 @@ import lejos.hardware.port.Port;
 
 public class Initializer {
 	private static Port usPort = LocalEV3.get().getPort("S1");		
-	private static Port colorPort = LocalEV3.get().getPort("S2");
-	private static Port identifierPort = LocalEV3.get().getPort("S3");
-	private static EV3LargeRegulatedMotor leftMotor;
-	private static EV3LargeRegulatedMotor rightMotor;
+	private static Port identifierPort = LocalEV3.get().getPort("S2");
+	private static Port colorPort = LocalEV3.get().getPort("S3");
+	private static EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+	private static EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	private static EV3LargeRegulatedMotor clawMotor;
 	private static double wheelRadius, track;
-	public static TextLCD t;
+	public static TextLCD t = LocalEV3.get().getTextLCD();
 	//TODO modify this according to how the info will be received via wifi
 	private static String flag = "blue";
 	
@@ -29,13 +29,17 @@ public class Initializer {
 	 * @param args
 	 */
 	public static void main(String [] args) {
-		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 100, 0);
+		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 200, 0);
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
 		Odometer odometer = new Odometer(leftMotor, rightMotor, 20, true);
 		Navigation navigator = new Navigation(odometer);
-		Localization localizer = new Localization(navigator, usPoller);
-		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, t);
+		Localization localizer = new Localization(navigator, usPoller, t);
+		LightLocalizer localizer2 = new LightLocalizer(navigator, colorPoller, t);
+		Brain controller = new Brain(odometer, navigator, localizer, localizer2, detector, usPoller, t);
+		usPoller.start();
+		colorPoller.start();
+		//detector.start();
 		controller.search();
 	 
 	}
