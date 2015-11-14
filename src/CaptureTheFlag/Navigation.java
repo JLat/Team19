@@ -80,7 +80,7 @@ public class Navigation extends Thread{
 		
 		double newDeg, distance;
 
-		newDeg = calculateNewDegree(xfinal,yfinal,deltaX,deltaY); //absolute Theta that it needs to turn to
+		newDeg = calculateNewAngle(xfinal,yfinal,deltaX,deltaY); //absolute Theta that it needs to turn to
 		turnTo(newDeg, false);
 		isNavigating = true;
 		distance = Math.sqrt(deltaX*deltaX + deltaY*deltaY); //calculates distance from final position
@@ -108,7 +108,7 @@ public class Navigation extends Thread{
 		
 		double newDeg, newDegReverse, distance;
 
-		newDeg = calculateNewDegree(xfinal,yfinal,deltaX,deltaY); /*absolute Theta that it needs to turn to*/
+		newDeg = calculateNewAngle(xfinal,yfinal,deltaX,deltaY); /*absolute Theta that it needs to turn to*/
 		newDegReverse = (newDeg+Math.PI)%(2*Math.PI);
 		turnTo(newDegReverse, true);				/*since we pass a degree into this function,*/
 																/*we convert it into radius*/
@@ -128,7 +128,8 @@ public class Navigation extends Thread{
 	 * @param angle
 	 * @param stop
 	 */
-	public void turnTo(double theta, boolean stop) {
+	public void turnTo(double thetaInRadians, boolean stop) {
+		double theta = thetaInRadians;
 		double turnDeg, currentDeg = odo.getTheta(); //initiate variables
 		boolean isTurningClockwise;
 		int leftAngle,rightAngle;
@@ -158,7 +159,42 @@ public class Navigation extends Thread{
 			this.setSpeeds(0, 0);
 		}
 	}
-	
+	/**
+	 * TurnTo function which takes an angle and boolean as arguments The boolean
+	 * controls whether or not to stop the motors when the turn is completed
+	 * @param angle
+	 * @param stop
+	 */
+	public void turnToAngle(double thetaInDegrees, boolean stop) {
+		double theta = Math.toRadians(thetaInDegrees);
+		double turnDeg, currentDeg = odo.getTheta(); //initiate variables
+		boolean isTurningClockwise;
+		int leftAngle,rightAngle;
+		isNavigating = true; //the method has been called therefore isNavigating is set to true
+		
+		if ((2*Math.PI + theta - currentDeg) % (2*Math.PI) < Math.PI) { /* turn clockwise*/
+			turnDeg = (2*Math.PI + theta - currentDeg) % (2*Math.PI);
+			isTurningClockwise = true;
+		} else { 														/* turn counter clockwise */
+			turnDeg = (2*Math.PI - theta + currentDeg) % (2*Math.PI);
+			isTurningClockwise = false;
+		}
+		leftMotor.setSpeed(motorLow);
+		rightMotor.setSpeed(motorLow);
+		
+		leftAngle = convertAngle(WHEEL_RADIUS, TRACK, turnDeg); //converts robots turning degrees to the wheels turn degree
+		rightAngle = leftAngle;
+
+		if(isTurningClockwise) rightAngle *= -1; //orient directions of wheel rotation
+		else leftAngle *= -1;
+		
+		leftMotor.rotate(leftAngle, true); 		//turn
+		rightMotor.rotate(rightAngle, false);
+		isNavigating = false;
+		if(stop){
+			this.setSpeeds(0, 0);
+		}
+	}
 	/**
 	 * TurnBy function which takes an angle and boolean as arguments 
 	 * the angle determines what degree it should turn and the boolean controls 
@@ -166,12 +202,15 @@ public class Navigation extends Thread{
 	 * @param angle
 	 * @param stop
 	 */
-	public void turnBy(double angle, boolean stop) {
-
+	public void turnDegrees(double angle, boolean stop) {
+		
+	}
+	public void turnRadians(double angle, boolean stop){
+		
 	}
 
 	/* Based on current and final positions, what is the absolute angle of the final position*/
-	public double calculateNewDegree(double x, double y, double dx, double dy){ 
+	public double calculateNewAngle(double x, double y, double dx, double dy){ 
 		if (dx >= 0) {
 			if (dy >= 0) {
 				return Math.atan(Math.abs(dx) / Math.abs(dy));
@@ -249,7 +288,10 @@ public class Navigation extends Thread{
 		return odo.getY();
 	}
 	
-	public static double getTheta(){
+	public static double getThetaDegrees(){
+		return odo.getThetaDegrees();
+	}
+	public static double getThetaRadians(){
 		return odo.getTheta();
 	}
 	

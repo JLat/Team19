@@ -1,5 +1,6 @@
 package Tests;
 
+import CaptureTheFlag.Claw;
 import CaptureTheFlag.LCDdisplay;
 import CaptureTheFlag.Navigation;
 import CaptureTheFlag.Odometer;
@@ -22,31 +23,17 @@ public class ClawTest {
 	
 	
 	public static void main(String[] args) {
-		close();
+		Claw claw = new Claw(clawMotor);
+		claw.close();
 		lcd.addInfo("Closed");
 		nav.goForward(10);
 		nav.turnTo(0, true);
-		open();
+		claw.open();
 		lcd.clearAdditionalInfo();
 		lcd.addInfo("Open");
 		pause();
 	}
-	public static void close(){
-		while(!clawMotor.isStalled()){
-			clawMotor.setSpeed(600);
-			clawMotor.backward();
-		}
-		LocalEV3.get().getAudio().systemSound(0);
-		clawMotor.stop();
-	}
-	public static void open(){
-		while(!clawMotor.isStalled()){
-			clawMotor.setSpeed(600);
-			clawMotor.forward();
-		}
-		LocalEV3.get().getAudio().systemSound(0);
-		clawMotor.stop();
-	}
+	
 	public static void pause(){
 		while(Button.waitForAnyPress()!=Button.ID_ESCAPE){
 			
