@@ -49,7 +49,8 @@ public class UltrasonicPoller extends Thread {
 	 * @param UpperBound Upper absolute bound of sensor
 	 * @param LowerBound Lower absolute bound of sensor
 	 */
-	public UltrasonicPoller(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound, Avoid p, Port usport) {
+	
+	public UltrasonicPoller(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound) {
 
 		this.recent = new LinkedList<Integer>();
 
@@ -58,8 +59,8 @@ public class UltrasonicPoller extends Thread {
 		this.minusOffset = MinusOffset;
 		this.upperBound = UpperBound;
 		this.lowerBound = LowerBound;
-		this.p = p;
-		UltrasonicPoller.usPort = usport;
+		usPort = Initializer.getUsPort();
+		p = Initializer.getPController();
 
 		@SuppressWarnings("resource")
 
@@ -84,7 +85,7 @@ public class UltrasonicPoller extends Thread {
 			this.rawDistance = (int) (usData[0] * 100.0);
 
 			processDistance();
-			p.processUSData(getProcessedDistance());
+			p.processUSData(getRawDistance());
 
 			try {
 				Thread.sleep(50);

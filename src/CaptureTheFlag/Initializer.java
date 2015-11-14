@@ -37,7 +37,7 @@ public class Initializer {
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		p = new Avoid(leftMotor, rightMotor, bandCenter, bandWidth, navigator, sensorMotor);
-		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 100, 0, p, usPort);
+		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 100, 0);
 		usPoller.start();
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
@@ -50,5 +50,13 @@ public class Initializer {
 	
 	public static EV3MediumRegulatedMotor getSensorMotor(){
 		return sensorMotor;
+	}
+	
+	public static Port getUsPort(){
+		return usPort;
+	}
+	
+	public static Avoid getPController(){
+		return p;
 	}
 }

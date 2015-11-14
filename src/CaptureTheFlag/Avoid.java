@@ -16,6 +16,7 @@ public class Avoid {
 	private int pathFilter;
 	private int turnFilter; // handles gaps in the wall
 	public boolean startStop = false;
+	public static boolean avoidOn = false;
 	private double lastDegree;
 	private boolean firstTimeEnter, XorY;
 	private static Navigation navi;
@@ -42,7 +43,7 @@ public class Avoid {
 	public void processUSData(int distance) {
 		/*processUSData is called every time by the thread therefore we needed to create
 		 * two large IF cases: (a) is there a wall -- use PController and (b) is there no wall -- travel regular path*/
-		if (distance < 2 && distance > 0 && firstTimeEnter) {
+		if (distance < 20 && distance > 0 && firstTimeEnter && avoidOn) {
 			startStop = true;
 			firstTimeEnter = false; //when the robot is already in PController, prevents the robot from entering
 									// this code block every iteration
@@ -174,6 +175,10 @@ public class Avoid {
 
 	public int readUSDistance() {
 		return this.distance;
+	}
+	
+	public static void setStartStop(boolean start){
+		avoidOn = start;
 	}
 
 }

@@ -93,6 +93,12 @@ public class Navigation extends Thread{
 		isNavigating = false;
 	}
 	
+	public void travelToWithAvoidance(double xfinal, double yfinal) {
+		Avoid.setStartStop(true);
+		travelTo(xfinal, yfinal);
+		Avoid.setStartStop(false);
+	}
+	
 	public void travelToReverse(double xfinal, double yfinal) {
 		isNavigating = true;
 		double x=odo.getX(); /*current positions*/
@@ -196,6 +202,7 @@ public class Navigation extends Thread{
 	 * @param distance
 	 */
 	public void goForward(double distance) {
+		setSpeeds(motorHigh, motorHigh);
 		leftMotor.rotate(convertDistance(WHEEL_RADIUS, distance), true); 
 		rightMotor.rotate(convertDistance(WHEEL_RADIUS, distance), false);
 	}

@@ -101,11 +101,7 @@ public class Search {
 
 			if (USS.getProcessedDistance() < 25) {
 				nav.setSpeeds(0, 0);
-				Sound.twoBeeps();
-				Delay.msDelay(1000);
 			nav.goForward(30);
-			
-			Delay.msDelay(2000);
 			nav.setSpeeds(0, 0);
 				nav.turnTo(odo.getTheta() + Math.PI/2, true);
 				return approachBlock();
