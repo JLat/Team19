@@ -20,7 +20,8 @@ public class SearchTest {
 		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 100, 0);
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
-		Search search = new Search (odometer, navigator, usPoller);
+		LCDdisplay display = null;
+		Search search = new Search (odometer, navigator, usPoller,display);
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		
 		odometer.start();
@@ -33,7 +34,7 @@ public class SearchTest {
 				t.drawString("Press Escape",0,0);
 				buttonChoice = Button.waitForAnyPress();
 			} while (buttonChoice != Button.ID_ESCAPE);
-			search.Snake(0, 0);
+			search.search(0, 0);
 			//LocalEV3.get().getAudio().systemSound(0);
 			System.exit(0);
 		}

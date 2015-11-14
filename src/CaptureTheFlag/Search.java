@@ -2,13 +2,13 @@ package CaptureTheFlag;
 
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
-import lejos.utility.Delay;
 
 public class Search {
 	Navigation nav;
 	Odometer odo;
 	Identifier detector;
 	UltrasonicPoller USS;
+	LCDdisplay display;
 
 	/**
 	 * Class constructor : takes in an instance of Navigation given by the
@@ -16,10 +16,11 @@ public class Search {
 	 * 
 	 * @param navigator
 	 */
-	public Search(Odometer odo, Navigation nav, UltrasonicPoller USS) {
+	public Search(Odometer odo, Navigation nav, UltrasonicPoller USS, LCDdisplay display) {
 		this.nav = nav;
 		this.odo = odo;
 		this.USS = USS;
+		this.display = display;
 	}
 
 	Scanner scan = new Scanner(Initializer.getSensorMotor());
@@ -36,16 +37,32 @@ public class Search {
 	 */
 
 	public boolean Snake(int startX, int startY) {
-		for (int i = 0; i < 2; i++) {
 
-			if (search(startX, startY + 30 * i))
+		// TODO: this...
+		// Search = 0 - If no block is found mark tile as empty and don't search
+		// it anymore
+		// Search = 1 - If wrong block take it outside the zone and research
+		// that tile]
+		// Search = 2 - If flag take it to final point
+
+		for (int i = 0; i < 2; i++) {
+			if (search(startX, startY + 30 * i) == 2)
+				return true;
+
+		}
+		nav.travelTo(startX, startY + 90 - 12);
+		nav.turnTo(Math.PI / 2, true);
+
+		for (int i = 0; i < 2; i++) {
+			if (search(startX+ 30 * i, startY + 90 - 12) == 2)
 				return true;
 		}
-		nav.travelTo(startX + 65, startY + 82);
+ 
+		nav.travelTo(startX + 60, startY + 60);
 		nav.turnTo(Math.PI, true);
-		
+
 		for (int i = 0; i < 2; i++) {
-			if (search(startX + 65, startY + 82 - (30*i)))
+			if (search(startX + 60, startY + 60 - (30 * i)) == 2)
 				return true;
 		}
 
@@ -59,25 +76,38 @@ public class Search {
 	 *            Starting X coordinate of square
 	 * @param yCorner
 	 *            Starting Y coordinate of square
+	 * @param wall
+	 *            Whether to account for a wall or not
 	 * @return Whether the flag or NO/Wrong block is found
 	 * 
 	 */
-	public boolean search(int xCorner, int yCorner) {
+	public int search(int xCorner, int yCorner) {
+		nav.goForward(-12);
+		
 		// Search function for each tile
 		// Assume starting at bottom left corner of the tile
 
 		// Stage 1 - Search for angled blocks
-		// Find smallest distance while scanning and if that value is below threshold then use that as the position of the block
+		// Find smallest distance while scanning and if that value is below
+		// threshold then use that as the position of the block
 		double minVal = 100;
 		double minAngle = 0;
-		for (int i = 0; i <= 90; i+=3) {
-			LocalEV3.get().getTextLCD().clear();
-			LocalEV3.get().getTextLCD().drawInt(USS.getProcessedDistance(), 4, 4);
+		double startAngle = 0;
+		double endAngle = 0;
+		
+		for (int i = 0; i <= 90; i += 3) {
 			scan.turnTo(i);
-			if (USS.getProcessedDistance() < minVal){
+			if (USS.getProcessedDistance() < minVal) {
 				minVal = USS.getProcessedDistance();
 				minAngle = scan.getAngle();
+				startAngle = scan.getAngle();
 			}
+			else if (USS.getProcessedDistance() == minVal){
+				endAngle = scan.getAngle();
+			}
+		}
+		if (endAngle > startAngle){
+			minAngle = (startAngle + endAngle) /2;
 		}
 
 		if (minVal < 28) {
@@ -90,38 +120,39 @@ public class Search {
 		}
 
 		LocalEV3.get().getAudio().systemSound(1);
-		
+
 		// Stage 2 - Search for non-angled blocks
 
 		// TODO: Allow travel in other direction
-		while (Math.abs(odo.getX() -xCorner) < 30 && Math.abs(  yCorner - odo.getY()) < 30) {
-			LocalEV3.get().getTextLCD().clear();
-			LocalEV3.get().getTextLCD().drawInt(USS.getProcessedDistance(), 4, 4);
-			nav.setSpeeds(100, 100);
+		while (Math.abs(xCorner - odo.getX()) < 30 && Math.abs(yCorner - odo.getY()) < 30) {
+			nav.setSpeeds(150, 150);
 
-			if (USS.getProcessedDistance() < 25) {
-			nav.goForward(12);
-			nav.setSpeeds(0, 0);
-				nav.turnTo(odo.getTheta() + Math.PI/2, true);
+			if (USS.getProcessedDistance() < 25 ) {
+				nav.goForward(12);
+				nav.setSpeeds(0, 0);
+				nav.turnTo(odo.getTheta() + Math.PI / 2, true);
 				return approachBlock();
 			}
 		}
 		nav.setSpeeds(0, 0);
-		return false;
+		return 0;
 
 	}
 
-	public boolean approachBlock() {
+	public int approachBlock() {
 		LocalEV3.get().getAudio().systemSound(0);
 		scan.turnTo(0);
-		nav.setSpeeds(50, 50);
-		while (USS.getProcessedDistance() > 2) {
+		nav.setSpeeds(100, 100);
 
+		while (USS.getProcessedDistance() > 5) {
+			
 		}
 		nav.setSpeeds(0, 0);
 		// if (detector.isFlagDetected())
-		// return true;
-		return false;
+		// return 2;
+		System.exit(0);
+		// Do something to remove the block from the zone
+		return 1;
 
 	}
 

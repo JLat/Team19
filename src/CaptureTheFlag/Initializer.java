@@ -36,6 +36,7 @@ public class Initializer {
 	 */
 	public static void main(String [] args) {
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
+		odometer.start();
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		p = new Avoid(leftMotor, rightMotor, bandCenter, bandWidth, navigator, sensorMotor);
 		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 100, 0);
@@ -44,8 +45,9 @@ public class Initializer {
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
 		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
 		Localization localizer = new Localization(navigator, usPoller);
-		Search search = new Search (odometer, navigator, usPoller);
+		Search search = new Search (odometer, navigator, usPoller,display);
 		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, t, search);
+		display.addInfo("distance");
 		controller.search();
 	 
 	}

@@ -30,7 +30,8 @@ public class Brain {
 	 */
 		
 	public void search(){
-		search.search(0,0);
+		//search.search(0, 0, true);
+		search.Snake(0,0);
 	}
 	
 }
