@@ -5,12 +5,16 @@ import java.util.Hashtable;
 import java.util.List;
 
 import lejos.hardware.port.Port;
+import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 
-public class Identifier extends LightPoller {
+public class Identifier extends Thread{
+//public class Identifier extends LightPoller {
 	private boolean objectInspected;
 	private boolean flagDetected;
 	private SampleProvider sensor;
+	private SensorModes mode;
 	private float[] colorData;
 	private double rValue, gValue, bValue;
 	private double error = 8;
@@ -25,7 +29,10 @@ public class Identifier extends LightPoller {
 	 * @param colorData
 	 */
 	public Identifier (Port identifierPort, String mode, String flag) {
-		super(identifierPort, mode);
+		this.mode = new EV3ColorSensor(identifierPort);
+		this.sensor = this.mode.getMode(mode);
+		this.colorData = new float[sensor.sampleSize()];
+		//super(identifierPort, mode);
 		this.objectInspected = false;
 		this.flagDetected = false;
 		this.flag = flag;

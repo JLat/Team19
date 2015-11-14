@@ -27,20 +27,19 @@ public class LightLocalizer implements TimerListener {
 	
 	public void doLightLocalization() {
 		timer.start();
-		Sound.beepSequenceUp();
-		odo.setPosition(new double [] {0,0,0}, new boolean [] {true, true, true});
-		navi.travelTo(5, 5);
-		navi.turnTo(0, true);
-		odo.setPosition(new double [] {0,0,0}, new boolean [] {true, true, true});
-		navi.turnBy(-360, true);
-		while(angles.size() != 4) {
-			angles.clear();
-			navi.turnBy(-360, true);
-		}
-		timer.stop();
-		processAngles();
-		navi.travelTo(0, 0);
-		navi.turnTo(0, true);
+//		odo.setPosition(new double [] {0,0,0}, new boolean [] {true, true, true});
+//		navi.travelTo(5, 5);
+//		navi.turnTo(0, true);
+//		odo.setPosition(new double [] {0,0,0}, new boolean [] {true, true, true});
+//		navi.turnBy(-360, true);
+//		while(angles.size() != 4) {
+//			angles.clear();
+//			navi.turnBy(-360, true);
+//		}
+//		timer.stop();
+//		processAngles();
+//		navi.travelTo(0, 0);
+//		navi.turnTo(0, true);
 	}
 	
 	public void processAngles(){
@@ -56,11 +55,12 @@ public class LightLocalizer implements TimerListener {
 
 	@Override
 	public void timedOut() {
-		double currentAngle = odo.getAng();
-		if(lightPoller.colorChange()) {
-			Sound.beepSequence();
-			angles.add(currentAngle);
-		}
-		
+//		double currentAngle = odo.getAng();
+//		t.clear();
+//		t.drawString("ID: "+lightPoller.getRawData(), 0, 0);
+//		if(lightPoller.colorChange()) {
+//			Sound.beep();
+//			angles.add(currentAngle);
+//		}
 	}
 }

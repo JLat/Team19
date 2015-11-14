@@ -3,7 +3,7 @@ package CaptureTheFlag;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigation {
-	static int FAST = 300, SLOW = 30, ACCELERATION = 3000;
+	static int FAST = 300, SLOW = 40, ACCELERATION = 3000;
 	private double degError = 3.0, cmError = 1.5;
 	private static Odometer odo;
 	private static EV3LargeRegulatedMotor leftMotor, rightMotor;

@@ -30,7 +30,7 @@ public class LCDdisplay implements TimerListener {
 		pos = new double[3];
 
 		// start the timer
-		lcdTimer.start();
+		//lcdTimer.start();
 	}
 
 	public void timedOut() {

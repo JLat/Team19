@@ -34,7 +34,7 @@ public class LightPoller extends Thread {
 	 */
 	public void run() {
 		while (true) {
-			colorSensor.fetchSample(colorData, 0);
+			sensor.fetchSample(colorData, 0);
 			this.rawColor = colorData[0];
 			this.colorChanged = colorChange();
 			try {
@@ -45,11 +45,11 @@ public class LightPoller extends Thread {
 		
 	}
 	
-	//Returns the float value picked up by the red mode of the color sensor when called. 
-	public float getSensorSample() {
-		colorSensor.fetchSample(colorData, 0);
-		return colorData[0];
-	}
+//	//Returns the float value picked up by the red mode of the color sensor when called. 
+//	public float getSensorSample() {
+//		colorSensor.fetchSample(colorData, 0);
+//		return colorData[0];
+//	}
 	
 	/*
 	 * Returns the boolean value of whether or not a color change has been detected 
@@ -67,6 +67,10 @@ public class LightPoller extends Thread {
 		}
 		colorStack.push(currentSample);
 		return change;
+	}
+	
+	public float getRawData() {
+		return this.rawColor;
 	}
 	
 

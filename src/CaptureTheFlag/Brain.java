@@ -1,7 +1,6 @@
 package CaptureTheFlag;
 
 import lejos.hardware.Sound;
-import lejos.hardware.lcd.TextLCD;
 
 public class Brain {
 	
@@ -11,10 +10,10 @@ public class Brain {
 	private static LightLocalizer local2;
 	private static Identifier iden;
 	private static UltrasonicPoller usPoller;
-	private static TextLCD lcd;
+	private static LCDdisplay lcd;
 	
 	public Brain (Odometer odo, Navigation navi, Localization local, LightLocalizer local2,
-				  Identifier iden, UltrasonicPoller usPoller, TextLCD l) {
+				  Identifier iden, UltrasonicPoller usPoller, LCDdisplay l) {
 		Brain.odo = odo;
 		Brain.navi = navi;
 		Brain.local = local;
@@ -30,7 +29,8 @@ public class Brain {
 	 */
 	public void search(){
 		Brain.odo.start();
-		Brain.local.doLocalization();
+		//Brain.local.doLocalization();
+		Sound.beepSequenceUp();
 		//Brain.local2.doLightLocalization();
 	}
 	

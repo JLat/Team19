@@ -39,8 +39,8 @@ public class Localization implements TimerListener{
 		navi.turnBy(-360, true);
 		this.clock.stop();
 //		this.t.drawString("Diff: "+ angleDifference, 0, 3);
-//		this.t.drawString("MaxA: "+ maxA, 0, 4);
-//		this.t.drawString("MaxB: "+ maxB, 0, 5);
+		this.t.drawString("MaxA: "+ maxA, 0, 4);
+		this.t.drawString("MaxB: "+ maxB, 0, 5);
 //		this.t.drawString("turn: "+ (this.maxA + this.maxB)/2, 0, 6);
 		navi.turnTo((this.maxA + this.maxB)/2, true);
 		odo.setPosition(new double[] {0, 0, 225}, new boolean[] {true, true, true});
@@ -52,7 +52,7 @@ public class Localization implements TimerListener{
 		int currentDistance = usPoller.getProcessedDistance();
 		t.clear();
 		t.drawString("D: "+currentDistance, 0, 0);
-		t.drawString("P: "+this.previousDistance, 0, 1);
+//		t.drawString("P: "+this.previousDistance, 0, 1);
 		if(currentDistance < 60 && this.previousDistance >= 60) {
 			this.angleA = currentAngle;
 		}

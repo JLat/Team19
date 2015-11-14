@@ -31,16 +31,17 @@ public class Initializer {
 	public static void main(String [] args) {
 		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 200, 0);
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
-		Identifier detector = new Identifier(identifierPort, "RGB", flag);
+		Identifier identifier = new Identifier(identifierPort, "RGB", flag);
 		Odometer odometer = new Odometer(leftMotor, rightMotor, 20, true);
 		Navigation navigator = new Navigation(odometer);
 		Localization localizer = new Localization(navigator, usPoller, t);
 		LightLocalizer localizer2 = new LightLocalizer(navigator, colorPoller, t);
-		Brain controller = new Brain(odometer, navigator, localizer, localizer2, detector, usPoller, t);
+		//LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, identifier);
+		//Brain controller = new Brain(odometer, navigator, localizer, localizer2, identifier, usPoller, display);
 		usPoller.start();
 		colorPoller.start();
-		//detector.start();
-		controller.search();
+		identifier.start();
+		//controller.search();
 	 
 	}
 }
