@@ -44,7 +44,7 @@ public class Initializer {
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
 		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
-		Localization localizer = new Localization(navigator, usPoller);
+		Localization localizer = new Localization(navigator, usPoller, t);
 		Search search = new Search (odometer, navigator, usPoller,display);
 		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, t, search);
 		display.addInfo("distance");
