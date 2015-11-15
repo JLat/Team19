@@ -13,13 +13,12 @@ public class Brain {
 	private static Search search;
 	private static Claw claw;
 	public Brain (Odometer odo, Navigation navi, Localization local, 
-				  Identifier iden, UltrasonicPoller usPoller, TextLCD l,Search search, Claw claw ) {
+				  Identifier iden, UltrasonicPoller usPoller,Search search, Claw claw ) {
 		Brain.odo = odo;
 		Brain.nav = navi;
 		Brain.local = local;
 		Brain.iden = iden;
 		Brain.usPoller = usPoller;
-		Brain.lcd = l;
 		Brain.search = search;
 		Brain.claw = claw;
 	}
@@ -33,11 +32,12 @@ public class Brain {
 		
 	public void search(){
 		//search.search(0, 0, true);
+		
 		search.Snake((int)odo.getX(),(int)odo.getY());
-		nav.goForward(-5);
-		claw.close();
-		nav.travelToWithAvoidance(0, 0);
-		claw.open();
+		//nav.goForward(-5);
+		//claw.close();
+		//nav.travelToWithAvoidance(0, 0);
+		//claw.open();
 		
 		
 	}

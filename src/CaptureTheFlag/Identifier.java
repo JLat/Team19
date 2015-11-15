@@ -19,7 +19,7 @@ public class Identifier extends Thread {
 	private double error = 10;
 	private Hashtable<String, List<Double>> blockID = new Hashtable<String, List<Double>>();
 	//TODO: change this when we know how the flag color will be given to us
-	private String flag = "yellow"; 
+	private String flag;
 	
 	/**
 	 * Class constructor : inherited from LightPoller

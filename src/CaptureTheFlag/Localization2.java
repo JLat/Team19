@@ -1,0 +1,127 @@
+package CaptureTheFlag;
+import lejos.hardware.ev3.LocalEV3;
+
+//Falling edge localization from Lab 4
+
+public class Localization2 {
+	public static float ROTATION_SPEED = 60;
+
+	private Odometer odo;
+	private Navigation nav;
+	private UltrasonicPoller uss;
+	private LCDdisplay lcd;
+	private int distanceCap = 30;
+	private double detectionRatio = 0.7;
+
+	public Localization2(Navigation nav, Odometer odo, UltrasonicPoller uss, LCDdisplay LCD) {
+		this.odo = odo;
+		this.lcd = LCD;
+		this.nav = nav;
+		this.uss = uss;
+	}
+
+	public void doLocalization(int Cap) {
+
+		distanceCap = Cap;
+		double[] pos = new double[3];
+		double angleA, angleB, delta;
+		lcd.addInfo("D: ");
+
+		// rotate the robot until it sees no wall
+		rotateUntilOpen("right");
+
+		rotateUntilWall("right");
+		// a wall was observed.
+
+		// stop the motors and play a sound.
+		nav.setSpeeds(0, 0);
+		LocalEV3.get().getAudio().systemSound(0);
+		// latch the angle
+		angleA = odo.getThetaDegrees();
+
+		// add the angle info on the screen.
+		this.lcd.addInfo("angleA: ", angleA);
+
+		// switch direction and rotate until it sees no wall
+		rotateUntilOpen("left");
+
+		// keep rotating until the robot sees a wall, then latch the angle
+		rotateUntilWall("left");
+
+		nav.setSpeeds(0, 0);
+		LocalEV3.get().getAudio().systemSound(0);
+		angleB = odo.getThetaDegrees();
+		
+		// add the value of the angle to the LCD.
+		this.lcd.addInfo("angl2: ", angleB);
+		if (angleA < angleB) {
+			lcd.addInfo("A < B");
+			delta = 46.0 - (angleB + angleA) / 2;
+			if (Math.abs(angleA - angleB) < 100)
+				delta -= 180;
+				
+		} else {
+			// (angleA>angleB)
+			lcd.addInfo("A>B");
+			delta = 224.0 - (angleB + angleA) / 2;
+			if (Math.abs(angleA - angleB)> 270)
+				delta -= 180;
+		}
+
+		// current odometer heading - delta = real current heading
+		// hence, by turning to theta-delta, we are actually turning to theta.
+
+		
+		pos[0] = 0;
+		pos[1] = 0;
+		// Offset because of error
+		pos[2] = odo.getThetaDegrees() + delta;
+
+		// update the odometer position
+		odo.setPosition(pos, new boolean[] { false, false, true });
+
+		// turn towards 0 degrees (parallel to back wall)
+		nav.turnToAngle(0, true);
+		this.lcd.clearAdditionalInfo();
+
+	}
+
+	private void rotateUntilWall(String direction) {
+		int dir = 0;
+		if (direction.equals("left")) {
+			dir = -1;
+		} else if (direction.equals("right")) {
+			dir = 1;
+		}
+		//
+		int distance = uss.getProcessedDistance();
+		while (distance < distanceCap) {
+			nav.setSpeeds(dir * ROTATION_SPEED, -dir * ROTATION_SPEED);
+			distance = uss.getProcessedDistance();
+		}
+
+		while (distance >= detectionRatio * distanceCap) {
+			nav.setSpeeds(dir * ROTATION_SPEED, -dir * ROTATION_SPEED);
+			distance = uss.getProcessedDistance();
+		}
+	}
+
+	private void rotateUntilOpen(String direction) {
+		int dir = 0;
+		if (direction.equals("left")) {
+			dir = -1;
+		} else if (direction.equals("right")) {
+			dir = 1;
+		}
+
+		// rotate the robot until it sees open space.
+
+		int distance = uss.getProcessedDistance();
+
+		while (distance < distanceCap) {
+			nav.setSpeeds(dir * ROTATION_SPEED, -dir * ROTATION_SPEED);
+			distance = uss.getProcessedDistance();
+		}
+	}
+
+}

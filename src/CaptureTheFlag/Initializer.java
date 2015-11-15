@@ -18,9 +18,9 @@ public class Initializer {
 	private static final int bandWidth = 4;
 	private static Avoid p;
 	private static double wheelRadius, track;
-	public static TextLCD t;
+	public static TextLCD t = LocalEV3.get().getTextLCD();
 	//TODO modify this according to how the info will be received via wifi
-	private static String flag = "blue";
+	private static String flag = "white";
 	
 	/**
 	 * Initializes all the objects in the following order :
@@ -46,9 +46,9 @@ public class Initializer {
 		detector.start();
 		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
 		Claw claw = new Claw(clawMotor);
-		Localization localizer = new Localization(navigator, usPoller,t);
+		Localization localizer = new Localization(navigator,usPoller,t);
 		Search search = new Search (odometer, navigator, usPoller,display,detector);
-		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, t, search, claw);
+		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, search, claw);
 		display.addInfo("distance");
 		display.addInfo("red");
 		display.addInfo("green");
