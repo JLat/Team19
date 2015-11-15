@@ -202,6 +202,24 @@ public class Navigation extends Thread{
 	 * @param angle
 	 * @param stop
 	 */
+	public void turnBy(double angle, boolean stop) {
+		leftMotor.setSpeed(SLOW);
+		rightMotor.setSpeed(SLOW);
+		leftMotor.rotate(convertAngle(WHEEL_RADIUS, TRACK, angle), true);
+		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, TRACK, angle), false);
+		if (stop) {
+			this.setSpeeds(0, 0);
+		}
+
+	}
+
+	public void turn(){
+		leftMotor.setSpeed(SLOW);
+		rightMotor.setSpeed(SLOW);
+		leftMotor.backward();
+		rightMotor.forward();
+	}
+	
 	public void turnDegrees(double angle, boolean stop) {
 		
 	}

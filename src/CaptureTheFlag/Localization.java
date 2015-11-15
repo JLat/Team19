@@ -35,6 +35,7 @@ public class Localization implements TimerListener{
 		odo.setPosition(new double [] {0,0,0}, new boolean[] {true, true, true});
 		this.clock.start();
 		Sound.beepSequence();
+		//Assuming angle in degrees
 		navi.turnBy(-360, true);
 		this.clock.stop();
 //		this.t.drawString("Diff: "+ angleDifference, 0, 3);
