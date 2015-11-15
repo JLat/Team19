@@ -49,7 +49,7 @@ public class Avoid {
 									// this code block every iteration
 
 			//originalRatio = Math.abs(ratioDeltaY) / Math.abs(ratioDeltaX); //slope of the original path
-			lastDegree = Navigation.getTheta(); //saves theta for comparison
+			lastDegree = Navigation.getThetaDegrees(); //saves theta for comparison
 			if((lastDegree >= 235 || lastDegree < 45)||(lastDegree >= 135 && lastDegree < 215)){
 				XorY = true;
 			}else{

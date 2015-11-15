@@ -5,21 +5,23 @@ import lejos.hardware.lcd.TextLCD;
 public class Brain {
 	
 	private static Odometer odo;
-	private static Navigation navi;
+	private static Navigation nav;
 	private static Localization local;
 	private static Identifier iden;
 	private static UltrasonicPoller usPoller;
 	private static TextLCD lcd;
 	private static Search search;
+	private static Claw claw;
 	public Brain (Odometer odo, Navigation navi, Localization local, 
-				  Identifier iden, UltrasonicPoller usPoller, TextLCD l,Search search ) {
+				  Identifier iden, UltrasonicPoller usPoller, TextLCD l,Search search, Claw claw ) {
 		Brain.odo = odo;
-		Brain.navi = navi;
+		Brain.nav = navi;
 		Brain.local = local;
 		Brain.iden = iden;
 		Brain.usPoller = usPoller;
 		Brain.lcd = l;
 		Brain.search = search;
+		Brain.claw = claw;
 	}
 	
 	private Scanner scanner = new Scanner(Initializer.getSensorMotor());
@@ -31,7 +33,13 @@ public class Brain {
 		
 	public void search(){
 		//search.search(0, 0, true);
-		search.Snake(0,0);
+		search.Snake((int)odo.getX(),(int)odo.getY());
+		nav.goForward(-5);
+		claw.close();
+		nav.travelToWithAvoidance(0, 0);
+		claw.open();
+		
+		
 	}
 	
 }

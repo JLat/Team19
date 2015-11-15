@@ -1,4 +1,4 @@
-package CaptureTheFlag;
+	package CaptureTheFlag;
 
 import java.util.ArrayList;
 import lejos.hardware.ev3.LocalEV3;
@@ -61,10 +61,10 @@ public class LCDdisplay implements TimerListener {
 			}else if(element.toLowerCase().contains("red")){
 				element = "Red: "+formattedDoubleToString((this.identifier.getRedValue()),2);
 				LCD.drawString(element,0, i);
-			}else if(element.contains("Green: ")){
+			}else if(element.toLowerCase().contains("green")){
 				element = "Green: "+formattedDoubleToString((this.identifier.getGreenValue()),2);
 				LCD.drawString(element,0, i);
-			}else if(element.contains("Blue: ")){
+			}else if(element.toLowerCase().contains("blue")){
 				element = "Blue: "+formattedDoubleToString((this.identifier.getBlueValue()),2);
 				LCD.drawString(element,0, i);
 			}else{

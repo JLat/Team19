@@ -8,12 +8,12 @@ import lejos.hardware.port.Port;
 
 public class Initializer {
 	private static Port usPort = LocalEV3.get().getPort("S1");		
-	private static Port colorPort = LocalEV3.get().getPort("S2");
-	private static Port identifierPort = LocalEV3.get().getPort("S3");
+	private static Port colorPort = LocalEV3.get().getPort("S3");
+	private static Port identifierPort = LocalEV3.get().getPort("S2");
 	private static EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	private static EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	private static EV3MediumRegulatedMotor sensorMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
-	private static EV3LargeRegulatedMotor clawMotor;
+	private static EV3MediumRegulatedMotor clawMotor = new EV3MediumRegulatedMotor (LocalEV3.get().getPort("C"));
 	private static final int bandCenter = 18; 
 	private static final int bandWidth = 4;
 	private static Avoid p;
@@ -43,11 +43,16 @@ public class Initializer {
 		usPoller.start();
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
+		detector.start();
 		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
-		Localization localizer = new Localization(navigator, usPoller, t);
-		Search search = new Search (odometer, navigator, usPoller,display);
-		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, t, search);
+		Claw claw = new Claw(clawMotor);
+		Localization localizer = new Localization(navigator, usPoller);
+		Search search = new Search (odometer, navigator, usPoller,display,detector);
+		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, t, search, claw);
 		display.addInfo("distance");
+		display.addInfo("red");
+		display.addInfo("green");
+		display.addInfo("blue");
 		controller.search();
 	 
 	}

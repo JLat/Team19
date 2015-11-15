@@ -16,11 +16,12 @@ public class Search {
 	 * 
 	 * @param navigator
 	 */
-	public Search(Odometer odo, Navigation nav, UltrasonicPoller USS, LCDdisplay display) {
+	public Search(Odometer odo, Navigation nav, UltrasonicPoller USS, LCDdisplay display, Identifier detector) {
 		this.nav = nav;
 		this.odo = odo;
 		this.USS = USS;
 		this.display = display;
+		this.detector = detector;
 	}
 
 	Scanner scan = new Scanner(Initializer.getSensorMotor());
@@ -38,34 +39,55 @@ public class Search {
 
 	public boolean Snake(int startX, int startY) {
 
-		// TODO: this...
+		/* TODO: this...
 		// Search = 0 - If no block is found mark tile as empty and don't search
 		// it anymore
 		// Search = 1 - If wrong block take it outside the zone and research
 		// that tile]
 		// Search = 2 - If flag take it to final point
 
-		for (int i = 0; i < 2; i++) {
-			if (search(startX, startY + 30 * i) == 2)
-				return true;
+		int pos[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, { startX + 60, startY + 60, 180 },
+				{ startX + 60, startY + 30, 180 } };
 
-		}
-		nav.travelTo(startX, startY + 90 - 12);
-		nav.turnTo(Math.PI / 2, true);
-
-		for (int i = 0; i < 2; i++) {
-			if (search(startX+ 30 * i, startY + 90 - 12) == 2)
+		for (int i = 0; i < 4; i++) {
+			nav.travelTo(pos[i][0], pos[i][1]);
+			nav.turnToAngle(pos[i][3], true);
+			if (search(pos[i][0], pos[i][1]) == 2)
 				return true;
 		}
- 
-		nav.travelTo(startX + 60, startY + 60);
-		nav.turnTo(Math.PI, true);
-
+		*/
+		
+		int result = 0;
+		
 		for (int i = 0; i < 2; i++) {
-			if (search(startX + 60, startY + 60 - (30 * i)) == 2)
+			nav.travelTo(startX, startY + 30 * i);
+			nav.turnTo(0,true);
+			result = search(startX, startY + 30 * i);
+			if (result == 2)
 				return true;
+			else if (result == 1)
+				i--;
 		}
 
+		// TODO: NOT NEEDED FOR DEMO;
+		/*
+		 * nav.travelTo(startX, startY + 90 - 12); nav.turnTo(Math.PI / 2,
+		 * true);
+		 * 
+		 * for (int i = 0; i < 2; i++) { if (search(startX+ 30 * i, startY + 90
+		 * - 12) == 2) return true; }
+		 */
+
+		for (int i = 0; i < 2; i++) {
+			nav.travelTo(startX + 60, startY + 60 - (30 * i));
+			nav.turnTo(Math.PI, true);
+			result = search(startX + 60, startY + 60 - (30 * i));
+			if (result == 2)
+				return true;
+			else if (result == 1)
+				i--;
+		}
+		
 		return false;
 	}
 
@@ -82,8 +104,8 @@ public class Search {
 	 * 
 	 */
 	public int search(int xCorner, int yCorner) {
-		nav.goForward(-12);
-		
+		nav.goForward(-10);
+
 		// Search function for each tile
 		// Assume starting at bottom left corner of the tile
 
@@ -94,20 +116,19 @@ public class Search {
 		double minAngle = 0;
 		double startAngle = 0;
 		double endAngle = 0;
-		
+
 		for (int i = 0; i <= 90; i += 3) {
 			scan.turnTo(i);
 			if (USS.getProcessedDistance() < minVal) {
 				minVal = USS.getProcessedDistance();
 				minAngle = scan.getAngle();
 				startAngle = scan.getAngle();
-			}
-			else if (USS.getProcessedDistance() == minVal){
+			} else if (USS.getProcessedDistance() == minVal) {
 				endAngle = scan.getAngle();
 			}
 		}
-		if (endAngle > startAngle){
-			minAngle = (startAngle + endAngle) /2;
+		if (endAngle > startAngle) {
+			minAngle = (startAngle + endAngle) / 2;
 		}
 
 		if (minVal < 28) {
@@ -119,18 +140,18 @@ public class Search {
 			// Turn to block (Relate angle of sensor to angle of block
 		}
 
-		LocalEV3.get().getAudio().systemSound(1);
-
 		// Stage 2 - Search for non-angled blocks
 
 		// TODO: Allow travel in other direction
 		while (Math.abs(xCorner - odo.getX()) < 30 && Math.abs(yCorner - odo.getY()) < 30) {
 			nav.setSpeeds(150, 150);
 
-			if (USS.getProcessedDistance() < 25 ) {
+			if (USS.getProcessedDistance() < 25) {
+				nav.setSpeeds(0, 0);
 				nav.goForward(12);
 				nav.setSpeeds(0, 0);
 				nav.turnTo(odo.getTheta() + Math.PI / 2, true);
+				nav.goForward(-5);
 				return approachBlock();
 			}
 		}
@@ -143,16 +164,29 @@ public class Search {
 		LocalEV3.get().getAudio().systemSound(0);
 		scan.turnTo(0);
 		nav.setSpeeds(100, 100);
+		
+		while (USS.getProcessedDistance() > 3) {
 
-		while (USS.getProcessedDistance() > 5) {
-			
 		}
 		nav.setSpeeds(0, 0);
-		// if (detector.isFlagDetected())
-		// return 2;
-		System.exit(0);
-		// Do something to remove the block from the zone
-		return 1;
+		nav.goForward(2);
+		if (detector.colorMapping()) {
+			
+			//Grab block and then get out of there
+			LocalEV3.get().getAudio().systemSound(1);
+			
+			
+			//System.exit(0);
+			return 2;
+		}
+		else{
+			LocalEV3.get().getAudio().systemSound(0);
+			
+			//System.exit(0);
+			//Remove block from zone then research zone
+			
+			return 0;
+		}
 
 	}
 
