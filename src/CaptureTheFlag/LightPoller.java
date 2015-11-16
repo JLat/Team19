@@ -67,6 +67,4 @@ public class LightPoller extends Thread {
 		return change;
 	}
 	
-
-
 }
