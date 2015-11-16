@@ -17,7 +17,7 @@ public class UltrasonicPoller extends Thread {
 	 * class, as well as a mean of getting the processed value.
 	 * 
 	 */
-	private static Port usPort;
+	private static Port usPort = LocalEV3.get().getPort("S1");
 	private SampleProvider us;
 	private float[] usData;
 	private Avoid p;
@@ -59,8 +59,6 @@ public class UltrasonicPoller extends Thread {
 		this.minusOffset = MinusOffset;
 		this.upperBound = UpperBound;
 		this.lowerBound = LowerBound;
-		usPort = Initializer.getUsPort();
-		p = Initializer.getPController();
 
 		@SuppressWarnings("resource")
 
@@ -85,7 +83,7 @@ public class UltrasonicPoller extends Thread {
 			this.rawDistance = (int) (usData[0] * 100.0);
 
 			processDistance();
-			p.processUSData(getRawDistance());
+			
 
 			try {
 				Thread.sleep(50);
@@ -229,7 +227,13 @@ public class UltrasonicPoller extends Thread {
 	public boolean isFull() {
 		return this.recent.size() == this.recentListSize;
 	}
-
+	
+	public int[] saveParameters(){
+		return new int[]{this.recentListSize,this.plusOffset,this.minusOffset,this.upperBound,this.lowerBound};
+	}
+	public void restoreParameters(int[] params){
+		this.setParameters(params[0], params[1],params[2],params[3],params[4]);
+	}
 
 
 
