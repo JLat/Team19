@@ -35,7 +35,7 @@ public class Odometer extends Thread {
 
 	// default constructor
 	public Odometer(EV3LargeRegulatedMotor leftmotor,
-			EV3LargeRegulatedMotor rightmotor) {
+					EV3LargeRegulatedMotor rightmotor) {
 		x = 0.0; //initializing values to zero
 		y = 0.0;
 		theta = 0.0;
