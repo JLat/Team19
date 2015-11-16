@@ -17,11 +17,11 @@ public class Navigation {
 	 * Navigator constructor
 	 * @param odo
 	 */
-	public Navigation (Odometer odo) {
+	public Navigation (Odometer odo, EV3LargeRegulatedMotor leftmotor,
+								     EV3LargeRegulatedMotor rightmotor) {
 		Navigation.odo = odo;
-		EV3LargeRegulatedMotor[] motors = Navigation.odo.getMotors();
-		Navigation.leftMotor = motors[0];
-		Navigation.rightMotor = motors[1];
+		Navigation.leftMotor = leftmotor;
+		Navigation.rightMotor = leftmotor;
 		
 		Navigation.leftMotor.setAcceleration(ACCELERATION);
 		Navigation.rightMotor.setAcceleration(ACCELERATION);
@@ -87,11 +87,11 @@ public class Navigation {
 	 */
 	public void turnTo(double angle, boolean stop) {
 		
-		double error = angle - Navigation.odo.getAng();
+		double error = angle - Navigation.odo.getTheta();
 
 		while (Math.abs(error) > degError) {
 
-			error = angle - Navigation.odo.getAng();
+			error = angle - Navigation.odo.getTheta();
 
 			if (error < -180.0) {
 				this.setSpeeds(-SLOW, SLOW);

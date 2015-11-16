@@ -33,7 +33,7 @@ public class Initializer {
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier identifier = new Identifier(identifierPort, "RGB", flag);
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
-		Navigation navigator = new Navigation(odometer);
+		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		Localization localizer = new Localization(navigator, usPoller, t);
 		LightLocalizer localizer2 = new LightLocalizer(navigator, colorPoller, t);
 		//LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, identifier);
