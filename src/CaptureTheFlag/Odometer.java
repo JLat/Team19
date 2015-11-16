@@ -7,7 +7,6 @@ package CaptureTheFlag;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.MotorPort;
 
 public class Odometer extends Thread {
 	// robot position
