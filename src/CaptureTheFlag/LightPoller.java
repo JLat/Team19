@@ -46,7 +46,7 @@ public class LightPoller extends Thread {
 	
 	//Returns the float value picked up by the red mode of the color sensor when called. 
 	public float getSensorSample() {
-		colorSensor.fetchSample(colorData, 0);
+		sensor.fetchSample(colorData, 0);
 		return colorData[0];
 	}
 	
