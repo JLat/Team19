@@ -16,7 +16,7 @@ public class ClawTest {
 	public static EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	public static EV3MediumRegulatedMotor clawMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("C"));
 	public static Odometer odo = new Odometer(leftMotor, rightMotor);
-	public static Navigation nav = new Navigation(odo, leftMotor, leftMotor);
+	public static Navigation nav = new Navigation(odo, leftMotor, rightMotor);
 	public static LCDdisplay lcd = new LCDdisplay(odo, null, null, null);
 	
 	
@@ -25,9 +25,9 @@ public class ClawTest {
 	public static void main(String[] args) {
 		Claw claw = new Claw(clawMotor);
 		claw.close();
-		lcd.addInfo("Closed");
-		nav.goForward(10);
-		nav.turnTo(0, true);
+		lcd.addInfo("isClosed: "+claw.isClosed());
+		lcd.addInfo("Has block: "+claw.hasBlock());
+		nav.turnTo(Math.PI, true);
 		claw.open();
 		lcd.clearAdditionalInfo();
 		lcd.addInfo("Open");
