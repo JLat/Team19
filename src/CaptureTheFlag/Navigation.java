@@ -247,11 +247,21 @@ public class Navigation extends Thread{
 
 	}
 
-	public void turn(){
+	/**
+	 * turn(): turns either clockwise or counter-clockwise
+	 * @param direction
+	 */
+	public void turn(String direction){
 		leftMotor.setSpeed(SLOW);
 		rightMotor.setSpeed(SLOW);
-		leftMotor.backward();
-		rightMotor.forward();
+		if( direction.toUpperCase() == "CLOCKWISE") {
+			leftMotor.forward();
+			rightMotor.backward();
+		}
+		else {
+			leftMotor.backward();
+			rightMotor.forward();
+		}
 	}
 
 //	/**
