@@ -32,7 +32,7 @@ public class Initializer {
 		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 200, 0);
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier identifier = new Identifier(identifierPort, "RGB", flag);
-		Odometer odometer = new Odometer(leftMotor, rightMotor, 20, true);
+		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		Navigation navigator = new Navigation(odometer);
 		Localization localizer = new Localization(navigator, usPoller, t);
 		LightLocalizer localizer2 = new LightLocalizer(navigator, colorPoller, t);

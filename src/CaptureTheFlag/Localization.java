@@ -44,7 +44,7 @@ public class Localization implements TimerListener{
 	}
 	@Override
 	public void timedOut() {
-		double currentAngle = odo.getAng();
+		double currentAngle = odo.getTheta();
 		int currentDistance = usPoller.getProcessedDistance();
 		t.clear();
 		t.drawString("D: "+ currentDistance, 0, 0);

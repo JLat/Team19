@@ -1,163 +1,176 @@
+/*
+ * Odometer.java
+ */
+
 package CaptureTheFlag;
 
-
-import lejos.utility.Timer;
-import lejos.utility.TimerListener;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.MotorPort;
 
-public class Odometer implements TimerListener {
+public class Odometer extends Thread {
+	// robot position
+	private double x, y, theta, thetaDeg;
 
-	private Timer timer;
-	private EV3LargeRegulatedMotor leftMotor, rightMotor;
-	private final int DEFAULT_TIMEOUT_PERIOD = 20;
-	private double leftRadius, rightRadius, width;
-	private double x, y, theta;
-	private double[] oldDH, dDH;
-	
-	// constructor
-	public Odometer (EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, 
-					 int INTERVAL, boolean autostart) {
-		
-		this.leftMotor = leftMotor;
-		this.rightMotor = rightMotor;
-		
-		// default values, modify for your robot
-		//original value: 2.1, 14.84
-		//TODO change these values to match our final design 
-		this.rightRadius = 2.093;
-		this.leftRadius = 2.093;
-		this.width = 9;
-		
-		this.x = 0.0;
-		this.y = 0.0;
-		this.theta = 90.0;
-		this.oldDH = new double[2];
-		this.dDH = new double[2];
+	// constant
+	public static double WB = Navigation.TRACK;
+	public static double WR = Navigation.WHEEL_RADIUS;
 
-		if (autostart) {
-			// if the timeout interval is given as <= 0, default to 20ms timeout 
-			this.timer = new Timer((INTERVAL <= 0) ? INTERVAL : DEFAULT_TIMEOUT_PERIOD, this);
-			this.timer.start();
-		} else
-			this.timer = null;
+	// variables
+	public static int lastTachoL;// Tacho L at last sample
+	public static int lastTachoR;// Tacho R at last sample
+	public static int nowTachoL;// Current tacho L
+	public static int nowTachoR;// Current tacho R
+
+	// Resources
+	static TextLCD t = LocalEV3.get().getTextLCD();
+	private EV3LargeRegulatedMotor leftMotor; // L
+	private EV3LargeRegulatedMotor rightMotor; // L
+
+	// odometer update period, in ms
+	private static final long ODOMETER_PERIOD = 25;
+
+	// lock object for mutual exclusion
+	private Object lock;
+
+	// default constructor
+	public Odometer(EV3LargeRegulatedMotor leftmotor,
+			EV3LargeRegulatedMotor rightmotor) {
+		x = 0.0; //initializing values to zero
+		y = 0.0;
+		theta = 0.0;
+		lock = new Object();
+		this.leftMotor = leftmotor; //initializing motors
+		this.rightMotor = rightmotor;
+
 	}
-	
-	// functions to start/stop the timerlistener
-	public void stop() {
-		if (this.timer != null)
-			this.timer.stop();
-	}
-	public void start() {
-		if (this.timer != null)
-			this.timer.start();
-	}
-	
-	/*
-	 * Calculates displacement and heading as title suggests
-	 */
-	private void getDisplacementAndHeading(double[] data) {
-		int leftTacho, rightTacho;
-		leftTacho = leftMotor.getTachoCount();
-		rightTacho = rightMotor.getTachoCount();
 
-		data[0] = (leftTacho * leftRadius + rightTacho * rightRadius) * Math.PI / 360.0;
-		data[1] = (rightTacho * rightRadius - leftTacho * leftRadius) / width;
-	}
-	
-	/*
-	 * Recompute the odometer values using the displacement and heading changes
-	 */
-	public void timedOut() {
-		this.getDisplacementAndHeading(dDH);
-		dDH[0] -= oldDH[0];
-		dDH[1] -= oldDH[1];
+	// run method (required for Thread)
+	public void run() {
+		long updateStart, updateEnd;
+		double distL, distR, deltaD, deltaT, dX, dY;
 
-		// update the position in a critical region
-		synchronized (this) {
-			theta += dDH[1];
-			theta = fixDegAngle(theta);
+		while (true) {
+			updateStart = System.currentTimeMillis();
+			// put (some of) your odometer code here
 
-			x += dDH[0] * Math.cos(Math.toRadians(theta));
-			y += dDH[0] * Math.sin(Math.toRadians(theta));
+			nowTachoL = leftMotor.getTachoCount(); // get tacho counts
+			nowTachoR = rightMotor.getTachoCount();
+			
+			distL = Math.PI * WR * (nowTachoL - lastTachoL) / 180; // compute left wheel displacement												
+			distR = Math.PI * WR * (nowTachoR - lastTachoR) / 180; // compute right wheel displacement
+			
+			lastTachoL = nowTachoL; // save tacho counts for next iteration
+			lastTachoR = nowTachoR;
+			
+			deltaD = 0.5 * (distL + distR); // compute displacement of vehicle (center of track)
+			deltaT = (distL - distR) / WB; // compute change in heading
+
+			synchronized (lock) {
+				// don't use the variables x, y, or theta anywhere but here!
+				
+				theta += deltaT;
+				if (theta >= Math.PI*2) { //creating upper bound on theta at 360
+					theta = theta - Math.PI*2;
+				}
+				if (theta < 0) { //creating lower bound on theta at 0
+					theta = Math.PI*2 + theta;
+				}
+				
+				dX = deltaD * Math.sin(theta); // compute X component of displacement
+				dY = deltaD * Math.cos(theta); // compute Y component of displacement
+				
+				x = x + dX; //update x position
+				y = y + dY; //update y position
+				thetaDeg = theta * 180/Math.PI; //convert theta into degrees to display onscreen
+			}
+
+			// this ensures that the odometer only runs once every period
+			updateEnd = System.currentTimeMillis();
+			if (updateEnd - updateStart < ODOMETER_PERIOD) {
+				try {
+					Thread.sleep(ODOMETER_PERIOD - (updateEnd - updateStart));
+				} catch (InterruptedException e) {
+					// there is nothing to be done here because it is not
+					// expected that the odometer will be interrupted by
+					// another thread
+				}
+			}
 		}
-
-		oldDH[0] += dDH[0];
-		oldDH[1] += dDH[1];
 	}
 
-	// return X value
+	// accessors
+	public void getPosition(double[] position, boolean[] update) {
+		// ensure that the values don't change while the odometer is running
+		synchronized (lock) {
+			if (update[0])
+				position[0] = x;
+			if (update[1])
+				position[1] = y;
+			if (update[2])
+				position[2] = thetaDeg; //display theta in degrees on screen
+		}
+	}
+
 	public double getX() {
-		synchronized (this) {
-			return x;
+		double result;
+
+		synchronized (lock) {
+			result = x;
 		}
+
+		return result;
 	}
 
-	// return Y value
 	public double getY() {
-		synchronized (this) {
-			return y;
+		double result;
+
+		synchronized (lock) {
+			result = y;
 		}
+
+		return result;
 	}
 
-	// return theta value
-	public double getAng() {
-		synchronized (this) {
-			return fixDegAngle(theta);
+	public double getTheta() {
+		double result;
+
+		synchronized (lock) {
+			result = theta;
 		}
+
+		return result;
 	}
 
-	// set x,y,theta
+	// mutators
 	public void setPosition(double[] position, boolean[] update) {
-		synchronized (this) {
+		// ensure that the values don't change while the odometer is running
+		synchronized (lock) {
 			if (update[0])
 				x = position[0];
 			if (update[1])
 				y = position[1];
 			if (update[2])
-				theta = position[2];
+				theta = position[2]; //positions are actually only set in radians
 		}
 	}
 
-	// return x,y,theta
-	public void getPosition(double[] position) {
-		synchronized (this) {
-			position[0] = x;
-			position[1] = y;
-			position[2] = theta;
+	public void setX(double x) {
+		synchronized (lock) {
+			this.x = x;
 		}
 	}
 
-	public double[] getPosition() {
-		synchronized (this) {
-			return new double[] { x, y, theta };
+	public void setY(double y) {
+		synchronized (lock) {
+			this.y = y;
 		}
 	}
-	
-	// accessors to motors
-	public EV3LargeRegulatedMotor [] getMotors() {
-		return new EV3LargeRegulatedMotor[] {this.leftMotor, this.rightMotor};
-	}
-	public EV3LargeRegulatedMotor getLeftMotor() {
-		return this.leftMotor;
-	}
-	public EV3LargeRegulatedMotor getRightMotor() {
-		return this.rightMotor;
-	}
 
-	// static 'helper' methods
-	public static double fixDegAngle(double angle) {
-		if (angle < 0.0)
-			angle = 360.0 + (angle % 360.0);
-
-		return angle % 360.0;
-	}
-
-	public static double minimumAngleFromTo(double a, double b) {
-		double d = fixDegAngle(b - a);
-
-		if (d < 180.0)
-			return d;
-		else
-			return d - 360.0;
+	public void setTheta(double theta) {
+		synchronized (lock) {
+			this.theta = theta;
+		}
 	}
 }
