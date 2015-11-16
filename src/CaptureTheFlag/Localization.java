@@ -30,18 +30,14 @@ public class Localization implements TimerListener{
 	 */
 	public void doLocalization(){
 		Sound.beepSequenceUp();
+		usPoller.setParameters(5, 25, 25, 255, 0);
 		navi.turn();	
 		while(usPoller.getProcessedDistance() < 30);
 		navi.setSpeeds(0, 0);
 		odo.setPosition(new double [] {0,0,0}, new boolean[] {true, true, true});
 		this.clock.start();
-		Sound.beepSequence();
 		navi.turnBy(-360, true);
 		this.clock.stop();
-//		this.t.drawString("Diff: "+ angleDifference, 0, 3);
-		this.t.drawString("MaxA: "+ maxA, 0, 4);
-		this.t.drawString("MaxB: "+ maxB, 0, 5);
-//		this.t.drawString("turn: "+ (this.maxA + this.maxB)/2, 0, 6);
 		navi.turnTo((this.maxA + this.maxB)/2, true);
 		odo.setPosition(new double[] {0, 0, 225}, new boolean[] {true, true, true});
 		navi.turnTo(0, true);
@@ -51,8 +47,7 @@ public class Localization implements TimerListener{
 		double currentAngle = odo.getAng();
 		int currentDistance = usPoller.getProcessedDistance();
 		t.clear();
-		t.drawString("D: "+currentDistance, 0, 0);
-//		t.drawString("P: "+this.previousDistance, 0, 1);
+		t.drawString("D: "+ currentDistance, 0, 0);
 		if(currentDistance < 60 && this.previousDistance >= 60) {
 			this.angleA = currentAngle;
 		}
@@ -66,5 +61,6 @@ public class Localization implements TimerListener{
 		}
 		this.previousDistance = currentDistance;
 	}
+	
 
 }
