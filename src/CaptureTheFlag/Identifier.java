@@ -36,17 +36,13 @@ public class Identifier extends Thread {
 		this.flag = flag;
 
 		blockID.put("dark blue", Arrays.asList(new Double[] {4., 12., 22.}));
-		blockID.put("light blue", Arrays.asList(new Double[] {31., 60., 46.}));
-		blockID.put("red", Arrays.asList(new Double[] {34., 5., 6.}));
-		blockID.put("yellow", Arrays.asList(new Double[] {49., 8., 34.}));
-		blockID.put("white", Arrays.asList(new Double[] {56., 60., 57.}));
-		blockID.put("wood", Arrays.asList(new Double[] {41., 21., 26.}));
-		
-		
-		
+		blockID.put("light blue", Arrays.asList(new Double[] {20., 26., 46.}));
+		blockID.put("red", Arrays.asList(new Double[] {25., 5., 6.}));
+		blockID.put("yellow", Arrays.asList(new Double[] {49., 34., 8.}));
+		blockID.put("white", Arrays.asList(new Double[] {56., 52., 60.}));
+		blockID.put("wood", Arrays.asList(new Double[] {37., 21., 17.}));
 		
 		//TODO: add all the block colors and their average RGB values here 
-		blockID.put("", Arrays.asList(new Double[] {1.0,2.0,3.0}));
 	}
 	
 	/**

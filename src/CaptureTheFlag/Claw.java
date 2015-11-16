@@ -26,7 +26,7 @@ public class Claw {
 	 */
 	public void open() {
 		while(!clawMotor.isStalled()){
-			clawMotor.setSpeed(600);
+			clawMotor.setSpeed(800);
 			clawMotor.forward();
 		}
 		LocalEV3.get().getAudio().systemSound(0);
@@ -40,7 +40,7 @@ public class Claw {
 	 */
 	public void close(){
 		while(!clawMotor.isStalled()){
-			clawMotor.setSpeed(600);
+			clawMotor.setSpeed(800);
 			clawMotor.backward();
 		}
 		LocalEV3.get().getAudio().systemSound(0);

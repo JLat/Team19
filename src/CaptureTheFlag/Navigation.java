@@ -1,6 +1,7 @@
 package CaptureTheFlag;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.utility.Delay;
 
 public class Navigation extends Thread{
 	static int FAST, SLOW;
@@ -35,7 +36,7 @@ public class Navigation extends Thread{
 	 * @param lSpd
 	 * @param rSpd
 	 */
-	public void setSpeeds(float lSpd, float rSpd) {
+	public synchronized void setSpeeds(float lSpd, float rSpd) {
 		Navigation.leftMotor.setSpeed(lSpd);
 		Navigation.rightMotor.setSpeed(rSpd);
 		if (lSpd < 0)
@@ -48,7 +49,7 @@ public class Navigation extends Thread{
 			Navigation.rightMotor.forward();
 	}
 
-	public void setSpeeds(int lSpd, int rSpd) {
+	public synchronized void setSpeeds(int lSpd, int rSpd) {
 		Navigation.leftMotor.setSpeed(lSpd);
 		Navigation.rightMotor.setSpeed(rSpd);
 		if (lSpd < 0)
@@ -143,6 +144,9 @@ public class Navigation extends Thread{
 			turnDeg = (2*Math.PI - theta + currentDeg) % (2*Math.PI);
 			isTurningClockwise = false;
 		}
+		leftMotor.setSpeed(0);
+		rightMotor.setSpeed(0);
+		Delay.msDelay(5);
 		leftMotor.setSpeed(motorLow);
 		rightMotor.setSpeed(motorLow);
 		
@@ -167,33 +171,7 @@ public class Navigation extends Thread{
 	 */
 	public void turnToAngle(double thetaInDegrees, boolean stop) {
 		double theta = Math.toRadians(thetaInDegrees);
-		double turnDeg, currentDeg = odo.getTheta(); //initiate variables
-		boolean isTurningClockwise;
-		int leftAngle,rightAngle;
-		isNavigating = true; //the method has been called therefore isNavigating is set to true
-		
-		if ((2*Math.PI + theta - currentDeg) % (2*Math.PI) < Math.PI) { /* turn clockwise*/
-			turnDeg = (2*Math.PI + theta - currentDeg) % (2*Math.PI);
-			isTurningClockwise = true;
-		} else { 														/* turn counter clockwise */
-			turnDeg = (2*Math.PI - theta + currentDeg) % (2*Math.PI);
-			isTurningClockwise = false;
-		}
-		leftMotor.setSpeed(motorLow);
-		rightMotor.setSpeed(motorLow);
-		
-		leftAngle = convertAngle(WHEEL_RADIUS, TRACK, turnDeg); //converts robots turning degrees to the wheels turn degree
-		rightAngle = leftAngle;
-
-		if(isTurningClockwise) rightAngle *= -1; //orient directions of wheel rotation
-		else leftAngle *= -1;
-		
-		leftMotor.rotate(leftAngle, true); 		//turn
-		rightMotor.rotate(rightAngle, false);
-		isNavigating = false;
-		if(stop){
-			this.setSpeeds(0, 0);
-		}
+		turnTo(theta,stop);
 	}
 	/**
 	 * TurnBy function which takes an angle and boolean as arguments 
@@ -202,24 +180,6 @@ public class Navigation extends Thread{
 	 * @param angle
 	 * @param stop
 	 */
-	public void turnBy(double angle, boolean stop) {
-		leftMotor.setSpeed(SLOW);
-		rightMotor.setSpeed(SLOW);
-		leftMotor.rotate(convertAngle(WHEEL_RADIUS, TRACK, angle), true);
-		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, TRACK, angle), false);
-		if (stop) {
-			this.setSpeeds(0, 0);
-		}
-
-	}
-
-	public void turn(){
-		leftMotor.setSpeed(SLOW);
-		rightMotor.setSpeed(SLOW);
-		leftMotor.backward();
-		rightMotor.forward();
-	}
-	
 	public void turnDegrees(double angle, boolean stop) {
 		
 	}
@@ -258,10 +218,40 @@ public class Navigation extends Thread{
 	 * Go forward/backward a set distance in cm
 	 * @param distance
 	 */
-	public void goForward(double distance) {
-		setSpeeds(motorHigh, motorHigh);
-		leftMotor.rotate(convertDistance(WHEEL_RADIUS, distance), true); 
-		rightMotor.rotate(convertDistance(WHEEL_RADIUS, distance), false);
+	public synchronized void goForward(double distance) {
+		leftMotor.setSpeed(0);
+		rightMotor.setSpeed(0);
+		Delay.msDelay(5);
+		leftMotor.setSpeed(motorHigh);
+		rightMotor.setSpeed(motorHigh);
+		int wheelAngle = convertDistance(WHEEL_RADIUS, distance);
+		leftMotor.rotate(wheelAngle, true); 
+		rightMotor.rotate(wheelAngle, false);
+	}
+	
+		/**
+	 * TurnBy function which takes an angle and boolean as arguments 
+	 * the angle determines what degree it should turn and the boolean controls 
+	 *  whether or not to stop the motors when the turn is completed
+	 * @param angle
+	 * @param stop
+	 */
+	public void turnBy(double angle, boolean stop) {
+		leftMotor.setSpeed(SLOW);
+		rightMotor.setSpeed(SLOW);
+		leftMotor.rotate(convertAngle(WHEEL_RADIUS, TRACK, angle), true);
+		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, TRACK, angle), false);
+		if (stop) {
+			this.setSpeeds(0, 0);
+		}
+
+	}
+
+	public void turn(){
+		leftMotor.setSpeed(SLOW);
+		rightMotor.setSpeed(SLOW);
+		leftMotor.backward();
+		rightMotor.forward();
 	}
 
 //	/**

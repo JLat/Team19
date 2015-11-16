@@ -21,7 +21,7 @@ public class SearchTest {
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		LCDdisplay display = null;
-		Search search = new Search (odometer, navigator, usPoller,display, null);
+		Search search = new Search (odometer, navigator, usPoller,display, null,null);
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		
 		odometer.start();

@@ -9,6 +9,7 @@ public class Search {
 	Identifier detector;
 	UltrasonicPoller USS;
 	LCDdisplay display;
+	Claw claw;
 
 	/**
 	 * Class constructor : takes in an instance of Navigation given by the
@@ -16,12 +17,13 @@ public class Search {
 	 * 
 	 * @param navigator
 	 */
-	public Search(Odometer odo, Navigation nav, UltrasonicPoller USS, LCDdisplay display, Identifier detector) {
+	public Search(Odometer odo, Navigation nav, UltrasonicPoller USS, LCDdisplay display, Identifier detector, Claw claw) {
 		this.nav = nav;
 		this.odo = odo;
 		this.USS = USS;
 		this.display = display;
 		this.detector = detector;
+		this.claw = claw;
 	}
 
 	Scanner scan = new Scanner(Initializer.getSensorMotor());
@@ -77,7 +79,7 @@ public class Search {
 		 * for (int i = 0; i < 2; i++) { if (search(startX+ 30 * i, startY + 90
 		 * - 12) == 2) return true; }
 		 */
-
+		nav.travelTo(startX + 60, startY + 70);
 		for (int i = 0; i < 2; i++) {
 			nav.travelTo(startX + 60, startY + 60 - (30 * i));
 			nav.turnTo(Math.PI, true);
@@ -136,7 +138,7 @@ public class Search {
 			double offX = minVal * Math.sin(Math.toRadians(minAngle));
 			double error = Math.atan(offX / offY);
 			nav.turnTo(odo.getTheta() + error, true);
-			return approachBlock();
+			return approachBlock(xCorner, yCorner);
 			// Turn to block (Relate angle of sensor to angle of block
 		}
 
@@ -148,11 +150,10 @@ public class Search {
 
 			if (USS.getProcessedDistance() < 25) {
 				nav.setSpeeds(0, 0);
-				nav.goForward(12);
+				nav.goForward(15);
 				nav.setSpeeds(0, 0);
 				nav.turnTo(odo.getTheta() + Math.PI / 2, true);
-				nav.goForward(-5);
-				return approachBlock();
+				return approachBlock(xCorner, yCorner);
 			}
 		}
 		nav.setSpeeds(0, 0);
@@ -160,7 +161,7 @@ public class Search {
 
 	}
 
-	public int approachBlock() {
+	public int approachBlock(int xCorner, int yCorner) {
 		LocalEV3.get().getAudio().systemSound(0);
 		scan.turnTo(0);
 		nav.setSpeeds(100, 100);
@@ -169,23 +170,31 @@ public class Search {
 
 		}
 		nav.setSpeeds(0, 0);
-		nav.goForward(2);
+		nav.goForward(3);
 		if (detector.colorMapping()) {
 			
 			//Grab block and then get out of there
 			LocalEV3.get().getAudio().systemSound(1);
 			
-			
+			//while (true);
 			//System.exit(0);
 			return 2;
 		}
 		else{
 			LocalEV3.get().getAudio().systemSound(0);
-			
+			//while (true);
 			//System.exit(0);
 			//Remove block from zone then research zone
+			nav.turnTo(odo.getTheta() + Math.PI, true);
+			nav.goForward(-10);
+			claw.close();
+			nav.travelTo(xCorner -20, yCorner);
+			nav.turnTo(odo.getTheta() + Math.PI, true);
+			claw.open();
 			
-			return 0;
+			
+			
+			return 1;
 		}
 
 	}

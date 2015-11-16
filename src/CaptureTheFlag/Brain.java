@@ -33,11 +33,14 @@ public class Brain {
 	public void search(){
 		//search.search(0, 0, true);
 		
+		
+		
 		search.Snake((int)odo.getX(),(int)odo.getY());
-		//nav.goForward(-5);
-		//claw.close();
-		//nav.travelToWithAvoidance(0, 0);
-		//claw.open();
+		nav.turnTo(odo.getTheta() + Math.PI, true);
+		nav.goForward(-10);
+		claw.close();
+		nav.travelToWithAvoidance(0, 0);
+		claw.open();
 		
 		
 	}
