@@ -1,4 +1,8 @@
 package CaptureTheFlag;
+import wifi.*;
+
+import java.io.IOException;
+
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -21,6 +25,9 @@ public class Initializer {
 	public static TextLCD t = LocalEV3.get().getTextLCD();
 	//TODO modify this according to how the info will be received via wifi
 	private static String flag = "red";
+	
+	private static final String SERVER_IP = "192.168.1.7";
+	private static final int TEAM_NUMBER = 19;
 	
 	/**
 	 * Initializes all the objects in the following order :
@@ -49,6 +56,38 @@ public class Initializer {
 		USLocalizer usLocalizer = new USLocalizer(navigator, odometer, usPoller, display);
 		Search search = new Search (odometer, navigator, usPoller,display,detector,claw	);
 		Brain controller = new Brain(odometer, navigator, usLocalizer, detector, usPoller, search, claw);
+		
+		
+		
+		WifiConnection conn = null;
+		try {
+			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+		} catch (IOException e) {
+			display.addInfo("Connection failed");
+		}
+		Transmission t = conn.getTransmission();
+		if (t == null) {
+			display.addInfo("Transmission Failed");
+		} else {
+			
+			//NOT NEEDED FOR DEMO
+			/*StartCorner corner = t.startingCorner;
+			int homeZoneBL_X = t.homeZoneBL_X;
+			int homeZoneBL_Y = t.homeZoneBL_Y;
+			int opponentHomeZoneBL_X = t.opponentHomeZoneBL_X;
+			int opponentHomeZoneBL_Y = t.opponentHomeZoneBL_Y;
+			int dropZone_X = t.dropZone_X;
+			int dropZone_Y = t.dropZone_Y;
+			int	opponentFlagType = t.opponentFlagType;	
+			*/
+			int flagType = t.flagType;
+				
+		}
+		String [] flag = {"light_blue","red","yellow","white","dark_blue"};
+		display.clearAdditionalInfo();
+		
+		
+		
 		display.addInfo("distance");
 		display.addInfo("red");
 		display.addInfo("green");
