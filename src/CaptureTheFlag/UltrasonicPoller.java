@@ -20,7 +20,6 @@ public class UltrasonicPoller extends Thread {
 	private static Port usPort = LocalEV3.get().getPort("S1");
 	private SampleProvider us;
 	private float[] usData;
-	private Avoid p;
 
 
 	

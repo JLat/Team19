@@ -37,11 +37,11 @@ public class USLocalizer {
 		this.lcd = LCD;
 
 	}
-
+	
 	/**
 	 * method that localizes the robot using the USSpoller class.
 	 * 
-	 * @param Cap:
+	 * @param Cap: Value for the wall distance. (Strongly suggest leaving this at 30).
 	 *            the distance at which a wall is considered detected.
 	 */
 	public void doLocalization(int Cap) {

@@ -19,5 +19,8 @@ public class Collect {
 	public void printData(String Title, Object data) {
 			writer.write(Title + ": " + data + " \n");
 	}
+	public void printData(Object data){
+		writer.write(data+"\n");
+	}
 
 }

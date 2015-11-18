@@ -46,9 +46,9 @@ public class Initializer {
 		detector.start();
 		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
 		Claw claw = new Claw(clawMotor);
-		Localization localizer = new Localization(navigator,usPoller,t);
+		USLocalizer usLocalizer = new USLocalizer(navigator, odometer, usPoller, display);
 		Search search = new Search (odometer, navigator, usPoller,display,detector,claw	);
-		Brain controller = new Brain(odometer, navigator, localizer, detector, usPoller, search, claw);
+		Brain controller = new Brain(odometer, navigator, usLocalizer, detector, usPoller, search, claw);
 		display.addInfo("distance");
 		display.addInfo("red");
 		display.addInfo("green");

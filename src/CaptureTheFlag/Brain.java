@@ -6,13 +6,13 @@ public class Brain {
 	
 	private static Odometer odo;
 	private static Navigation nav;
-	private static Localization local;
+	private static USLocalizer local;
 	private static Identifier iden;
 	private static UltrasonicPoller usPoller;
 	private static TextLCD lcd;
 	private static Search search;
 	private static Claw claw;
-	public Brain (Odometer odo, Navigation navi, Localization local, 
+	public Brain (Odometer odo, Navigation navi, USLocalizer local, 
 				  Identifier iden, UltrasonicPoller usPoller,Search search, Claw claw ) {
 		Brain.odo = odo;
 		Brain.nav = navi;
