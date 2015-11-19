@@ -7,15 +7,15 @@ import lejos.utility.Delay;
 
 public class Navigation extends Thread {
 	static int FAST = 250; 
-	static int SLOW = 80;
+	static int SLOW = 110;
 	private static Odometer odo;
 	private static EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private static EV3MediumRegulatedMotor sensorMotor;
 	private static double deltaX, deltaY, xfinal, yfinal;
 	public static final double WHEEL_RADIUS = 2.1;
 	public static final double TRACK = 9.85;
-	public static final int motorHigh = 250;
-	public static final int motorLow = 150, leftAngle = 250, rightAngle = -250, sensorHigh = 500,
+	public static final int motorHigh = 300;
+	public static final int motorLow = 200, leftAngle = 250, rightAngle = -250, sensorHigh = 500,
 			sensorLow = 120;
 	private static UltrasonicPoller usPoller;
 

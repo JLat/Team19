@@ -15,8 +15,6 @@ public class NaviTest {
 		Navigation navi = new Navigation(odo, leftMotor, rightMotor);
 		navi.travelTo(0, 60);
 		navi.travelTo(60, 60);
-		navi.travelToWithAvoidance(60, 0);
-		navi.travelToWithAvoidance(0, 0);
 		System.exit(0);
 	}
 }

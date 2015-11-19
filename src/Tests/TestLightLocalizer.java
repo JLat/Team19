@@ -25,6 +25,6 @@ public class TestLightLocalizer {
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		navigator.start();
 		LightLocalization lightLocalizer = new LightLocalization(navigator, colorPoller, display); 
-		lightLocalizer.doLightLocalization();
+		lightLocalizer.doLightLocalization(0,0);
 	}
 }

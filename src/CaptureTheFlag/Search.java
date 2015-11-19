@@ -119,7 +119,7 @@ public class Search {
 		double startAngle = 0;
 		double endAngle = 0;
 
-		for (int i = 0; i <= 90; i += 3) {
+		for (int i = 0; i <= 90; i += 5) {
 			scan.turnTo(i);
 			if (USS.getProcessedDistance() < minVal) {
 				minVal = USS.getProcessedDistance();
@@ -146,7 +146,7 @@ public class Search {
 
 		// TODO: Allow travel in other direction
 		while (Math.abs(xCorner - odo.getX()) < 30 && Math.abs(yCorner - odo.getY()) < 30) {
-			nav.setSpeeds(150, 150);
+			nav.setSpeeds(200, 200);
 
 			if (USS.getProcessedDistance() < 25) {
 				nav.setSpeeds(0, 0);
@@ -188,7 +188,7 @@ public class Search {
 			nav.turnTo(odo.getTheta() + Math.PI, true);
 			nav.goForward(-10);
 			claw.close();
-			nav.travelTo(xCorner -20, yCorner);
+			nav.travelTo(xCorner -10, yCorner);
 			nav.turnTo(odo.getTheta() + Math.PI, true);
 			claw.open();
 			

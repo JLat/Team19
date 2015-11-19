@@ -25,10 +25,10 @@ public class Initializer {
 	public static TextLCD t;
 	public static UltrasonicPoller usPoller;
 	
-	private static final String SERVER_IP = "192.168.10.109";
+	private static final String SERVER_IP = "172.20.10.4";
 	private static final int TEAM_NUMBER = 19;
 	//TODO modify this according to how the info will be received via wifi
-	private static String flag = "red";
+	private static String flag = "";
 	
 	/**
 	 * Initializes all the objects in the following order :
@@ -45,7 +45,7 @@ public class Initializer {
 	public static void main(String [] args) {
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		odometer.start();
-		usPoller = new UltrasonicPoller(10, 10, 10, 100, 0);
+		usPoller = new UltrasonicPoller(10, 10, 20, 100, 0);
 		usPoller.start();
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
@@ -58,11 +58,11 @@ public class Initializer {
 		LightLocalization Lloc = new LightLocalization (navigator, colorPoller,display);
 		Search search = new Search (odometer, navigator, usPoller,display,detector,claw);
 		Brain controller = new Brain(odometer, navigator, USLoc, Lloc, detector, usPoller, search, claw);
-		int flagType = 2;
+		int flagType = 3;
 		String [] flags = {"light blue", "red", "yellow", "white", "dark blue"};
 		
 		
-		/*
+		
 		
 		
 		WifiConnection conn = null;
@@ -70,6 +70,7 @@ public class Initializer {
 			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
 		} catch (IOException e) {
 			display.addInfo("Connection failed", 0);
+			LocalEV3.get().getAudio().systemSound(0);
 		}
 	
 		// example usage of Transmission class
@@ -87,12 +88,12 @@ public class Initializer {
 		    flagType = t.flagType;
 			int	opponentFlagType = t.opponentFlagType;
 		}
-		*/
 		
 		
-		detector.setFlag(flags[flagType]);
+		
+		detector.setFlag(flags[flagType -1]);
 		display.clearAdditionalInfo();
-		
+		display.addInfo(flags[flagType -1], 0);
 		
 		
 		

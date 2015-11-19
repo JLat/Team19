@@ -23,29 +23,30 @@ public class LightLocalization implements TimerListener {
 		this.timer = new Timer(20, this);
 	}
 
-	public void doLightLocalization() {
+	public void doLightLocalization(int x, int y) {
 
 		timer.start();
 		navi.turnBy(2 * Math.PI, true);
 		timer.stop();
 		if (angles.get(3) < angles.get(2)) {
-			angles.set(3, 2 * Math.PI - angles.get(3));
+			angles.set(3, 2 * Math.PI + angles.get(3));
 		}
-		processAngles();
+		processAngles(x,y);
 		display.addInfo("Angles" + angles.toString());
-		navi.travelTo(0, 0);
-		navi.turnTo(0, true);
+		//navi.travelTo(x, y);
+		//navi.turnTo(0, true);
 	}
 
-	public void processAngles() {
+	public void processAngles(int x , int y) {
 		double[] position = new double[3];
 		double thetaX = angles.get(2) - angles.get(0);
 		double thetaY = angles.get(3) - angles.get(1);
-		position[0] = sensorDistance * Math.cos(thetaY / 2);
-		position[1] = sensorDistance * Math.cos(thetaX / 2);
-		position[2] = (2 * Math.PI - Math.toRadians(60.2) + odo.getTheta()+ (Math.PI / 2 - ((((2 * Math.PI + angles.get(1) - angles.get(3)) % (2 * Math.PI)) / 2) + angles.get(3))% (2 * Math.PI)))% (2 * Math.PI);
+		position[0] = sensorDistance * Math.cos(thetaY / 2) + x;
+		position[1] = sensorDistance * Math.cos(thetaX / 2) + y;
+		position[2] = (2 * Math.PI - Math.toRadians(60.5) + odo.getTheta()+ (Math.PI / 2 - ((((2 * Math.PI + angles.get(1) - angles.get(3)) % (2 * Math.PI)) / 2) + angles.get(3))% (2 * Math.PI)))% (2 * Math.PI);
 
 		odo.setPosition(position, new boolean[] { true, true, true });
+		
 	}
 
 	@Override

@@ -80,7 +80,7 @@ public class USLocalizer {
 		processValues();
 		
 		// Travel to a point.
-		nav.travelTo(0, 0);
+		nav.travelTo(0, 3);
 		nav.turnTo(0, true);
 		
 		
