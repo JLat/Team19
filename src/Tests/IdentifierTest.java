@@ -18,7 +18,8 @@ public class IdentifierTest {
 
 		final TextLCD t = LocalEV3.get().getTextLCD();
 		int buttonChoice = 0;
-
+		String clr= "";
+		
 		String Colors[] = { "red", "yellow", "white", "dark blue", "light blue", "wood" };
 		int i = 0;
 
@@ -31,21 +32,14 @@ public class IdentifierTest {
 				// clear the display
 				t.clear();
 				t.drawString("BLOCK COLOR:", 0, 0);
-				t.drawString(Colors[Math.abs(i)%(Colors.length)], 0, 1);
+				//t.drawString(Colors[Math.abs(i)%(Colors.length)], 0, 1);
+				t.drawString(clr, 0, 1);
 				t.drawString("ESC - EXIT", 0, 5);
 				buttonChoice = Button.waitForAnyPress();
-				if (buttonChoice == Button.ID_DOWN) {
-					i++;
-				} else if (buttonChoice == Button.ID_UP) {
-					i--;
-				}
-
 			} while (buttonChoice != Button.ID_ENTER && buttonChoice != Button.ID_ESCAPE);
 
 			if (buttonChoice == Button.ID_ENTER) {
-				col.printData(Colors[Math.abs(i)%(Colors.length)]+","+identifier.getBlockColor()+
-								String.format(",%.2f,%.2f,%.2f,%.2f,", identifier.getRoverG(),
-										identifier.getGoverB(), identifier.getBoverR(), identifier.getError()));
+				clr = identifier.categorizeReadings();
 			} else {
 				col.writer.close();
 				System.exit(0);

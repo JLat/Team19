@@ -1,22 +1,22 @@
 package CaptureTheFlag;
 
-import lejos.hardware.lcd.TextLCD;
 
 public class Brain {
 	
 	private static Odometer odo;
 	private static Navigation nav;
-	private static USLocalizer local;
+	private static USLocalizer USLoc;
 	private static Identifier iden;
 	private static UltrasonicPoller usPoller;
-	private static TextLCD lcd;
+	private static LightLocalization LLoc;
 	private static Search search;
 	private static Claw claw;
-	public Brain (Odometer odo, Navigation navi, USLocalizer local, 
+	public Brain (Odometer odo, Navigation navi, USLocalizer USLoc,LightLocalization LLoc, 
 				  Identifier iden, UltrasonicPoller usPoller,Search search, Claw claw ) {
 		Brain.odo = odo;
 		Brain.nav = navi;
-		Brain.local = local;
+		Brain.USLoc = USLoc;
+		Brain.LLoc = LLoc;
 		Brain.iden = iden;
 		Brain.usPoller = usPoller;
 		Brain.search = search;
@@ -31,15 +31,15 @@ public class Brain {
 	 */
 		
 	public void search(){
-		//search.search(0, 0, true);
-		
-		
-		
+		USLoc.doLocalization(30);
+		LLoc.doLightLocalization();
+		nav.travelToAxis(120, 120);
+		nav.turnTo(0,true);
 		search.Snake((int)odo.getX(),(int)odo.getY());
 		nav.turnTo(odo.getTheta() + Math.PI, true);
 		nav.goForward(-10);
 		claw.close();
-		nav.travelToWithAvoidance(0, 0);
+		nav.travelToAxis(0, 0);
 		claw.open();
 		
 		

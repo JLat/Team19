@@ -90,7 +90,7 @@ public class USLocalizer {
 		
 		
 		
-		pause();
+		//pause();
 
 		// restore the settings of the USSsensor.
 		uss.restoreParameters(savedParameters);

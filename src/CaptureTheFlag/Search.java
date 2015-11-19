@@ -150,7 +150,7 @@ public class Search {
 
 			if (USS.getProcessedDistance() < 25) {
 				nav.setSpeeds(0, 0);
-				nav.goForward(15);
+				nav.goForward(12);
 				nav.setSpeeds(0, 0);
 				nav.turnTo(odo.getTheta() + Math.PI / 2, true);
 				return approachBlock(xCorner, yCorner);
@@ -171,7 +171,7 @@ public class Search {
 		}
 		nav.setSpeeds(0, 0);
 		nav.goForward(3);
-		if (detector.colorMapping()) {
+		if (detector.isFlagDetected()) {
 			
 			//Grab block and then get out of there
 			LocalEV3.get().getAudio().systemSound(1);

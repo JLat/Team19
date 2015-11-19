@@ -209,18 +209,18 @@ public class Identifier extends Thread {
 	 * get method to check if flag is found
 	 * 
 	 * @return this.flagDetected
-	 */
+	 */ 	
 	public boolean isFlagDetected() {
-		return this.typeOfBlock == this.flagType;
+		return this.typeOfBlock.equals(this.flagType);
+	}
+	
+	public void setFlag(String flag){
+		flagType = flag;
 	}
 
 	public double getError() {
 		return this.error;
 	}
 
-	public boolean colorMapping() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 }

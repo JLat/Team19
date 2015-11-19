@@ -1,6 +1,4 @@
 package CaptureTheFlag;
-import wifi.*;
-
 import java.io.IOException;
 
 import lejos.hardware.ev3.LocalEV3;
@@ -8,6 +6,9 @@ import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.Port;
+import wifi.StartCorner;
+import wifi.Transmission;
+import wifi.WifiConnection;
 
 
 public class Initializer {
@@ -20,14 +21,14 @@ public class Initializer {
 	private static EV3MediumRegulatedMotor clawMotor = new EV3MediumRegulatedMotor (LocalEV3.get().getPort("C"));
 	private static final int bandCenter = 18; 
 	private static final int bandWidth = 4;
-	private static Avoid p;
 	private static double wheelRadius, track;
-	public static TextLCD t = LocalEV3.get().getTextLCD();
+	public static TextLCD t;
+	public static UltrasonicPoller usPoller;
+	
+	private static final String SERVER_IP = "192.168.10.109";
+	private static final int TEAM_NUMBER = 19;
 	//TODO modify this according to how the info will be received via wifi
 	private static String flag = "red";
-	
-	private static final String SERVER_IP = "192.168.1.7";
-	private static final int TEAM_NUMBER = 19;
 	
 	/**
 	 * Initializes all the objects in the following order :
@@ -44,47 +45,55 @@ public class Initializer {
 	public static void main(String [] args) {
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		odometer.start();
-		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
-		p = new Avoid(leftMotor, rightMotor, bandCenter, bandWidth, navigator, sensorMotor);
-		UltrasonicPoller usPoller = new UltrasonicPoller(10, 10, 10, 100, 0);
+		usPoller = new UltrasonicPoller(10, 10, 10, 100, 0);
 		usPoller.start();
+		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
 		detector.start();
 		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
 		Claw claw = new Claw(clawMotor);
-		USLocalizer usLocalizer = new USLocalizer(navigator, odometer, usPoller, display);
-		Search search = new Search (odometer, navigator, usPoller,display,detector,claw	);
-		Brain controller = new Brain(odometer, navigator, usLocalizer, detector, usPoller, search, claw);
+		USLocalizer USLoc = new USLocalizer( navigator, odometer,usPoller,display);
+		LightLocalization Lloc = new LightLocalization (navigator, colorPoller,display);
+		Search search = new Search (odometer, navigator, usPoller,display,detector,claw);
+		Brain controller = new Brain(odometer, navigator, USLoc, Lloc, detector, usPoller, search, claw);
+		int flagType = 0;
+		String [] flags = {"light blue", "red", "yellow", "white", "dark blue"};
 		
+		
+		/*
 		
 		
 		WifiConnection conn = null;
 		try {
 			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
 		} catch (IOException e) {
-			display.addInfo("Connection failed");
+			display.addInfo("Connection failed", 0);
 		}
+	
+		// example usage of Transmission class
 		Transmission t = conn.getTransmission();
 		if (t == null) {
-			display.addInfo("Transmission Failed");
+			display.addInfo("Failed to read transmission", 0);
 		} else {
-			
-			//NOT NEEDED FOR DEMO
-			/*StartCorner corner = t.startingCorner;
+			StartCorner corner = t.startingCorner;
 			int homeZoneBL_X = t.homeZoneBL_X;
 			int homeZoneBL_Y = t.homeZoneBL_Y;
 			int opponentHomeZoneBL_X = t.opponentHomeZoneBL_X;
 			int opponentHomeZoneBL_Y = t.opponentHomeZoneBL_Y;
 			int dropZone_X = t.dropZone_X;
 			int dropZone_Y = t.dropZone_Y;
-			int	opponentFlagType = t.opponentFlagType;	
-			*/
-			int flagType = t.flagType;
-				
+		    flagType = t.flagType;
+			int	opponentFlagType = t.opponentFlagType;
 		}
-		String [] flag = {"light_blue","red","yellow","white","dark_blue"};
+		*/
+		
+		
+		detector.setFlag(flags[flagType]);
 		display.clearAdditionalInfo();
+		
+		
+		
 		
 		
 		
@@ -103,8 +112,9 @@ public class Initializer {
 	public static Port getUsPort(){
 		return usPort;
 	}
+
 	
-	public static Avoid getPController(){
-		return p;
+	public static UltrasonicPoller getUsPoller(){
+		return usPoller;
 	}
 }

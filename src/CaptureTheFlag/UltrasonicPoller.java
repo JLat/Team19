@@ -1,6 +1,5 @@
 package CaptureTheFlag;
 
-
 import java.util.LinkedList;
 
 import lejos.hardware.ev3.LocalEV3;
@@ -17,12 +16,10 @@ public class UltrasonicPoller extends Thread {
 	 * class, as well as a mean of getting the processed value.
 	 * 
 	 */
-	private static Port usPort = LocalEV3.get().getPort("S1");
+	private static Port usPort;
 	private SampleProvider us;
 	private float[] usData;
 
-
-	
 	private LinkedList<Integer> recent;
 	private int
 	// original distance
@@ -42,13 +39,18 @@ public class UltrasonicPoller extends Thread {
 	/**
 	 * Main Constructor
 	 * 
-	 * @param recentListSize Size of date points to be stored
-	 * @param PlusOffset Positive offset bound values from previous average
-	 * @param MinusOffset Minus offset bound values from previous average
-	 * @param UpperBound Upper absolute bound of sensor
-	 * @param LowerBound Lower absolute bound of sensor
+	 * @param recentListSize
+	 *            Size of date points to be stored
+	 * @param PlusOffset
+	 *            Positive offset bound values from previous average
+	 * @param MinusOffset
+	 *            Minus offset bound values from previous average
+	 * @param UpperBound
+	 *            Upper absolute bound of sensor
+	 * @param LowerBound
+	 *            Lower absolute bound of sensor
 	 */
-	
+
 	public UltrasonicPoller(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound) {
 
 		this.recent = new LinkedList<Integer>();
@@ -58,6 +60,7 @@ public class UltrasonicPoller extends Thread {
 		this.minusOffset = MinusOffset;
 		this.upperBound = UpperBound;
 		this.lowerBound = LowerBound;
+		usPort = Initializer.getUsPort();
 
 		@SuppressWarnings("resource")
 
@@ -65,7 +68,7 @@ public class UltrasonicPoller extends Thread {
 		SensorModes usSensor = new EV3UltrasonicSensor(usPort);
 		this.us = usSensor.getMode("Distance");
 
-		//SampleProvider usDistance = usSensor.getMode("Distance");
+		// SampleProvider usDistance = usSensor.getMode("Distance");
 		// usDistance provides samples from this instance
 		this.usData = new float[us.sampleSize()];
 		// usData is the buffer in which data are returned
@@ -82,7 +85,6 @@ public class UltrasonicPoller extends Thread {
 			this.rawDistance = (int) (usData[0] * 100.0);
 
 			processDistance();
-			
 
 			try {
 				Thread.sleep(50);
@@ -91,17 +93,21 @@ public class UltrasonicPoller extends Thread {
 		}
 	}
 
-	
 	/**
 	 * Change parameters of the USSPoller after it had already been instantiated
 	 * 
-	 * @param recentListSize Size of date points to be stored
-	 * @param PlusOffset Positive offset bound values from previous average
-	 * @param MinusOffset Minus offset bound values from previous average
-	 * @param UpperBound Upper absolute bound of sensor
-	 * @param LowerBound Lower absolute bound of sensor
+	 * @param recentListSize
+	 *            Size of date points to be stored
+	 * @param PlusOffset
+	 *            Positive offset bound values from previous average
+	 * @param MinusOffset
+	 *            Minus offset bound values from previous average
+	 * @param UpperBound
+	 *            Upper absolute bound of sensor
+	 * @param LowerBound
+	 *            Lower absolute bound of sensor
 	 */
-	public void setParameters(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound){
+	public void setParameters(int recentListSize, int PlusOffset, int MinusOffset, int UpperBound, int LowerBound) {
 		this.recentListSize = recentListSize;
 		this.plusOffset = PlusOffset;
 		this.minusOffset = MinusOffset;
@@ -142,7 +148,7 @@ public class UltrasonicPoller extends Thread {
 		 * allow a faster response to walls than to open space.
 		 * 
 		 */
-		if (recent.size() >= 0.5*recentListSize) {
+		if (recent.size() >= 0.5 * recentListSize) {
 			processedDistance = Math.min(previousAverage + plusOffset, processedDistance);
 			processedDistance = Math.max(processedDistance, previousAverage - minusOffset);
 		}
@@ -171,7 +177,8 @@ public class UltrasonicPoller extends Thread {
 	 * Find the average value of a list of values
 	 * 
 	 * 
-	 * @param list array to find average of
+	 * @param list
+	 *            array to find average of
 	 * @return average of the list
 	 */
 	public int getAverage(LinkedList<Integer> list) {
@@ -198,7 +205,7 @@ public class UltrasonicPoller extends Thread {
 	public int getRawDistance() {
 		return this.rawDistance;
 	}
-	
+
 	/**
 	 * Clears values stored inside sensor poller
 	 */
@@ -226,15 +233,13 @@ public class UltrasonicPoller extends Thread {
 	public boolean isFull() {
 		return this.recent.size() == this.recentListSize;
 	}
-	
-	public int[] saveParameters(){
-		return new int[]{this.recentListSize,this.plusOffset,this.minusOffset,this.upperBound,this.lowerBound};
-	}
-	public void restoreParameters(int[] params){
-		this.setParameters(params[0], params[1],params[2],params[3],params[4]);
+
+	public int[] saveParameters() {
+		return new int[] { this.recentListSize, this.plusOffset, this.minusOffset, this.upperBound, this.lowerBound };
 	}
 
-
-
+	public void restoreParameters(int[] params) {
+		this.setParameters(params[0], params[1], params[2], params[3], params[4]);
+	}
 
 }
