@@ -54,7 +54,9 @@ public class LightLocalization implements TimerListener {
 		position[1] = sensorDistance * Math.cos(thetaX / 2);
 		double deltaY = (3*Math.PI/2) + angles.get(1) + (thetaY / 2);
 		double deltaX = -Math.PI + angles.get(2) - (thetaX / 2);
-		position[2] = odo.getTheta() - deltaY + ((Math.PI/2)  + Math.toRadians(sensorOffsetAngle));
+//		position[2] = odo.getTheta() - deltaY + ((Math.PI/2)  + Math.toRadians(sensorOffsetAngle));
+		position[2] = (2*Math.PI-45*(Math.PI/180)+odo.getTheta()+(Math.PI/2 -((((2*Math.PI+angles.get(1)-angles.get(3))%(2*Math.PI))/2)+angles.get(3))%(2*Math.PI)))%(2*Math.PI);
+		
 		odo.setPosition(position, new boolean[] { true, true, true }); 
 	}
 
