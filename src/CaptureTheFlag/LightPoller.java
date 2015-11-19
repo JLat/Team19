@@ -10,7 +10,7 @@ public class LightPoller extends Thread {
 	private SampleProvider sensor;
 	private float[] colorData;
 	public boolean colorChanged, calibrated, newLine;
-	private double woodValue, lineDifference = 30, currentValue;
+	private double woodValue, lineDifference = 20, currentValue;
 
 	/**
 	 * Class constructor : makes a new LightPoller

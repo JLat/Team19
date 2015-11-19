@@ -195,7 +195,7 @@ public class Navigation extends Thread {
 				}else{
 					turnTo(yDirection, true);
 				}
-				goForward(20);
+				goForward(30);
 			} else {
 				Sound.twoBeeps();
 				if (xEmptySpace > yEmptySpace) {
