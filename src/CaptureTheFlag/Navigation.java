@@ -200,6 +200,7 @@ public class Navigation extends Thread {
 				Sound.twoBeeps();
 				if (xEmptySpace > yEmptySpace) {
 					this.turnTo(xDirection, true);
+					//Scanner.
 					this.goStraight(Math.abs(xfinal - x));
 				} else {
 					this.turnTo(yDirection, true);

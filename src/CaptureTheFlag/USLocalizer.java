@@ -18,7 +18,7 @@ public class USLocalizer {
 	private LCDdisplay lcd;
 	private int dist;
 	private boolean facingWall;
-	private int minAngleBetweenAandB = 165;
+	private int minAngleBetweenAandB = 150;
 	private double angleA, angleB, delta, sensorOffset = 14.5;
 
 	public USLocalizer(Navigation nav, Odometer odo, UltrasonicPoller uss, LCDdisplay LCD) {
@@ -45,21 +45,22 @@ public class USLocalizer {
 	 *            the distance at which a wall is considered detected.
 	 */
 	public void doLocalization(int Cap) {
+		// keep the previous parameters of the USSpoller into an int array, in
+		// order to restore them after localization is done.
+		int[] savedParameters = uss.saveParameters();
 
+		uss.setParameters(5, 15, 15, 50, 0);
+		
+		lcd.addInfo("distance: ");
 		pause();
 		// record the start time for testing and future improvements in speed of
 		// operation.
 		double t1 = System.currentTimeMillis() / 1000;
 
-		// keep the previous parameters of the USSpoller into an int array, in
-		// order to restore them after localization is done.
-		int[] savedParameters = uss.saveParameters();
-
-		uss.setParameters(5, 10, 10, 50, 0);
+		
 
 		// the distance at which a wall is considered detected.
 		dist = Cap;
-		lcd.addInfo("distance: ");
 
 		// Allowing a small delay for the US sensor to initialize properly
 		// before starting to rotate the robot.

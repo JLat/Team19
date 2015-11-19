@@ -3,17 +3,36 @@ package CaptureTheFlag;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 
-public class Scanner {
+public class Scanner extends Thread{
 
 	private int SPEED = 100;
 	public double angleRatio = -90./300;
 	public EV3MediumRegulatedMotor scannerMotor;
+	private static boolean radarMode = false;
 	
 	public Scanner(EV3MediumRegulatedMotor scannerMotor){
 		this.scannerMotor = scannerMotor;
 		this.scannerMotor.resetTachoCount();
 	}
 
+	public void run(){
+		while(true){
+			if(radarMode){
+				scannerMotor.setSpeed(500);
+				scannerMotor.rotateTo(40, true);
+				while(scannerMotor.getPosition()<40){
+				}
+				scannerMotor.rotateTo(-40, true);
+				while(scannerMotor.getPosition()>-40){
+				}
+			}
+		}
+	}
+
+	public static void setRadarMode(boolean start){
+		Scanner.radarMode = start;
+	}
+	
 	/**
 	 * Turn sensor to desired angle 
 	 * Forward -- 0 deg

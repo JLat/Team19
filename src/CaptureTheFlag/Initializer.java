@@ -96,16 +96,16 @@ public class Initializer {
 		
 		
 		
-		display.addInfo(flags[flagType -1], flagType - 1);
-		
-		
-		
-		
-		
-		display.addInfo("distance");
-		display.addInfo("red");
-		display.addInfo("green");
-		display.addInfo("blue");
+//		display.addInfo(flags[flagType -1], flagType - 1);
+//		
+//		
+//		
+//		
+//		
+//		display.addInfo("distance");
+//		display.addInfo("red");
+//		display.addInfo("green");
+//		display.addInfo("blue");
 		controller.search();
 	 
 	}
