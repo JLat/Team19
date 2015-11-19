@@ -31,8 +31,14 @@ public class Claw {
 		}
 		LocalEV3.get().getAudio().systemSound(0);
 		clawMotor.stop();
+		clawMotor.flt();
 		this.clawMotor.resetTachoCount();
+		
 	}
+	public void partialOpen(){
+		clawMotor.rotate(-250);
+	}
+	
 
 	/**
 	 * Close claw around object

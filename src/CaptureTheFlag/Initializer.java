@@ -63,7 +63,7 @@ public class Initializer {
 		
 		
 		
-		
+		/*
 		
 		WifiConnection conn = null;
 		try {
@@ -88,12 +88,15 @@ public class Initializer {
 		    flagType = t.flagType;
 			int	opponentFlagType = t.opponentFlagType;
 		}
-		
+		*/
 		
 		
 		detector.setFlag(flags[flagType -1]);
 		display.clearAdditionalInfo();
-		display.addInfo(flags[flagType -1], 0);
+		
+		
+		
+		display.addInfo(flags[flagType -1], flagType - 1);
 		
 		
 		

@@ -31,6 +31,8 @@ public class Brain {
 	 */
 		
 	public void search(){
+		
+		
 		USLoc.doLocalization(30);
 		LLoc.doLightLocalization(0,0);
 		nav.travelToAxis(120, 120);
@@ -38,9 +40,10 @@ public class Brain {
 		LLoc.doLightLocalization((int)odo.getX(),(int) odo.getY());
 		search.Snake((int)odo.getX(),(int)odo.getY());
 		nav.turnTo(odo.getTheta() + Math.PI, true);
+		claw.partialOpen();
 		nav.goForward(-10);
 		claw.close();
-		nav.travelToAxis(0, 0);
+		//nav.travelToAxis(0, 0);
 		claw.open();
 		
 		
