@@ -5,7 +5,6 @@ import CaptureTheFlag.LightLocalization;
 import CaptureTheFlag.LightPoller;
 import CaptureTheFlag.Navigation;
 import CaptureTheFlag.Odometer;
-import CaptureTheFlag.UltrasonicPoller;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;

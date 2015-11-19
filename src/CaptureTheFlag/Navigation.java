@@ -3,7 +3,6 @@ package CaptureTheFlag;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
-import lejos.hardware.sensor.SensorModes;
 import lejos.utility.Delay;
 
 public class Navigation extends Thread {
@@ -12,7 +11,7 @@ public class Navigation extends Thread {
 	private static Odometer odo;
 	private static EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private static EV3MediumRegulatedMotor sensorMotor;
-	private static double x, y, deltaX, deltaY, xfinal, yfinal;
+	private static double deltaX, deltaY, xfinal, yfinal;
 	public static final double WHEEL_RADIUS = 2.1;
 	public static final double TRACK = 9.85;
 	public static final int motorHigh = 250;

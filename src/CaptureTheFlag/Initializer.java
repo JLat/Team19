@@ -49,6 +49,7 @@ public class Initializer {
 		usPoller.start();
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		LightPoller colorPoller = new LightPoller(colorPort, "Red");
+		colorPoller.start();
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
 		detector.start();
 		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
@@ -57,7 +58,7 @@ public class Initializer {
 		LightLocalization Lloc = new LightLocalization (navigator, colorPoller,display);
 		Search search = new Search (odometer, navigator, usPoller,display,detector,claw);
 		Brain controller = new Brain(odometer, navigator, USLoc, Lloc, detector, usPoller, search, claw);
-		int flagType = 0;
+		int flagType = 2;
 		String [] flags = {"light blue", "red", "yellow", "white", "dark blue"};
 		
 		
