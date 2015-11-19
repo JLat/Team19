@@ -10,7 +10,7 @@ public class LightPoller extends Thread {
 	private SensorModes colorSensor;
 	private SampleProvider sensor;
 	private float[] colorData;
-	private Stack<Float> colorStack;
+	private Stack<Float> colorStack = new Stack<Float>();
 	public boolean colorChanged;
 	
 	

@@ -218,4 +218,9 @@ public class Identifier extends Thread {
 		return this.error;
 	}
 
+	public boolean colorMapping() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

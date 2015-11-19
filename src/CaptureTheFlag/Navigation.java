@@ -4,7 +4,8 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.utility.Delay;
 
 public class Navigation extends Thread{
-	static int FAST, SLOW;
+	static int FAST = 250;
+	static int SLOW = 80;
 	private static Odometer odo;
 	private static EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private static double x, y, deltaX, deltaY, xfinal,yfinal;
@@ -239,8 +240,8 @@ public class Navigation extends Thread{
 	public void turnBy(double angle, boolean stop) {
 		leftMotor.setSpeed(SLOW);
 		rightMotor.setSpeed(SLOW);
-		leftMotor.rotate(convertAngle(WHEEL_RADIUS, TRACK, angle), true);
-		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, TRACK, angle), false);
+		leftMotor.rotate(convertAngle(WHEEL_RADIUS, 1.055*TRACK, angle), true);
+		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, 1.055*TRACK, angle), false);
 		if (stop) {
 			this.setSpeeds(0, 0);
 		}
@@ -255,12 +256,12 @@ public class Navigation extends Thread{
 		leftMotor.setSpeed(SLOW);
 		rightMotor.setSpeed(SLOW);
 		if( direction.toUpperCase() == "CLOCKWISE") {
-			leftMotor.forward();
-			rightMotor.backward();
-		}
-		else {
 			leftMotor.backward();
 			rightMotor.forward();
+		}
+		else {
+			leftMotor.forward();
+			rightMotor.backward();
 		}
 	}
 
