@@ -54,18 +54,22 @@ public class LightLocalization implements TimerListener {
 				navi.setSpeeds(0, 0);
 			}
 		}
-//		int lineY = (int)(odo.getY() + 15)/ 30;
-//		odo.setY(lineY * 30 - 5);
+		int lineY = (int)(odo.getY() + 15)/ 30;
+		odo.setY(lineY * 30 - 5);
+		odo.setTheta(0);
 	}
 	
 
 	public void processAngles(int x , int y) {
 		if (angles.size() < 4){
-			doLightLocalization2(-50);
-			navi.turnTo(odo.getTheta() + Math.PI / 2, true);
-			doLightLocalization2(50);
-			navi.turnTo(0, true);
-			doLightLocalization((int)odo.getX(),(int)odo.getY());
+			return;
+//			doLightLocalization2(-50);
+//			navi.turnTo(odo.getTheta() + Math.PI / 2, true);
+//			doLightLocalization2(50);
+//			navi.turnTo(0, true);
+//			navi.goForward(5);
+//			odo.setTheta(0);
+//			doLightLocalization(x,y);
 		}
 		if (angles.get(3) < angles.get(2)) {
 			angles.set(3, 2 * Math.PI + angles.get(3));

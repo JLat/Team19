@@ -64,7 +64,7 @@ public class Initializer {
 		
 		
 		
-		/*
+		
 		
 		WifiConnection conn = null;
 		try {
@@ -88,7 +88,7 @@ public class Initializer {
 			int dropZone_Y = t.dropZone_Y;
 		    flagType = t.flagType;
 			int	opponentFlagType = t.opponentFlagType;
-		}*/
+		}
 		
 		
 		
