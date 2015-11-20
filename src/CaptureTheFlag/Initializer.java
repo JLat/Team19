@@ -13,7 +13,8 @@ import wifi.WifiConnection;
 
 public class Initializer {
 	private static Port usPort = LocalEV3.get().getPort("S1");		
-	private static Port colorPort = LocalEV3.get().getPort("S3");
+	private static Port colorPort1 = LocalEV3.get().getPort("S3");
+	private static Port colorPort2= LocalEV3.get().getPort("S4");
 	private static Port identifierPort = LocalEV3.get().getPort("S2");
 	private static EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	private static EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
@@ -48,7 +49,7 @@ public class Initializer {
 		usPoller = new UltrasonicPoller(10, 10, 20, 100, 0);
 		usPoller.start();
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
-		LightPoller colorPoller = new LightPoller(colorPort, "Red");
+		LightPoller colorPoller = new LightPoller(colorPort1, colorPort2, "Red");
 		colorPoller.start();
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
 		detector.start();

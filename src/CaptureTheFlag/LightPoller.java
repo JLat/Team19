@@ -6,11 +6,12 @@ import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 
 public class LightPoller extends Thread {
-	private SensorModes colorSensor;
-	private SampleProvider sensor;
-	private float[] colorData;
+	private SensorModes colorSensor1;
+	private SensorModes colorSensor2;
+	private SampleProvider sensor1, sensor2;
+	private float[] colorData1, colorData2;
 	public boolean colorChanged, calibrated, newLine;
-	private double woodValue, lineDifference = 20, currentValue;
+	private double woodValue, lineDifference = 20, currentValue1, currentValue2;
 
 	/**
 	 * Class constructor : makes a new LightPoller
@@ -18,10 +19,13 @@ public class LightPoller extends Thread {
 	 * @param sampler
 	 * @param colorData
 	 */
-	public LightPoller(Port port, String mode) {
-		this.colorSensor = new EV3ColorSensor(port);
-		this.sensor = colorSensor.getMode(mode);
-		this.colorData = new float[sensor.sampleSize()];
+	public LightPoller(Port port1, Port port2, String mode) {
+		this.colorSensor1 = new EV3ColorSensor(port1);
+		this.colorSensor2 = new EV3ColorSensor(port2);
+		this.sensor1 = colorSensor1.getMode(mode);
+		this.colorData1 = new float[sensor1.sampleSize()];
+		this.sensor2 = colorSensor2.getMode(mode);
+		this.colorData2 = new float[sensor2.sampleSize()];
 	}
 
 	/**
@@ -32,8 +36,10 @@ public class LightPoller extends Thread {
 		while (true) {
 			if (!calibrated)
 				calibrate();
-			sensor.fetchSample(colorData, 0);
-			currentValue = 100*colorData[0];
+			sensor1.fetchSample(colorData1, 0);
+			currentValue1 = 100*colorData1[0];
+			sensor2.fetchSample(colorData2, 0);
+			currentValue2 = 100*colorData2[0];
 			try {
 				Thread.sleep(50);
 			} catch (Exception e) {
@@ -47,8 +53,8 @@ public class LightPoller extends Thread {
 		int calibrationCounter = 0;
 		double temp = 0;
 		while (calibrationCounter < 10) {
-			sensor.fetchSample(colorData, 0);
-			temp += 100 * colorData[0];
+			sensor1.fetchSample(colorData1, 0);
+			temp += 100 * colorData1[0];
 			calibrationCounter++;
 		}
 		this.woodValue = temp / 10;
@@ -60,9 +66,15 @@ public class LightPoller extends Thread {
 	 * detected by comparing the previous sample stored in a stack to the
 	 * current one.
 	 */
-	public boolean seesLine() {
+	public boolean seesLine1() {
 		if (calibrated) {
-			return woodValue - currentValue > lineDifference;
+			return woodValue - currentValue1 > lineDifference;
+		}
+		return false;
+	}
+	public boolean seesLine2() {
+		if (calibrated) {
+			return woodValue - currentValue2 > lineDifference;
 		}
 		return false;
 	}

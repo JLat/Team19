@@ -186,7 +186,8 @@ public class Search {
 			//System.exit(0);
 			//Remove block from zone then research zone
 			nav.turnTo(odo.getTheta() + Math.PI, true);
-			nav.goForward(-10);
+			claw.partialOpen();
+			nav.goForward(-8);
 			claw.close();
 			nav.travelTo(xCorner -10, yCorner);
 			nav.turnTo(odo.getTheta() + Math.PI, true);

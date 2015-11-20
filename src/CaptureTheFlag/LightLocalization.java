@@ -3,6 +3,7 @@ package CaptureTheFlag;
 import java.util.ArrayList;
 
 import lejos.hardware.ev3.LocalEV3;
+import lejos.utility.Delay;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
@@ -33,8 +34,31 @@ public class LightLocalization implements TimerListener {
 		}
 		processAngles(x,y);
 		display.addInfo("Angles" + angles.toString());
-		//navi.travelTo(x, y);
-		//navi.turnTo(0, true);
+		navi.travelTo(x, y);
+		navi.turnTo(0, true);
+		
+		navi.turnTo(0, true);
+		navi.setSpeeds(-50, -50);
+		while (!lightPoller.seesLine1() || !lightPoller.seesLine2()) {
+			if (lightPoller.seesLine1()) {
+				while (!lightPoller.seesLine2()) {
+					navi.setSpeeds(-50, 0);
+				}
+				navi.setSpeeds(0, 0);
+			}
+			if (lightPoller.seesLine2()) {
+				while (!lightPoller.seesLine1()) {
+					navi.setSpeeds(0, -50);
+				}
+				navi.setSpeeds(0, 0);
+			}
+		}
+		int lineY = (int)(odo.getY() + 15)/ 30;
+		odo.setY(lineY * 30 - 5);
+		navi.travelTo(x, y);
+		
+		
+		
 	}
 
 	public void processAngles(int x , int y) {
@@ -43,8 +67,9 @@ public class LightLocalization implements TimerListener {
 		double thetaY = angles.get(3) - angles.get(1);
 		position[0] = sensorDistance * Math.cos(thetaY / 2) + x;
 		position[1] = sensorDistance * Math.cos(thetaX / 2) + y;
-		position[2] = (2 * Math.PI - Math.toRadians(60.5) + odo.getTheta()+ (Math.PI / 2 - ((((2 * Math.PI + angles.get(1) - angles.get(3)) % (2 * Math.PI)) / 2) + angles.get(3))% (2 * Math.PI)))% (2 * Math.PI);
+		position[2] = (2 * Math.PI - Math.toRadians(62) + odo.getTheta()+ (Math.PI / 2 - ((((2 * Math.PI + angles.get(1) - angles.get(3)) % (2 * Math.PI)) / 2) + angles.get(3))% (2 * Math.PI)))% (2 * Math.PI);
 
+		Delay.msDelay(400);
 		odo.setPosition(position, new boolean[] { true, true, true });
 		
 	}
@@ -52,7 +77,7 @@ public class LightLocalization implements TimerListener {
 	@Override
 	public void timedOut() {
 		double currentAngle = odo.getTheta();
-		if (lightPoller.seesLine()) {
+		if (lightPoller.seesLine1()) {
 			LocalEV3.get().getAudio().systemSound(0);
 			angles.add(currentAngle);
 			display.addInfo("CHANGE: " + currentAngle);

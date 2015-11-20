@@ -30,8 +30,8 @@ public class Navigation extends Thread {
 		Navigation.odo = odo;
 		Navigation.leftMotor = leftMotor;
 		Navigation.rightMotor = rightMotor;
-		leftMotor.setAcceleration(500);
-		rightMotor.setAcceleration(500);
+		leftMotor.setAcceleration(1200);
+		rightMotor.setAcceleration(1200);
 		usPoller = Initializer.getUsPoller();
 		sensorMotor = Initializer.getSensorMotor();
 	}
