@@ -52,7 +52,7 @@ public class USLocalizer {
 		uss.setParameters(5, 15, 15, 50, 0);
 		
 		lcd.addInfo("distance: ");
-		pause();
+//		pause();
 		// record the start time for testing and future improvements in speed of
 		// operation.
 		double t1 = System.currentTimeMillis() / 1000;
