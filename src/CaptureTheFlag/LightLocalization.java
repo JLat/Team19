@@ -29,39 +29,48 @@ public class LightLocalization implements TimerListener {
 		timer.start();
 		navi.turnBy(2 * Math.PI, true);
 		timer.stop();
-		if (angles.get(3) < angles.get(2)) {
-			angles.set(3, 2 * Math.PI + angles.get(3));
-		}
+		
 		processAngles(x,y);
 		display.addInfo("Angles" + angles.toString());
 		navi.travelTo(x, y);
 		navi.turnTo(0, true);
 		
-		navi.turnTo(0, true);
-		navi.setSpeeds(-50, -50);
+		doLightLocalization2(-50);
+	}
+	
+	public void doLightLocalization2(int speed) {
+		navi.setSpeeds(speed, speed);
 		while (!lightPoller.seesLine1() || !lightPoller.seesLine2()) {
 			if (lightPoller.seesLine1()) {
 				while (!lightPoller.seesLine2()) {
-					navi.setSpeeds(-50, 0);
+					navi.setSpeeds(speed, 0);
 				}
 				navi.setSpeeds(0, 0);
 			}
 			if (lightPoller.seesLine2()) {
 				while (!lightPoller.seesLine1()) {
-					navi.setSpeeds(0, -50);
+					navi.setSpeeds(0, speed);
 				}
 				navi.setSpeeds(0, 0);
 			}
 		}
-		int lineY = (int)(odo.getY() + 15)/ 30;
-		odo.setY(lineY * 30 - 5);
-		navi.travelTo(x, y);
-		
-		
-		
+//		int lineY = (int)(odo.getY() + 15)/ 30;
+//		odo.setY(lineY * 30 - 5);
 	}
+	
 
 	public void processAngles(int x , int y) {
+		if (angles.size() < 4){
+			doLightLocalization2(-50);
+			navi.turnTo(odo.getTheta() + Math.PI / 2, true);
+			doLightLocalization2(50);
+			navi.turnTo(0, true);
+			doLightLocalization((int)odo.getX(),(int)odo.getY());
+		}
+		if (angles.get(3) < angles.get(2)) {
+			angles.set(3, 2 * Math.PI + angles.get(3));
+		}
+		
 		double[] position = new double[3];
 		double thetaX = angles.get(2) - angles.get(0);
 		double thetaY = angles.get(3) - angles.get(1);

@@ -26,7 +26,7 @@ public class Initializer {
 	public static TextLCD t;
 	public static UltrasonicPoller usPoller;
 	
-	private static final String SERVER_IP = "172.20.10.4";
+	private static final String SERVER_IP = "192.168.10.112";
 	private static final int TEAM_NUMBER = 19;
 	//TODO modify this according to how the info will be received via wifi
 	private static String flag = "";
@@ -88,8 +88,8 @@ public class Initializer {
 			int dropZone_Y = t.dropZone_Y;
 		    flagType = t.flagType;
 			int	opponentFlagType = t.opponentFlagType;
-		}
-		*/
+		}*/
+		
 		
 		
 		detector.setFlag(flags[flagType -1]);
