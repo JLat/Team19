@@ -1,6 +1,8 @@
 package CaptureTheFlag;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
@@ -45,8 +47,36 @@ public class Initializer {
 	 * Localizer 8- Brain
 	 * 
 	 * @param args
+	 * @throws UnsupportedEncodingException 
+	 * @throws FileNotFoundException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args){
+		
+		//creating the Logger class;
+		new Logger("LOG.txt");
+		
+		// adding the classes that will produce visible logs.
+		// TODO: comment out classes that you don't want appearing in the log file.
+		Logger.addClass("CaptureTheFlag.Brain");
+		Logger.addClass("CaptureTheFlag.Claw");
+		Logger.addClass("CaptureTheFlag.Identifier");
+		Logger.addClass("CaptureTheFlag.Initializer");
+		//Logger.addClass("CaptureTheFlag.LCDdisplay");
+		Logger.addClass("CaptureTheFlag.LightLocalization");
+		Logger.addClass("CaptureTheFlag.LightPoller");
+		Logger.addClass("CaptureTheFlag.Navigation");
+		//Logger.addClass("CaptureTheFlag.Odometer");
+		//Logger.addClass("CaptureTheFlag.Point3D");
+		Logger.addClass("CaptureTheFlag.Scanner");
+		Logger.addClass("CaptureTheFlag.Search");
+		//Logger.addClass("CaptureTheFlag.UltrasonicPoller");
+		Logger.addClass("CaptureTheFlag.USLocalizer");
+		
+		// example of a call.
+		Logger.log("Starting Program");
+		Logger.log("Please: add some log calls inside your methods!");
+		
+		
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		odometer.start();
 		usPoller = new UltrasonicPoller(10, 10, 20, 100, 0);
@@ -105,6 +135,11 @@ public class Initializer {
 		// display.addInfo("green");
 		// display.addInfo("blue");
 		controller.search();
+		
+		
+		
+		Logger.log("Closing Program");
+		Logger.writer.close();
 
 	}
 

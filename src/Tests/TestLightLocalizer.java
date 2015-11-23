@@ -19,7 +19,7 @@ public class TestLightLocalizer {
 	public static void main(String [] args) {
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		odometer.start();
-		LightPoller colorPoller = new LightPoller(colorPort, "Red");
+		LightPoller colorPoller = new LightPoller(colorPort, null, "Red");
 		colorPoller.start();
 		LCDdisplay display = new LCDdisplay(odometer, null, colorPoller, null);
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);

@@ -25,9 +25,16 @@ public class Logger {
 	 * @throws FileNotFoundException
 	 * @throws UnsupportedEncodingException
 	 */
-	public Logger(String filePath) throws FileNotFoundException, UnsupportedEncodingException {
-
-		writer = new PrintWriter(filePath, "UTF-8");
+	public Logger(String filePath){
+		
+		try {
+			writer = new PrintWriter(filePath, "UTF-8");
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			// print the error.
+			e.printStackTrace();
+		}
+		
+		
 
 		// getting current date and time using Date class
 		DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
@@ -49,7 +56,7 @@ public class Logger {
 
 		// verifying that the entry's class has logging enabled.
 		if (visibleLogs.contains(className)) {
-			writer.println("[" + className + "." + methodName + "]," + message);
+			writer.println("[" + className + "." + methodName + "]: \t" + message);
 		} else {
 
 			// the entry's caller class was not part of the visibleLogs list,
