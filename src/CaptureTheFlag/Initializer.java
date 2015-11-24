@@ -139,7 +139,7 @@ public class Initializer {
 		
 		
 		Logger.log("Closing Program");
-		Logger.writer.close();
+		Logger.close();
 
 	}
 

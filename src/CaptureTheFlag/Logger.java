@@ -11,6 +11,13 @@ import java.util.Date;
 /**
  * Class that takes care of Logging data during a program run.
  * 
+ * the correct sequence for using it goes as follows:
+ * 1- create a Logger using new Logger("LOG.txt") (for example)
+ * 2- add the desired classes to the visibleLogs list using addClass(String className)
+ * 3- use the Logger.log(String message) method
+ * 4- use the Logger.close() in the end to actually print the files.
+ * 5- enjoy some smart debugging! :)
+ * 
  * @author Fabrice
  *
  */
@@ -47,8 +54,7 @@ public class Logger {
 	 * appear, it is needed that its class name be added to the visibleLogs list
 	 * using the addClass(String className) method.
 	 * 
-	 * @param data
-	 *            The message to pass in.
+	 * @param message The message to pass in.
 	 */
 	public static void log(Object message) {
 		String className = Thread.currentThread().getStackTrace()[2].getClassName();
@@ -84,6 +90,10 @@ public class Logger {
 	 */
 	public static void removeClass(String className) {
 		visibleLogs.remove(className);
+	}
+	
+	public static void close(){
+		Logger.writer.close();
 	}
 
 }
