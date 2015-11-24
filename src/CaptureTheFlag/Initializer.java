@@ -52,38 +52,38 @@ public class Initializer {
 	 */
 	public static void main(String[] args){
 		
-		//creating the Logger class;
-		new Logger("LOG.txt");
-		
-		// adding the classes that will produce visible logs.
-		// TODO: comment out classes that you don't want appearing in the log file.
-		Logger.addClass("CaptureTheFlag.Brain");
-		Logger.addClass("CaptureTheFlag.Claw");
-		Logger.addClass("CaptureTheFlag.Identifier");
-		Logger.addClass("CaptureTheFlag.Initializer");
-		//Logger.addClass("CaptureTheFlag.LCDdisplay");
-		Logger.addClass("CaptureTheFlag.LightLocalization");
-		Logger.addClass("CaptureTheFlag.LightPoller");
-		Logger.addClass("CaptureTheFlag.Navigation");
-		//Logger.addClass("CaptureTheFlag.Odometer");
-		//Logger.addClass("CaptureTheFlag.Point3D");
-		Logger.addClass("CaptureTheFlag.Scanner");
-		Logger.addClass("CaptureTheFlag.Search");
-		//Logger.addClass("CaptureTheFlag.UltrasonicPoller");
-		Logger.addClass("CaptureTheFlag.USLocalizer");
-		
-		// example of a call.
-		Logger.log("Starting Program");
-		Logger.log("Please: add some log calls inside your methods!");
+//		//creating the Logger class;
+//		new Logger("LOG.txt");
+//		
+//		// adding the classes that will produce visible logs.
+//		// TODO: comment out classes that you don't want appearing in the log file.
+//		Logger.addClass("CaptureTheFlag.Brain");
+//		Logger.addClass("CaptureTheFlag.Claw");
+//		Logger.addClass("CaptureTheFlag.Identifier");
+//		Logger.addClass("CaptureTheFlag.Initializer");
+//		//Logger.addClass("CaptureTheFlag.LCDdisplay");
+//		Logger.addClass("CaptureTheFlag.LightLocalization");
+//		Logger.addClass("CaptureTheFlag.LightPoller");
+//		Logger.addClass("CaptureTheFlag.Navigation");
+//		//Logger.addClass("CaptureTheFlag.Odometer");
+//		//Logger.addClass("CaptureTheFlag.Point3D");
+//		Logger.addClass("CaptureTheFlag.Scanner");
+//		Logger.addClass("CaptureTheFlag.Search");
+//		//Logger.addClass("CaptureTheFlag.UltrasonicPoller");
+//		Logger.addClass("CaptureTheFlag.USLocalizer");
+//		
+//		// example of a call.
+//		Logger.log("Starting Program");
+//		Logger.log("Please: add some log calls inside your methods!");
 		
 		
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		odometer.start();
 		usPoller = new UltrasonicPoller(10, 10, 20, 100, 0);
 		usPoller.start();
-		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		LightPoller colorPoller = new LightPoller(colorPort1, colorPort2, "Red");
 		colorPoller.start();
+		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor, colorPoller);
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
 		detector.start();
 		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
@@ -95,31 +95,31 @@ public class Initializer {
 		int flagType = 3;
 		String[] flags = { "light blue", "red", "yellow", "white", "dark blue" };
 
-		
-
-		WifiConnection conn = null;
-		try {
-			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
-		} catch (IOException e) {
-			display.addInfo("Connection failed", 0);
-			LocalEV3.get().getAudio().systemSound(0);
-		}
-
-		// example usage of Transmission class
-		Transmission t = conn.getTransmission();
-		if (t == null) {
-			display.addInfo("Failed to read transmission", 0);
-		} else {
-			StartCorner corner = t.startingCorner;
-			homeZoneBL_X = t.homeZoneBL_X;
-			homeZoneBL_Y = t.homeZoneBL_Y;
-			opponentHomeZoneBL_X = t.opponentHomeZoneBL_X;
-			opponentHomeZoneBL_Y = t.opponentHomeZoneBL_Y;
-			dropZone_X = t.dropZone_X;
-			dropZone_Y = t.dropZone_Y;
-			flagType = t.flagType;
-			opponentFlagType = t.opponentFlagType;
-		}
+//		
+//
+//		WifiConnection conn = null;
+//		try {
+//			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+//		} catch (IOException e) {
+//			display.addInfo("Connection failed", 0);
+//			LocalEV3.get().getAudio().systemSound(0);
+//		}
+//
+//		// example usage of Transmission class
+//		Transmission t = conn.getTransmission();
+//		if (t == null) {
+//			display.addInfo("Failed to read transmission", 0);
+//		} else {
+//			StartCorner corner = t.startingCorner;
+//			homeZoneBL_X = t.homeZoneBL_X;
+//			homeZoneBL_Y = t.homeZoneBL_Y;
+//			opponentHomeZoneBL_X = t.opponentHomeZoneBL_X;
+//			opponentHomeZoneBL_Y = t.opponentHomeZoneBL_Y;
+//			dropZone_X = t.dropZone_X;
+//			dropZone_Y = t.dropZone_Y;
+//			flagType = t.flagType;
+//			opponentFlagType = t.opponentFlagType;
+//		}
 
 		detector.setFlag(flags[flagType - 1]);
 		display.clearAdditionalInfo();
@@ -135,11 +135,11 @@ public class Initializer {
 		// display.addInfo("green");
 		// display.addInfo("blue");
 		controller.search();
+		display.addInfo("distance", usPoller.getProcessedDistance());
 		
-		
-		
-		Logger.log("Closing Program");
-		Logger.close();
+//		
+//		Logger.log("Closing Program");
+//		Logger.close();
 
 	}
 

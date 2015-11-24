@@ -6,18 +6,18 @@ import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.utility.Delay;
 
 public class Navigation extends Thread {
-	static int FAST = 250; 
+	static int FAST = 250;
 	static int SLOW = 110;
 	private static Odometer odo;
 	private static EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private static EV3MediumRegulatedMotor sensorMotor;
 	private static double deltaX, deltaY, xfinal, yfinal;
 	public static final double WHEEL_RADIUS = 2.1;
-	public static final double TRACK = 9.85;
-	public static final int motorHigh = 300;
-	public static final int motorLow = 200, leftAngle = 250, rightAngle = -250, sensorHigh = 500,
-			sensorLow = 120;
+	public static final double TRACK = 9.85, lightSensorOffset = 4.6;
+	public static final int motorHigh = 250, motorLow = 100, leftAngle = 250, rightAngle = -250, sensorHigh = 500,
+			sensorLow = 120, smallLeftAngle = 84, smallRightAngle = -84;
 	private static UltrasonicPoller usPoller;
+	private static LightPoller lightPoller;
 
 	public static boolean isNavigating = false;
 
@@ -34,6 +34,18 @@ public class Navigation extends Thread {
 		rightMotor.setAcceleration(1200);
 		usPoller = Initializer.getUsPoller();
 		sensorMotor = Initializer.getSensorMotor();
+	}
+
+	public Navigation(Odometer odo, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
+			LightPoller lightPoller) {
+		Navigation.odo = odo;
+		Navigation.leftMotor = leftMotor;
+		Navigation.rightMotor = rightMotor;
+		leftMotor.setAcceleration(1200);
+		rightMotor.setAcceleration(1200);
+		usPoller = Initializer.getUsPoller();
+		sensorMotor = Initializer.getSensorMotor();
+		Navigation.lightPoller = lightPoller;
 	}
 
 	public Odometer getOdometer() {
@@ -138,6 +150,12 @@ public class Navigation extends Thread {
 			double yDirection = -1;
 			double xEmptySpace = 0;
 			double yEmptySpace = 0;
+			double xFrontEmptySpace = 0;
+			double yFrontEmptySpace = 0;
+			double xLeftEmptySpace = 0;
+			double yLeftEmptySpace = 0;
+			double xRightEmptySpace = 0;
+			double yRightEmptySpace = 0;
 			// compare current position and destination
 			if (yfinal > y + 0.5) {
 				yDirection = 0;
@@ -153,21 +171,40 @@ public class Navigation extends Thread {
 			// normal condition
 			if (xDirection >= 0) {
 				this.turnTo(xDirection, true);
-				xEmptySpace = usPoller.getProcessedDistance();
+				sensorMotor.rotateTo(0, false);
+				Delay.msDelay(50);
+				xFrontEmptySpace = usPoller.getProcessedDistance();
+				sensorMotor.rotateTo(smallLeftAngle, false);
+				Delay.msDelay(50);
+				xLeftEmptySpace = usPoller.getProcessedDistance();
+				sensorMotor.rotateTo(smallRightAngle, false);
+				Delay.msDelay(50);
+				xRightEmptySpace = usPoller.getProcessedDistance();
+				xEmptySpace = Math.min(xFrontEmptySpace, Math.min(xLeftEmptySpace*2/1.732, xRightEmptySpace*2/1.732));
 			}
 			if (yDirection >= 0) {
 				this.turnTo(yDirection, true);
-				yEmptySpace = usPoller.getProcessedDistance();
+				sensorMotor.rotateTo(0, false);
+				Delay.msDelay(50);
+				yFrontEmptySpace = usPoller.getProcessedDistance();
+				sensorMotor.rotateTo(smallLeftAngle, false);
+				Delay.msDelay(50);
+				yLeftEmptySpace = usPoller.getProcessedDistance();
+				sensorMotor.rotateTo(smallRightAngle, false);
+				Delay.msDelay(50);
+				yRightEmptySpace = usPoller.getProcessedDistance();
+				yEmptySpace = Math.min(yFrontEmptySpace, Math.min(yLeftEmptySpace*2/1.732, yRightEmptySpace*2/1.732));
 			}
+			sensorMotor.rotateTo(0, false);
 			// when destination is on the same axis and there is a object on the
 			// way
-			boolean yBlocked = (xfinal > x - 1) && (xfinal < x + 1) && (yEmptySpace < 15)&&(yEmptySpace>0);
-			boolean xBlocked = (yfinal > y - 1) && (yfinal < y + 1) && (xEmptySpace < 15)&&(xEmptySpace>0);
+			boolean yBlocked = (xfinal > x - 1) && (xfinal < x + 1) && (yEmptySpace < 28) && (yEmptySpace > 0);
+			boolean xBlocked = (yfinal > y - 1) && (yfinal < y + 1) && (xEmptySpace < 28) && (xEmptySpace > 0);
 			if (xBlocked || yBlocked) {
 				Sound.beep();
-				if(xBlocked){
+				if (xBlocked) {
 					turnTo(xDirection, true);
-				}else{
+				} else {
 					turnTo(yDirection, true);
 				}
 				sensorMotor.setSpeed(sensorHigh);
@@ -175,24 +212,24 @@ public class Navigation extends Thread {
 				double leftSpace = usPoller.getProcessedDistance();
 				sensorMotor.rotateTo(rightAngle, false);
 				double rightSpace = usPoller.getProcessedDistance();
-				if (leftSpace>rightSpace){
-					turnTo((odo.getTheta()-Math.PI/2+2*Math.PI)%(2*Math.PI), true);
+				if (leftSpace > rightSpace) {
+					turnTo((odo.getTheta() - Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI), true);
 					sensorMotor.rotateTo(rightAngle, false);
 					this.setSpeeds(motorHigh, motorHigh);
-				}else{
-					turnTo((odo.getTheta()+Math.PI/2+2*Math.PI)%(2*Math.PI), true);
+				} else {
+					turnTo((odo.getTheta() + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI), true);
 					sensorMotor.rotateTo(leftAngle, false);
 					this.setSpeeds(motorHigh, motorHigh);
 				}
 
-				while(usPoller.getProcessedDistance() < 25){
+				while (usPoller.getProcessedDistance() < 25) {
 				}
 				this.setSpeeds(0, 0);
 				sensorMotor.rotateTo(0);
 				goForward(30);
-				if(xBlocked){
+				if (xBlocked) {
 					turnTo(xDirection, true);
-				}else{
+				} else {
 					turnTo(yDirection, true);
 				}
 				goForward(30);
@@ -200,18 +237,19 @@ public class Navigation extends Thread {
 				Sound.twoBeeps();
 				if (xEmptySpace > yEmptySpace) {
 					this.turnTo(xDirection, true);
-					//Scanner.
-					this.goStraight(Math.abs(xfinal - x));
+					 this.goStraight(Math.min(Math.abs(xfinal - x), xEmptySpace));
+//					travelTailsWithCorrection((int) Math.min((Math.abs(xfinal - x) % 30), xEmptySpace%30));
 				} else {
 					this.turnTo(yDirection, true);
-					this.goStraight(Math.abs(yfinal - y));
+					 this.goStraight(Math.min(Math.abs(yfinal - y), yEmptySpace));
+//					travelTailsWithCorrection((int) Math.min((Math.abs(yfinal - y) % 30), yEmptySpace%30));
 				}
 				while (usPoller.getProcessedDistance() > 15 && this.isMoving()) {
 
 				}
 				this.setSpeeds(0, 0);
 			}
-			if ((Math.abs(odo.getX() - xfinal) < 0.5) && (Math.abs(odo.getY() - yfinal) < 0.5)){
+			if ((Math.abs(odo.getX() - xfinal) < 0.5) && (Math.abs(odo.getY() - yfinal) < 0.5)) {
 				Sound.buzz();
 				break;
 			}
@@ -387,6 +425,40 @@ public class Navigation extends Thread {
 		rightMotor.rotate(wheelAngle, true);
 	}
 
+	public void travelTailsWithCorrection(int numberOfBlocks) {
+		for (int i = 0; i < numberOfBlocks; i++) {
+
+			goStraight(numberOfBlocks*30);
+			//correction
+			/*
+			setSpeeds(motorHigh, motorHigh);
+			boolean leftSeeLine = false, rightSeeLine = false;
+			while (!leftSeeLine || !rightSeeLine) {
+				leftSeeLine = lightPoller.seesLine2();
+				rightSeeLine = lightPoller.seesLine1();
+				if (rightSeeLine) {
+					while (!leftSeeLine) {
+						setSpeeds(motorLow, 0);
+					}
+					setSpeeds(0, 0);
+				}
+				if (leftSeeLine) {
+					while (!rightSeeLine) {
+						setSpeeds(0, motorLow);
+					}
+					setSpeeds(0, 0);
+				}
+			}
+			goForward(lightSensorOffset);
+			int lineY = (int) (odo.getY() + 15) / 30;
+			int lineX = (int) (odo.getX() + 15) / 30;
+			odo.setY(lineY * 30);
+			odo.setX(lineX * 30);
+			odo.setTheta(0);
+			*/
+		}
+	}
+
 	/**
 	 * TurnBy function which takes an angle and boolean as arguments the angle
 	 * determines what degree it should turn and the boolean controls whether or
@@ -396,28 +468,27 @@ public class Navigation extends Thread {
 	 * @param stop
 	 */
 	public void turnBy(double angle, boolean stop) {
- 		leftMotor.setSpeed(SLOW);
- 		rightMotor.setSpeed(SLOW);
-		leftMotor.rotate(convertAngle(WHEEL_RADIUS, 1.055*TRACK, angle), true);
-		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, 1.055*TRACK, angle), false);
- 		if (stop) {
- 			this.setSpeeds(0, 0);
- 		}
- 
- 	}
+		leftMotor.setSpeed(SLOW);
+		rightMotor.setSpeed(SLOW);
+		leftMotor.rotate(convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), true);
+		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), false);
+		if (stop) {
+			this.setSpeeds(0, 0);
+		}
 
-	public void turn(String direction){
- 		leftMotor.setSpeed(SLOW);
- 		rightMotor.setSpeed(SLOW);
- 		if( direction.toUpperCase() == "CLOCKWISE") {
- 			leftMotor.backward();
- 			rightMotor.forward();
- 		}
-		else {
+	}
+
+	public void turn(String direction) {
+		leftMotor.setSpeed(SLOW);
+		rightMotor.setSpeed(SLOW);
+		if (direction.toUpperCase() == "CLOCKWISE") {
+			leftMotor.backward();
+			rightMotor.forward();
+		} else {
 			leftMotor.forward();
 			rightMotor.backward();
 		}
- 	}
+	}
 
 	// /**
 	// * Go backwards a set distance in cm (used to grab block)
