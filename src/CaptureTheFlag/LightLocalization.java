@@ -7,6 +7,12 @@ import lejos.utility.Delay;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
+/**
+ * LightLocalization class : Implements timer listener which calls timedOut() every 20ms
+ * 							 to check for color changes	in lines
+ * @author yyang132
+ *
+ */
 public class LightLocalization implements TimerListener {
 	private static Odometer odo;
 	private static LightPoller lightPoller;
@@ -16,6 +22,12 @@ public class LightLocalization implements TimerListener {
 	private double sensorDistance = 9.6;
 	private ArrayList<Double> angles = new ArrayList<Double>();
 
+	/**
+	 * Class constructor: takes in a navigator, a lightPoller (color sensor) and a display
+	 * @param navi
+	 * @param lightPoller
+	 * @param display
+	 */
 	public LightLocalization(Navigation navi, LightPoller lightPoller, LCDdisplay display) {
 		LightLocalization.navi = navi;
 		LightLocalization.lightPoller = lightPoller;
@@ -24,6 +36,14 @@ public class LightLocalization implements TimerListener {
 		this.timer = new Timer(20, this);
 	}
 
+	/**
+	 * Main class method 1st light localization
+	 * 1- detects the lines and stores their respective angle after a 360 turn
+	 * 2- calls processAngles
+	 * 3- turn to an approximate (0, 0) point before calling 2nd localization
+	 * @param x
+	 * @param y
+	 */
 	public void doLightLocalization(int x, int y) {
 
 		timer.start();
@@ -38,6 +58,10 @@ public class LightLocalization implements TimerListener {
 		doLightLocalization2(-50);
 	}
 	
+	/**
+	 * Second light localization to improve accuracy
+	 * @param speed
+	 */
 	public void doLightLocalization2(int speed) {
 		navi.setSpeeds(speed, speed);
 		while (!lightPoller.seesLine1() || !lightPoller.seesLine2()) {
@@ -59,17 +83,14 @@ public class LightLocalization implements TimerListener {
 		odo.setTheta(0);
 	}
 	
-
+	/**
+	 * processAngles: computes the distance from the robot's position using the angles stored by timedOut()
+	 * @param x
+	 * @param y
+	 */
 	public void processAngles(int x , int y) {
 		if (angles.size() < 4){
 			return;
-//			doLightLocalization2(-50);
-//			navi.turnTo(odo.getTheta() + Math.PI / 2, true);
-//			doLightLocalization2(50);
-//			navi.turnTo(0, true);
-//			navi.goForward(5);
-//			odo.setTheta(0);
-//			doLightLocalization(x,y);
 		}
 		if (angles.get(3) < angles.get(2)) {
 			angles.set(3, 2 * Math.PI + angles.get(3));
@@ -86,7 +107,11 @@ public class LightLocalization implements TimerListener {
 		odo.setPosition(position, new boolean[] { true, true, true });
 		
 	}
-
+	
+	/**
+	 *timedOut() fetches the data from light poller to look for color change
+	 *if it detects one, stores the current angle as displayed by the odometer 
+	 */
 	@Override
 	public void timedOut() {
 		double currentAngle = odo.getTheta();

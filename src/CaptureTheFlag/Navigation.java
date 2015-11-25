@@ -470,6 +470,7 @@ public class Navigation extends Thread {
 	public void turnBy(double angle, boolean stop) {
 		leftMotor.setSpeed(SLOW);
 		rightMotor.setSpeed(SLOW);
+		//the 1.055 is there to improve the accuracy of the turns
 		leftMotor.rotate(convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), true);
 		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), false);
 		if (stop) {
