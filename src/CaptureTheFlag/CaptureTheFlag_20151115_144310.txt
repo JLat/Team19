@@ -1,0 +1,9 @@
+WARNING - 14:43:10: First conversion pass
+ERROR - 14:43:10: java.net.MalformedURLException: unknown protocol: pathmap
+WARNING - 14:43:42: Convert CaptureTheFlag
+WARNING - 14:43:42: First conversion pass
+ERROR - 14:43:42: java.net.MalformedURLException: unknown protocol: pathmap
+WARNING - 14:45:12: Convert Team19
+ERROR - 14:45:12: java.net.MalformedURLException: unknown protocol: pathmap
+WARNING - 15:00:19: First conversion pass
+ERROR - 15:00:19: java.net.MalformedURLException: unknown protocol: pathmap
