@@ -45,13 +45,19 @@ public class LightLocalization implements TimerListener {
 	 * @param y
 	 */
 	public void doLightLocalization(int x, int y) {
-
+		
+		//Start detecting lines by calling TimedOut
 		timer.start();
+	
+		//Turn by 360 degrees and stop
 		navi.turnBy(2 * Math.PI, true);
 		timer.stop();
 		
+		//Set the odometer to the robot's actual position
 		processAngles(x,y);
 		display.addInfo("Angles" + angles.toString());
+		
+		//Navigate to that position and turn to (0,0) heading
 		navi.travelTo(x, y);
 		navi.turnTo(0, true);
 		
@@ -89,14 +95,19 @@ public class LightLocalization implements TimerListener {
 	 * @param y
 	 */
 	public void processAngles(int x , int y) {
+		
+		//Robot must have crossed 4 lines while turning
 		if (angles.size() < 4){
 			return;
 		}
+		//If the last angle wraps-around fix it so all the angles 0 to 4 are in increasing order 
 		if (angles.get(3) < angles.get(2)) {
 			angles.set(3, 2 * Math.PI + angles.get(3));
 		}
 		
 		double[] position = new double[3];
+		
+		//Calculate the x and y position according to the recorded angles and the distance of our sensor
 		double thetaX = angles.get(2) - angles.get(0);
 		double thetaY = angles.get(3) - angles.get(1);
 		position[0] = sensorDistance * Math.cos(thetaY / 2) + x;
@@ -104,6 +115,7 @@ public class LightLocalization implements TimerListener {
 		position[2] = (2 * Math.PI - Math.toRadians(62) + odo.getTheta()+ (Math.PI / 2 - ((((2 * Math.PI + angles.get(1) - angles.get(3)) % (2 * Math.PI)) / 2) + angles.get(3))% (2 * Math.PI)))% (2 * Math.PI);
 
 		Delay.msDelay(400);
+		//Set the position to the newly calculated positions of (x,y)
 		odo.setPosition(position, new boolean[] { true, true, true });
 		
 	}
@@ -114,9 +126,11 @@ public class LightLocalization implements TimerListener {
 	 */
 	@Override
 	public void timedOut() {
+		//gets the current angle reported by the Odometer
 		double currentAngle = odo.getTheta();
 		if (lightPoller.seesLine1()) {
 			LocalEV3.get().getAudio().systemSound(0);
+			//Record that angle if a line is detected
 			angles.add(currentAngle);
 			display.addInfo("CHANGE: " + currentAngle);
 		}
