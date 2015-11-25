@@ -33,9 +33,9 @@ public class LightPoller extends Thread {
 	 * reads and process the data from sampler
 	 */
 	public void run() {
+		calibrate();
+		
 		while (true) {
-			if (!calibrated)
-				calibrate();
 			sensor1.fetchSample(colorData1, 0);
 			currentValue1 = 100*colorData1[0];
 			sensor2.fetchSample(colorData2, 0);

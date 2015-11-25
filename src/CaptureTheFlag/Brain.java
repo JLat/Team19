@@ -35,7 +35,7 @@ public class Brain {
 		Sound.beepSequenceUp();
 		USLoc.doLocalization(30);
 		LLoc.doLightLocalization(0, 0);
-		
+		Sound.beepSequence();
 		
 //		USLoc.doLocalization(30);
 //		LLoc.doLightLocalization(0,0);

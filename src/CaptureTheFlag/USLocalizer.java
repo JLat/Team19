@@ -10,7 +10,7 @@ import lejos.utility.Delay;
  *         of the robot.
  */
 public class USLocalizer {
-	public static float ROTATION_SPEED = 60;
+	public static float ROTATION_SPEED = 100;
 
 	private Odometer odo;
 	private Navigation nav;
@@ -49,7 +49,8 @@ public class USLocalizer {
 		// order to restore them after localization is done.
 		int[] savedParameters = uss.saveParameters();
 
-		uss.setParameters(5, 15, 15, 50, 0);
+		//uss.setParameters(5, 15, 15, 50, 0);
+		uss.setParameters(5, 10, 15, 50, 0);
 		
 		lcd.addInfo("distance: ");
 //		pause();
@@ -64,8 +65,8 @@ public class USLocalizer {
 
 		// Allowing a small delay for the US sensor to initialize properly
 		// before starting to rotate the robot.
-		Delay.msDelay(250);
-		nav.setSpeeds(70, -70);
+		Delay.msDelay(150);
+		nav.setSpeeds(100, -100);
 		
 		
 		// if the robot initially faces a wall
@@ -123,7 +124,6 @@ public class USLocalizer {
 		LocalEV3.get().getAudio().systemSound(0);
 		// lcd.addInfo("angle B: ", angleB);
 		nav.setSpeeds(0, 0);
-
 	}
 
 	private void locateFromOpen() {

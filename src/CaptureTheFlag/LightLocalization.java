@@ -61,7 +61,7 @@ public class LightLocalization implements TimerListener {
 		navi.travelTo(x, y);
 		navi.turnTo(0, true);
 		
-		doLightLocalization2(-50);
+		doLightLocalization2(-100);
 	}
 	
 	/**

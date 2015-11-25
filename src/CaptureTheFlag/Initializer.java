@@ -135,7 +135,6 @@ public class Initializer {
 		// display.addInfo("red");
 		// display.addInfo("green");
 		// display.addInfo("blue");
-		Sound.beep();
 		controller.search();
 		display.addInfo("distance", usPoller.getProcessedDistance());
 		

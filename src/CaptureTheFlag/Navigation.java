@@ -6,19 +6,17 @@ import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.utility.Delay;
 
 public class Navigation extends Thread {
-	static int FAST = 250;
-	static int SLOW = 110;
 	private static Odometer odo;
 	private static EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private static EV3MediumRegulatedMotor sensorMotor;
 	private static double deltaX, deltaY, xfinal, yfinal;
 	public static final double WHEEL_RADIUS = 2.1;
 	public static final double TRACK = 9.85, lightSensorOffset = 4.6;
-	public static final int motorHigh = 250, motorLow = 100, leftAngle = 250, rightAngle = -250, sensorHigh = 500,
-			sensorLow = 120, smallLeftAngle = 84, smallRightAngle = -84;
+	//Changed the motorLow to 150 it was previously 100 
+	public static final int motorHigh = 250, motorLow = 150, leftAngle = 250, rightAngle = -250, sensorHigh = 500,
+							sensorLow = 120, smallLeftAngle = 84, smallRightAngle = -84;
 	private static UltrasonicPoller usPoller;
 	private static LightPoller lightPoller;
-
 	public static boolean isNavigating = false;
 
 	/**
@@ -276,8 +274,8 @@ public class Navigation extends Thread {
 		distance = Math.sqrt(deltaX * deltaX + deltaY
 				* deltaY); /* calculates distance from final position */
 
-		leftMotor.setSpeed(SLOW);
-		rightMotor.setSpeed(SLOW);
+		leftMotor.setSpeed(motorLow);
+		rightMotor.setSpeed(motorLow);
 		leftMotor.rotate(-convertDistance(WHEEL_RADIUS, distance),
 				true); /* tells motor how many times each wheel should turn */
 		rightMotor.rotate(-convertDistance(WHEEL_RADIUS, distance),
@@ -468,8 +466,8 @@ public class Navigation extends Thread {
 	 * @param stop
 	 */
 	public void turnBy(double angle, boolean stop) {
-		leftMotor.setSpeed(SLOW);
-		rightMotor.setSpeed(SLOW);
+		leftMotor.setSpeed(motorLow);
+		rightMotor.setSpeed(motorLow);
 		//the 1.055 is there to improve the accuracy of the turns
 		leftMotor.rotate(convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), true);
 		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), false);
@@ -480,8 +478,8 @@ public class Navigation extends Thread {
 	}
 
 	public void turn(String direction) {
-		leftMotor.setSpeed(SLOW);
-		rightMotor.setSpeed(SLOW);
+		leftMotor.setSpeed(motorLow);
+		rightMotor.setSpeed(motorLow);
 		if (direction.toUpperCase() == "CLOCKWISE") {
 			leftMotor.backward();
 			rightMotor.forward();
