@@ -49,7 +49,8 @@ public class USLocalizer {
 		// order to restore them after localization is done.
 		int[] savedParameters = uss.saveParameters();
 
-		//uss.setParameters(5, 15, 15, 50, 0);
+		//Old parameters: uss.setParameters(5, 15, 15, 50, 0);
+		//to speed up the process, use a smaller filter size of 10
 		uss.setParameters(5, 10, 15, 50, 0);
 		
 		lcd.addInfo("distance: ");
