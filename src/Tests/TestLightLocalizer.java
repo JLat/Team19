@@ -5,6 +5,8 @@ import CaptureTheFlag.LightLocalization;
 import CaptureTheFlag.LightPoller;
 import CaptureTheFlag.Navigation;
 import CaptureTheFlag.Odometer;
+import CaptureTheFlag.USLocalizer;
+import CaptureTheFlag.UltrasonicPoller;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
@@ -24,6 +26,11 @@ public class TestLightLocalizer {
 		LCDdisplay display = new LCDdisplay(odometer, null, colorPoller, null);
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor);
 		navigator.start();
+		UltrasonicPoller uss = new UltrasonicPoller(10, 5, 5, 50, 0);
+		uss.start();
+		LCDdisplay lcd = new LCDdisplay(odometer, uss, null, null);
+		USLocalizer localization = new USLocalizer(navigator, odometer, uss, lcd);
+		localization.doLocalization(30);
 		LightLocalization lightLocalizer = new LightLocalization(navigator, colorPoller, display); 
 		lightLocalizer.doLightLocalization(0,0);
 	}

@@ -1,5 +1,6 @@
 package CaptureTheFlag;
 
+import lejos.hardware.Sound;
 
 public class Brain {
 	
@@ -31,7 +32,9 @@ public class Brain {
 	 */
 		
 	public void search(){
-		
+		Sound.beepSequenceUp();
+		USLoc.doLocalization(30);
+		LLoc.doLightLocalization(0, 0);
 		
 		
 //		USLoc.doLocalization(30);
@@ -46,7 +49,7 @@ public class Brain {
 //		claw.close();
 //		nav.travelToAxis(Initializer.dropZone_X, Initializer.dropZone_Y);
 //		claw.open();
-		nav.travelToAxis(120,120);
+//		nav.travelToAxis(120,120);
 //		nav.travelTailsWithCorrection(6);
 	}
 	

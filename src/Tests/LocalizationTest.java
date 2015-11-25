@@ -24,6 +24,9 @@ public class LocalizationTest {
 	public static void main(String[] args) {
 		USLocalizer localization = new USLocalizer(nav, odo, uss,lcd);
 		localization.doLocalization(30);
+		
+		
+		
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -121,9 +122,9 @@ public class Initializer {
 //			opponentFlagType = t.opponentFlagType;
 //		}
 
-		detector.setFlag(flags[flagType - 1]);
-		display.clearAdditionalInfo();
-		display.addInfo("Connected", 0);
+//		detector.setFlag(flags[flagType - 1]);
+//		display.clearAdditionalInfo();
+//		display.addInfo("Connected", 0);
 		// display.addInfo(flags[flagType -1], flagType - 1);
 		//
 		//
@@ -134,6 +135,7 @@ public class Initializer {
 		// display.addInfo("red");
 		// display.addInfo("green");
 		// display.addInfo("blue");
+		Sound.beep();
 		controller.search();
 		display.addInfo("distance", usPoller.getProcessedDistance());
 		
