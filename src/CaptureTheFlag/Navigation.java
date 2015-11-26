@@ -13,7 +13,7 @@ public class Navigation extends Thread {
 	public static final double WHEEL_RADIUS = 2.1;
 	public static final double TRACK = 9.85, lightSensorOffset = 4.6;
 	// Changed the motorLow to 150 it was previously 100
-	public static final int motorHigh = 250, motorLow = 150, leftAngle = 250, rightAngle = -250, sensorHigh = 500,
+	public static final int motorHigh = 200, motorLow = 100, motorLocalize = 150, leftAngle = 250, rightAngle = -250, sensorHigh = 500,
 			sensorLow = 120, smallLeftAngle = 84, smallRightAngle = -84;
 	private static UltrasonicPoller usPoller;
 	private static LightPoller lightPoller;
@@ -491,8 +491,8 @@ public class Navigation extends Thread {
 	 * @param stop
 	 */
 	public void turnBy(double angle, boolean stop) {
-		leftMotor.setSpeed(motorLow);
-		rightMotor.setSpeed(motorLow);
+		leftMotor.setSpeed(motorLocalize);
+		rightMotor.setSpeed(motorLocalize);
 		// the 1.055 is there to improve the accuracy of the turns
 		leftMotor.rotate(convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), true);
 		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), false);
@@ -503,8 +503,8 @@ public class Navigation extends Thread {
 	}
 
 	public void turn(String direction) {
-		leftMotor.setSpeed(motorLow);
-		rightMotor.setSpeed(motorLow);
+		leftMotor.setSpeed(motorLocalize);
+		rightMotor.setSpeed(motorLocalize);
 		if (direction.toUpperCase() == "CLOCKWISE") {
 			leftMotor.backward();
 			rightMotor.forward();
