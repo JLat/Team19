@@ -32,25 +32,21 @@ public class Brain {
 	 */
 		
 	public void search(){
-		Sound.beepSequenceUp();
-		USLoc.doLocalization(30);
-		LLoc.doLightLocalization(0, 0);
-		Sound.beepSequence();
 		
-//		USLoc.doLocalization(30);
-//		LLoc.doLightLocalization(0,0);
-//		nav.travelToAxis(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
-//		nav.turnTo(0,true);
-//		LLoc.doLightLocalization((int)odo.getX(),(int) odo.getY());
-//		search.Snake((int)odo.getX(),(int)odo.getY());
-//		nav.turnTo(odo.getTheta() + Math.PI, true);
-//		claw.partialOpen();
-//		nav.goForward(-10);
-//		claw.close();
-//		nav.travelToAxis(Initializer.dropZone_X*30, Initializer.dropZone_Y*30);
-//		claw.open();
-//		nav.travelToAxis(120,120);
-//		nav.travelTailsWithCorrection(6);
+		USLoc.doLocalization(30);
+		LLoc.doLightLocalization(0,0);
+		nav.travelToAxis(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
+		nav.turnTo(0,true);
+		LLoc.doLightLocalization((int)odo.getX(),(int) odo.getY());
+		search.Snake((int)odo.getX(),(int)odo.getY());
+		nav.turnTo(odo.getTheta() + Math.PI, true);
+		claw.partialOpen();
+		nav.goForward(-10);
+		claw.close();
+		nav.travelToAxis(Initializer.dropZone_X*30, Initializer.dropZone_Y*30);
+		claw.open();
+		nav.travelToAxis(120,120);
+		nav.travelTailsWithCorrection(6);
 	}
 	
 }

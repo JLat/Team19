@@ -26,7 +26,7 @@ public class Search {
 		this.detector = detector;
 		this.claw = claw;
 	}
-
+	
 	Scanner scan = new Scanner(Initializer.getSensorMotor());
 
 	/**

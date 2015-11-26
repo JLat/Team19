@@ -28,6 +28,7 @@ public class Initializer {
 	private static double wheelRadius, track;
 	public static TextLCD t;
 	public static UltrasonicPoller usPoller;
+	public static LCDdisplay display;
 
 	private static final String SERVER_IP = "192.168.10.200";
 	private static final int TEAM_NUMBER = 19;
@@ -82,12 +83,12 @@ public class Initializer {
 		odometer.start();
 		usPoller = new UltrasonicPoller(10, 10, 20, 100, 0);
 		usPoller.start();
-		LightPoller colorPoller = new LightPoller(colorPort1, colorPort2, "Red");
+		LightPoller colorPoller = new LightPoller(colorPort1, colorPort2, "ColorID");
 		colorPoller.start();
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor, colorPoller);
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
 		detector.start();
-		LCDdisplay display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
+		display = new LCDdisplay(odometer, usPoller, colorPoller, detector);
 		Claw claw = new Claw(clawMotor);
 		USLocalizer USLoc = new USLocalizer(navigator, odometer, usPoller, display);
 		LightLocalization Lloc = new LightLocalization(navigator, colorPoller, display);
@@ -155,4 +156,8 @@ public class Initializer {
 	public static UltrasonicPoller getUsPoller() {
 		return usPoller;
 	}
+	public static LCDdisplay getDisplay(){
+		return display;
+	}
+	
 }

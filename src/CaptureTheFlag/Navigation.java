@@ -12,9 +12,9 @@ public class Navigation extends Thread {
 	private static double deltaX, deltaY, xfinal, yfinal;
 	public static final double WHEEL_RADIUS = 2.1;
 	public static final double TRACK = 9.85, lightSensorOffset = 4.6;
-	//Changed the motorLow to 150 it was previously 100 
+	// Changed the motorLow to 150 it was previously 100
 	public static final int motorHigh = 250, motorLow = 150, leftAngle = 250, rightAngle = -250, sensorHigh = 500,
-							sensorLow = 120, smallLeftAngle = 84, smallRightAngle = -84;
+			sensorLow = 120, smallLeftAngle = 84, smallRightAngle = -84;
 	private static UltrasonicPoller usPoller;
 	private static LightPoller lightPoller;
 	public static boolean isNavigating = false;
@@ -178,7 +178,8 @@ public class Navigation extends Thread {
 				sensorMotor.rotateTo(smallRightAngle, false);
 				Delay.msDelay(50);
 				xRightEmptySpace = usPoller.getProcessedDistance();
-				xEmptySpace = Math.min(xFrontEmptySpace, Math.min(xLeftEmptySpace*2/1.732, xRightEmptySpace*2/1.732));
+				xEmptySpace = Math.min(xFrontEmptySpace,
+						Math.min(xLeftEmptySpace * 2 / 1.732, xRightEmptySpace * 2 / 1.732));
 			}
 			if (yDirection >= 0) {
 				this.turnTo(yDirection, true);
@@ -191,8 +192,11 @@ public class Navigation extends Thread {
 				sensorMotor.rotateTo(smallRightAngle, false);
 				Delay.msDelay(50);
 				yRightEmptySpace = usPoller.getProcessedDistance();
-				yEmptySpace = Math.min(yFrontEmptySpace, Math.min(yLeftEmptySpace*2/1.732, yRightEmptySpace*2/1.732));
+				yEmptySpace = Math.min(yFrontEmptySpace,
+						Math.min(yLeftEmptySpace * 2 / 1.732, yRightEmptySpace * 2 / 1.732));
 			}
+			Initializer.getDisplay().addInfo("xEmpty", xEmptySpace);
+			Initializer.getDisplay().addInfo("yEmpty", yEmptySpace);
 			sensorMotor.rotateTo(0, false);
 			// when destination is on the same axis and there is a object on the
 			// way
@@ -235,16 +239,19 @@ public class Navigation extends Thread {
 				Sound.twoBeeps();
 				if (xEmptySpace > yEmptySpace) {
 					this.turnTo(xDirection, true);
-					 this.goStraight(Math.min(Math.abs(xfinal - x), xEmptySpace));
-//					travelTailsWithCorrection((int) Math.min((Math.abs(xfinal - x) % 30), xEmptySpace%30));
+					// this.goStraight(Math.min(Math.abs(xfinal - x),
+					// xEmptySpace));
+					travelTailsWithCorrection(Math.min((int) (Math.abs(xfinal - x) / 30), (int) (xEmptySpace / 30)));
 				} else {
 					this.turnTo(yDirection, true);
-					 this.goStraight(Math.min(Math.abs(yfinal - y), yEmptySpace));
-//					travelTailsWithCorrection((int) Math.min((Math.abs(yfinal - y) % 30), yEmptySpace%30));
+					// this.goStraight(Math.min(Math.abs(yfinal - y),
+					// yEmptySpace));
+					travelTailsWithCorrection(Math.min((int) (Math.abs(yfinal - y) / 30), (int) (yEmptySpace / 30)));
 				}
-				while (usPoller.getProcessedDistance() > 15 && this.isMoving()) {
-
-				}
+				// while (usPoller.getProcessedDistance() > 15 &&
+				// this.isMoving()) {
+				//
+				// }
 				this.setSpeeds(0, 0);
 			}
 			if ((Math.abs(odo.getX() - xfinal) < 0.5) && (Math.abs(odo.getY() - yfinal) < 0.5)) {
@@ -426,34 +433,52 @@ public class Navigation extends Thread {
 	public void travelTailsWithCorrection(int numberOfBlocks) {
 		for (int i = 0; i < numberOfBlocks; i++) {
 
-			goStraight(numberOfBlocks*30);
-			//correction
-			/*
+			double tempTheta = odo.getTheta();
+			if (tempTheta >= Math.toRadians(45) && tempTheta < Math.toRadians(135)) {
+				tempTheta = Math.toRadians(90);
+			} else if (tempTheta >= Math.toRadians(135) && tempTheta < Math.toRadians(225)) {
+				tempTheta = Math.toRadians(180);
+			} else if (tempTheta >= Math.toRadians(225) && tempTheta < Math.toRadians(315)) {
+				tempTheta = Math.toRadians(270);
+			} else {
+				tempTheta = 0;
+			}
+			// correction
+
 			setSpeeds(motorHigh, motorHigh);
-			boolean leftSeeLine = false, rightSeeLine = false;
-			while (!leftSeeLine || !rightSeeLine) {
-				leftSeeLine = lightPoller.seesLine2();
-				rightSeeLine = lightPoller.seesLine1();
-				if (rightSeeLine) {
-					while (!leftSeeLine) {
-						setSpeeds(motorLow, 0);
+			boolean leftSeeLineAlready = false, rightSeeLineAlready = false;
+			while (!(lightPoller.seesLine2() && leftSeeLineAlready)
+					|| !(lightPoller.seesLine1() && rightSeeLineAlready)) {
+				if (lightPoller.seesLine2() && !leftSeeLineAlready) {
+					leftSeeLineAlready = true;
+					while (!lightPoller.seesLine1() && !rightSeeLineAlready) {
+						setSpeeds(0, motorHigh);
 					}
 					setSpeeds(0, 0);
+					rightSeeLineAlready = true;
 				}
-				if (leftSeeLine) {
-					while (!rightSeeLine) {
-						setSpeeds(0, motorLow);
+
+				if (lightPoller.seesLine1() && !rightSeeLineAlready) {
+					rightSeeLineAlready = true;
+					while (!lightPoller.seesLine2() && !leftSeeLineAlready) {
+						setSpeeds(motorHigh, 0);
 					}
 					setSpeeds(0, 0);
+					rightSeeLineAlready = true;
 				}
+				if (leftSeeLineAlready && rightSeeLineAlready) {
+					Sound.twoBeeps();
+					break;
+				}
+
 			}
 			goForward(lightSensorOffset);
 			int lineY = (int) (odo.getY() + 15) / 30;
 			int lineX = (int) (odo.getX() + 15) / 30;
 			odo.setY(lineY * 30);
 			odo.setX(lineX * 30);
-			odo.setTheta(0);
-			*/
+			odo.setTheta(tempTheta);
+
 		}
 	}
 
@@ -468,7 +493,7 @@ public class Navigation extends Thread {
 	public void turnBy(double angle, boolean stop) {
 		leftMotor.setSpeed(motorLow);
 		rightMotor.setSpeed(motorLow);
-		//the 1.055 is there to improve the accuracy of the turns
+		// the 1.055 is there to improve the accuracy of the turns
 		leftMotor.rotate(convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), true);
 		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), false);
 		if (stop) {

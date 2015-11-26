@@ -11,7 +11,7 @@ public class LightPoller extends Thread {
 	private SampleProvider sensor1, sensor2;
 	private float[] colorData1, colorData2;
 	public boolean colorChanged, calibrated, newLine;
-	private double woodValue, lineDifference = 20, currentValue1, currentValue2;
+	private double woodValue, lineDifference = 100, currentValue1, currentValue2;
 
 	/**
 	 * Class constructor : makes a new LightPoller
@@ -40,7 +40,7 @@ public class LightPoller extends Thread {
 			sensor2.fetchSample(colorData2, 0);
 			currentValue2 = 100*colorData2[0];
 			try {
-				Thread.sleep(50);
+				Thread.sleep(20);
 			} catch (Exception e) {
 
 			}
@@ -67,13 +67,13 @@ public class LightPoller extends Thread {
 	 */
 	public boolean seesLine1() {
 		if (calibrated) {
-			return woodValue - currentValue1 > lineDifference;
+			return currentValue1 -woodValue > lineDifference;
 		}
 		return false;
 	}
 	public boolean seesLine2() {
 		if (calibrated) {
-			return woodValue - currentValue2 > lineDifference;
+			return currentValue2 - woodValue > lineDifference;
 		}
 		return false;
 	}
