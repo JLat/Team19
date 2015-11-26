@@ -1,6 +1,7 @@
 package CaptureTheFlag;
 
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
@@ -23,6 +24,7 @@ import java.util.Date;
  */
 public class Logger {
 	public static PrintWriter writer;
+	public static PrintStream ssh;
 
 	public static ArrayList<String> visibleLogs = new ArrayList<String>();
 
@@ -36,6 +38,7 @@ public class Logger {
 		
 		try {
 			writer = new PrintWriter(filePath, "UTF-8");
+			ssh = System.out;
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// print the error.
 			e.printStackTrace();
@@ -47,6 +50,7 @@ public class Logger {
 		DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		Date today = new Date();
 		writer.println("Log of: " + format.format(today));
+		ssh.println("Connected To Robot: " + format.format(today));
 	}
 
 	/**
@@ -63,6 +67,7 @@ public class Logger {
 		// verifying that the entry's class has logging enabled.
 		if (visibleLogs.contains(className)) {
 			writer.println("[" + className + "." + methodName + "]: \t" + message);
+			ssh.println("[" + className + "." + methodName + "]: \t" + message);
 		} else {
 
 			// the entry's caller class was not part of the visibleLogs list,
@@ -94,6 +99,7 @@ public class Logger {
 	
 	public static void close(){
 		Logger.writer.close();
+		Logger.ssh.close();
 	}
 
 }

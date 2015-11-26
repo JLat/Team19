@@ -47,7 +47,7 @@ public class Brain {
 //		claw.partialOpen();
 //		nav.goForward(-10);
 //		claw.close();
-//		nav.travelToAxis(Initializer.dropZone_X, Initializer.dropZone_Y);
+//		nav.travelToAxis(Initializer.dropZone_X*30, Initializer.dropZone_Y*30);
 //		claw.open();
 //		nav.travelToAxis(120,120);
 //		nav.travelTailsWithCorrection(6);

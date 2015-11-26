@@ -17,7 +17,8 @@ public class Search {
 	 * 
 	 * @param navigator
 	 */
-	public Search(Odometer odo, Navigation nav, UltrasonicPoller USS, LCDdisplay display, Identifier detector, Claw claw) {
+	public Search(Odometer odo, Navigation nav, UltrasonicPoller USS, LCDdisplay display, Identifier detector,
+			Claw claw) {
 		this.nav = nav;
 		this.odo = odo;
 		this.USS = USS;
@@ -39,58 +40,61 @@ public class Search {
 	 * @return Whether the flag was successfully found or not
 	 */
 
+	/**
+	 * @param startX
+	 *            Starting X coordinate of search area
+	 * @param startY
+	 *            Starting Y coordinate of search area
+	 * @return true if block is found
+	 */
 	public boolean Snake(int startX, int startY) {
 
-		/* TODO: this...
 		// Search = 0 - If no block is found mark tile as empty and don't search
 		// it anymore
 		// Search = 1 - If wrong block take it outside the zone and research
 		// that tile]
 		// Search = 2 - If flag take it to final point
 
-		int pos[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, { startX + 60, startY + 60, 180 },
+		
+		//each tiles position relative to bottom left corner from 0 - 5
+		int pos[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, { startX, startY + 90 - 12, 90 },
+				{ startX + 30, startY + 90 - 12, 90 }, { startX + 60, startY + 60, 180 },
 				{ startX + 60, startY + 30, 180 } };
 
-		for (int i = 0; i < 4; i++) {
-			nav.travelTo(pos[i][0], pos[i][1]);
-			nav.turnToAngle(pos[i][3], true);
-			if (search(pos[i][0], pos[i][1]) == 2)
-				return true;
-		}
-		*/
-		
 		int result = 0;
-		
-		for (int i = 0; i < 2; i++) {
-			nav.travelTo(startX, startY + 30 * i);
-			nav.turnTo(0,true);
-			result = search(startX, startY + 30 * i);
+		for (int i = 0; i < 6; i++) {
+			nav.travelTo(pos[i][0], pos[i][1]);
+			nav.turnToAngle(Math.toRadians(pos[i][3]), true);
+			result = search(pos[i][0], pos[i][1]);
 			if (result == 2)
 				return true;
 			else if (result == 1)
 				i--;
 		}
+		return false;
+		
 
-		// TODO: NOT NEEDED FOR DEMO;
 		/*
+		 * 
+		 * for (int i = 0; i < 2; i++) { nav.travelTo(startX, startY + 30 * i);
+		 * nav.turnTo(0,true); result = search(startX, startY + 30 * i); if
+		 * (result == 2) return true; else if (result == 1) i--; }
+		 * 
+		 * // TODO: NOT NEEDED FOR DEMO;
+		 * 
 		 * nav.travelTo(startX, startY + 90 - 12); nav.turnTo(Math.PI / 2,
 		 * true);
 		 * 
 		 * for (int i = 0; i < 2; i++) { if (search(startX+ 30 * i, startY + 90
 		 * - 12) == 2) return true; }
+		 * 
+		 * nav.travelTo(startX + 60, startY + 70); for (int i = 0; i < 2; i++) {
+		 * nav.travelTo(startX + 60, startY + 60 - (30 * i));
+		 * nav.turnTo(Math.PI, true); result = search(startX + 60, startY + 60 -
+		 * (30 * i)); if (result == 2) return true; else if (result == 1) i--; }
 		 */
-		nav.travelTo(startX + 60, startY + 70);
-		for (int i = 0; i < 2; i++) {
-			nav.travelTo(startX + 60, startY + 60 - (30 * i));
-			nav.turnTo(Math.PI, true);
-			result = search(startX + 60, startY + 60 - (30 * i));
-			if (result == 2)
-				return true;
-			else if (result == 1)
-				i--;
-		}
+
 		
-		return false;
 	}
 
 	/**
@@ -118,7 +122,8 @@ public class Search {
 		double minAngle = 0;
 		double startAngle = 0;
 		double endAngle = 0;
-
+		
+		//Scan sensor searching for block in front of threshold
 		for (int i = 0; i <= 90; i += 5) {
 			scan.turnTo(i);
 			if (USS.getProcessedDistance() < minVal) {
@@ -129,10 +134,12 @@ public class Search {
 				endAngle = scan.getAngle();
 			}
 		}
+		//Find average of angles where smallest distance was found
 		if (endAngle > startAngle) {
 			minAngle = (startAngle + endAngle) / 2;
 		}
-
+		
+		//Block found, turn towards block and approach
 		if (minVal < 28) {
 			double offY = 12 + minVal * Math.cos(Math.toRadians(minAngle));
 			double offX = minVal * Math.sin(Math.toRadians(minAngle));
@@ -144,10 +151,10 @@ public class Search {
 
 		// Stage 2 - Search for non-angled blocks
 
-		// TODO: Allow travel in other direction
+		//Travel forwards with sensor at 90 deg (right)
 		while (Math.abs(xCorner - odo.getX()) < 30 && Math.abs(yCorner - odo.getY()) < 30) {
 			nav.setSpeeds(200, 200);
-
+		//Block found, move forwards to adjust for sensor offset, then turn 90deg. Approach and check
 			if (USS.getProcessedDistance() < 25) {
 				nav.setSpeeds(0, 0);
 				nav.goForward(12);
@@ -165,36 +172,33 @@ public class Search {
 		LocalEV3.get().getAudio().systemSound(0);
 		scan.turnTo(0);
 		nav.setSpeeds(100, 100);
-		
+
+		//Move forward until within 3 cm from block
 		while (USS.getProcessedDistance() > 3) {
 
 		}
 		nav.setSpeeds(0, 0);
 		nav.goForward(3);
+		
+		//check which type of flag is in front of robot
 		if (detector.isFlagDetected()) {
-			
-			//Grab block and then get out of there
+
+			//In front of block, exit search
 			LocalEV3.get().getAudio().systemSound(1);
 			
-			//while (true);
-			//System.exit(0);
 			return 2;
-		}
-		else{
+		} else {
 			LocalEV3.get().getAudio().systemSound(0);
-			//while (true);
-			//System.exit(0);
-			//Remove block from zone then research zone
+
+			// Remove block from zone then research zone
 			nav.turnTo(odo.getTheta() + Math.PI, true);
 			claw.partialOpen();
 			nav.goForward(-8);
 			claw.close();
-			nav.travelTo(xCorner -10, yCorner);
+			nav.travelTo(xCorner - 10, yCorner);
 			nav.turnTo(odo.getTheta() + Math.PI, true);
 			claw.open();
-			
-			
-			
+
 			return 1;
 		}
 
