@@ -1,5 +1,6 @@
 package CaptureTheFlag;
 
+import lejos.hardware.Button;
 import lejos.hardware.Sound;
 
 public class Brain {
@@ -32,7 +33,9 @@ public class Brain {
 	 */
 		
 	public void search(){
-		
+		Logger.log("Starting Search routine (main program)");
+		Logger.setStartTime();
+				
 		USLoc.doLocalization(30);
 		LLoc.doLightLocalization(0,0);
 		nav.travelToAxis(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
@@ -47,6 +50,15 @@ public class Brain {
 		claw.open();
 		nav.travelToAxis(120,120);
 		nav.travelTailsWithCorrection(6);
+		
 	}
-	
+	public static void pause(){
+		int choice = Button.waitForAnyPress();
+		if(choice == Button.ID_ESCAPE){
+			Logger.close();
+			System.exit(0);
+		}
+		
+	}
 }
+

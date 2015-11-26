@@ -32,6 +32,7 @@ public class Navigation extends Thread {
 		rightMotor.setAcceleration(1200);
 		usPoller = Initializer.getUsPoller();
 		sensorMotor = Initializer.getSensorMotor();
+		Logger.log("Created Navigation instance");
 	}
 
 	public Navigation(Odometer odo, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
@@ -44,6 +45,7 @@ public class Navigation extends Thread {
 		usPoller = Initializer.getUsPoller();
 		sensorMotor = Initializer.getSensorMotor();
 		Navigation.lightPoller = lightPoller;
+		Logger.log("Created Navigation instance");
 	}
 
 	public Odometer getOdometer() {
@@ -57,6 +59,7 @@ public class Navigation extends Thread {
 	 * @param rSpd
 	 */
 	public synchronized void setSpeeds(float lSpd, float rSpd) {
+		Logger.log("Setting motor speeds to ("+lSpd+","+rSpd+")");
 		Navigation.leftMotor.setSpeed(lSpd);
 		Navigation.rightMotor.setSpeed(rSpd);
 		if (lSpd < 0)
@@ -70,6 +73,7 @@ public class Navigation extends Thread {
 	}
 
 	public synchronized void setSpeeds(int lSpd, int rSpd) {
+		Logger.log("Setting motor speeds to ("+lSpd+","+rSpd+")");
 		Navigation.leftMotor.setSpeed(lSpd);
 		Navigation.rightMotor.setSpeed(rSpd);
 		if (lSpd < 0)
@@ -91,6 +95,7 @@ public class Navigation extends Thread {
 	 * @param yfinal
 	 */
 	public void travelTo(double xfinal, double yfinal) {
+		Logger.log("Travelling to ("+xfinal+","+yfinal+")");
 		isNavigating = true;
 		double x = odo.getX(); // current positions
 		double y = odo.getY();
@@ -139,6 +144,7 @@ public class Navigation extends Thread {
 	}
 
 	public void travelToAxis(double xfinal, double yfinal) {
+		Logger.log("Travelling to ("+xfinal+","+yfinal+") parallel to the axes");
 		Navigation.xfinal = xfinal;
 		Navigation.yfinal = yfinal;
 		while (true) {
@@ -262,6 +268,7 @@ public class Navigation extends Thread {
 	}
 
 	public void travelToReverse(double xfinal, double yfinal) {
+		Logger.log("Travelling to ("+xfinal+","+yfinal+") in reverse");
 		isNavigating = true;
 		double x = odo.getX(); /* current positions */
 		double y = odo.getY();
@@ -298,6 +305,7 @@ public class Navigation extends Thread {
 	 * @param stop
 	 */
 	public synchronized void turnTo(double thetaInRadians, boolean stop) {
+		Logger.log("Turning to "+Math.toDegrees(thetaInRadians)+" degrees "+ (stop? " with stop":" without stop"));
 		double theta = thetaInRadians;
 		double turnDeg, currentDeg = odo.getTheta(); // initiate variables
 		boolean isTurningClockwise;
@@ -362,11 +370,11 @@ public class Navigation extends Thread {
 	 * @param stop
 	 */
 	public void turnDegrees(double angle, boolean stop) {
-
+		turnToAngle((this.odo.getThetaDegrees()+angle)%360, stop);
 	}
 
 	public void turnRadians(double angle, boolean stop) {
-
+		turnDegrees(Math.toDegrees(angle), stop);
 	}
 
 	/*
@@ -409,6 +417,7 @@ public class Navigation extends Thread {
 	 * @param distance
 	 */
 	public synchronized void goForward(double distance) {
+		Logger.log("Moving forward "+distance+" cm ");
 		leftMotor.setSpeed(0);
 		rightMotor.setSpeed(0);
 		Delay.msDelay(5);
@@ -420,6 +429,8 @@ public class Navigation extends Thread {
 	}
 
 	public synchronized void goStraight(double distance) {
+		//TODO: what is the difference between goStraight and goForward ?!
+		Logger.log("Moving forward "+distance+" cm ");
 		leftMotor.setSpeed(0);
 		rightMotor.setSpeed(0);
 		Delay.msDelay(5);
@@ -427,10 +438,14 @@ public class Navigation extends Thread {
 		rightMotor.setSpeed(motorHigh);
 		int wheelAngle = convertDistance(WHEEL_RADIUS, distance);
 		leftMotor.rotate(wheelAngle, true);
+		// TODO: there seems to be only this line here that is different.
 		rightMotor.rotate(wheelAngle, true);
 	}
 
 	public void travelTailsWithCorrection(int numberOfBlocks) {
+		//TODO: Write some comments here please!
+		Logger.log("travelTailsWithCorrection("+numberOfBlocks+")");
+		Logger.log("No comments in this method. I have no idea what this does. PLEASE WRITE COMMENTS");
 		for (int i = 0; i < numberOfBlocks; i++) {
 
 			double tempTheta = odo.getTheta();
@@ -491,6 +506,9 @@ public class Navigation extends Thread {
 	 * @param stop
 	 */
 	public void turnBy(double angle, boolean stop) {
+		Logger.log("turning by ("+angle+") degrees");
+		
+		
 		leftMotor.setSpeed(motorLocalize);
 		rightMotor.setSpeed(motorLocalize);
 		// the 1.055 is there to improve the accuracy of the turns
@@ -503,6 +521,7 @@ public class Navigation extends Thread {
 	}
 
 	public void turn(String direction) {
+		Logger.log("Turning "+ direction);
 		leftMotor.setSpeed(motorLocalize);
 		rightMotor.setSpeed(motorLocalize);
 		if (direction.toUpperCase() == "CLOCKWISE") {

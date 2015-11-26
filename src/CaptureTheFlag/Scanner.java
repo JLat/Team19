@@ -13,12 +13,14 @@ public class Scanner extends Thread{
 	public Scanner(EV3MediumRegulatedMotor scannerMotor){
 		this.scannerMotor = scannerMotor;
 		this.scannerMotor.resetTachoCount();
+		Logger.log("Created Scanner instance");
 	}
 
 	public void run(){
 		while(true){
 			if(radarMode){
 				scannerMotor.setSpeed(500);
+				// TODO: -Fabrice: are you accounting for the gear reduction here ?
 				scannerMotor.rotateTo(40, true);
 				while(scannerMotor.getPosition()<40){
 				}
@@ -30,6 +32,7 @@ public class Scanner extends Thread{
 	}
 
 	public static void setRadarMode(boolean start){
+		Logger.log("Setting scanner to Scanner Mode");
 		Scanner.radarMode = start;
 	}
 	

@@ -1,0 +1,2 @@
+Log of: 2015/11/26 15:17
+[Tests.LoggerTest.main]: 	this is your message

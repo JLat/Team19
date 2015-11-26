@@ -54,29 +54,29 @@ public class Initializer {
 	 */
 	public static void main(String[] args){
 		
-//		//creating the Logger class;
-//		new Logger("LOG.txt");
-//		
-//		// adding the classes that will produce visible logs.
-//		// TODO: comment out classes that you don't want appearing in the log file.
-//		Logger.addClass("CaptureTheFlag.Brain");
-//		Logger.addClass("CaptureTheFlag.Claw");
-//		Logger.addClass("CaptureTheFlag.Identifier");
-//		Logger.addClass("CaptureTheFlag.Initializer");
-//		//Logger.addClass("CaptureTheFlag.LCDdisplay");
-//		Logger.addClass("CaptureTheFlag.LightLocalization");
-//		Logger.addClass("CaptureTheFlag.LightPoller");
-//		Logger.addClass("CaptureTheFlag.Navigation");
-//		//Logger.addClass("CaptureTheFlag.Odometer");
-//		//Logger.addClass("CaptureTheFlag.Point3D");
-//		Logger.addClass("CaptureTheFlag.Scanner");
-//		Logger.addClass("CaptureTheFlag.Search");
-//		//Logger.addClass("CaptureTheFlag.UltrasonicPoller");
-//		Logger.addClass("CaptureTheFlag.USLocalizer");
-//		
-//		// example of a call.
-//		Logger.log("Starting Program");
-//		Logger.log("Please: add some log calls inside your methods!");
+		//creating the Logger class;
+		new Logger("LOG.txt");
+		
+		// adding the classes that will produce visible logs.
+		// TODO: comment out classes that you don't want appearing in the log file.
+		Logger.addClass("CaptureTheFlag.Brain");
+		Logger.addClass("CaptureTheFlag.Claw");
+		Logger.addClass("CaptureTheFlag.Identifier");
+		Logger.addClass("CaptureTheFlag.Initializer");
+		Logger.addClass("CaptureTheFlag.LCDdisplay");
+		Logger.addClass("CaptureTheFlag.LightLocalization");
+		Logger.addClass("CaptureTheFlag.LightPoller");
+		Logger.addClass("CaptureTheFlag.Navigation");
+		Logger.addClass("CaptureTheFlag.Odometer");
+		Logger.addClass("CaptureTheFlag.Point3D");
+		Logger.addClass("CaptureTheFlag.Scanner");
+		Logger.addClass("CaptureTheFlag.Search");
+		Logger.addClass("CaptureTheFlag.UltrasonicPoller");
+		Logger.addClass("CaptureTheFlag.USLocalizer");
+		
+		// example of a call.
+		Logger.log("Starting Main method - Initializing modules.....");
+		Logger.log("Please: add some log calls inside your methods!");
 		
 		
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
@@ -96,7 +96,10 @@ public class Initializer {
 		Brain controller = new Brain(odometer, navigator, USLoc, Lloc, detector, usPoller, search, claw);
 		int flagType = 3;
 		String[] flags = { "light blue", "red", "yellow", "white", "dark blue" };
-
+		
+		Logger.log("Done initializing components!");
+		
+		
 //		
 //
 //		WifiConnection conn = null;
@@ -136,12 +139,14 @@ public class Initializer {
 		// display.addInfo("red");
 		// display.addInfo("green");
 		// display.addInfo("blue");
+		
+
 		controller.search();
 		display.addInfo("distance", usPoller.getProcessedDistance());
 		
-//		
-//		Logger.log("Closing Program");
-//		Logger.close();
+		
+		Logger.log("Closing Program");
+		Logger.close();
 
 	}
 

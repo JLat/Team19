@@ -25,6 +25,7 @@ public class Claw {
 	 * Open claw
 	 */
 	public void open() {
+		Logger.log("Opening claw");
 		while (!clawMotor.isStalled()) {
 			clawMotor.setSpeed(clawSpeed);
 			clawMotor.forward();
@@ -33,10 +34,13 @@ public class Claw {
 		clawMotor.stop();
 		clawMotor.flt();
 		this.clawMotor.resetTachoCount();
+		Logger.log("Claw opened");
 		
 	}
 	public void partialOpen(){
+		Logger.log("Opening claw partially");
 		clawMotor.rotate(-250);
+		Logger.log("Claw opened");
 	}
 	
 
@@ -44,12 +48,15 @@ public class Claw {
 	 * Close claw around object
 	 */
 	public void close() {
+		Logger.log("Closing claw");
 		while (!clawMotor.isStalled()) {
 			clawMotor.setSpeed(clawSpeed);
 			clawMotor.backward();
 		}
 		LocalEV3.get().getAudio().systemSound(0);
 		clawMotor.stop();
+		Logger.log("Closed claw "+ (hasBlock()? "with" : "without") + " a block");
+		
 	}
 
 	public int getTachoCount() {

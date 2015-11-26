@@ -25,6 +25,7 @@ public class Search {
 		this.display = display;
 		this.detector = detector;
 		this.claw = claw;
+		Logger.log("Created Search instance");
 	}
 	
 	Scanner scan = new Scanner(Initializer.getSensorMotor());
@@ -48,6 +49,7 @@ public class Search {
 	 * @return true if block is found
 	 */
 	public boolean Snake(int startX, int startY) {
+		Logger.log("Starting snake routine");
 
 		// Search = 0 - If no block is found mark tile as empty and don't search
 		// it anymore
@@ -110,6 +112,7 @@ public class Search {
 	 * 
 	 */
 	public int search(int xCorner, int yCorner) {
+		Logger.log("Searching at corner ("+xCorner+","+yCorner+")");
 		nav.goForward(-10);
 
 		// Search function for each tile
@@ -169,6 +172,7 @@ public class Search {
 	}
 
 	public int approachBlock(int xCorner, int yCorner) {
+		Logger.log("approaching block at ("+xCorner+","+yCorner+")");
 		LocalEV3.get().getAudio().systemSound(0);
 		scan.turnTo(0);
 		nav.setSpeeds(100, 100);

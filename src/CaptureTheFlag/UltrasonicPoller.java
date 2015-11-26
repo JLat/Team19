@@ -72,7 +72,7 @@ public class UltrasonicPoller extends Thread {
 		// usDistance provides samples from this instance
 		this.usData = new float[us.sampleSize()];
 		// usData is the buffer in which data are returned
-
+		Logger.log("created UltrasonicPoller instance");
 	}
 
 	public void run() {
@@ -113,6 +113,7 @@ public class UltrasonicPoller extends Thread {
 		this.minusOffset = MinusOffset;
 		this.upperBound = UpperBound;
 		this.lowerBound = LowerBound;
+		Logger.log("Set USPoller parameters to ("+recentListSize+","+PlusOffset+","+MinusOffset+","+UpperBound+","+LowerBound);
 	}
 
 	/**
@@ -207,7 +208,7 @@ public class UltrasonicPoller extends Thread {
 	}
 
 	/**
-	 * Clears values stored inside sensor poller
+	 * Clears values stored inside sensor poller linked-List (cache)
 	 */
 	public void clear() {
 		this.recent.clear();
@@ -228,16 +229,22 @@ public class UltrasonicPoller extends Thread {
 	}
 
 	/**
-	 * @return If sensor poller has max number of values
+	 * @return If sensor poller recent array is full
 	 */
 	public boolean isFull() {
 		return this.recent.size() == this.recentListSize;
 	}
 
+	/** saves the parameters of the USPoller to an array for saving.
+	 * @return and array with the settings.
+	 */
 	public int[] saveParameters() {
 		return new int[] { this.recentListSize, this.plusOffset, this.minusOffset, this.upperBound, this.lowerBound };
 	}
 
+	/** restores the settings of the USPoller with some previously saved settings.
+	 * @param params
+	 */
 	public void restoreParameters(int[] params) {
 		this.setParameters(params[0], params[1], params[2], params[3], params[4]);
 	}

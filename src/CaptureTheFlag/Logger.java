@@ -24,7 +24,8 @@ import java.util.Date;
  */
 public class Logger {
 	public static PrintWriter writer;
-	public static PrintStream ssh;
+	//public static PrintStream ssh;
+	public static long startTime=0;
 
 	public static ArrayList<String> visibleLogs = new ArrayList<String>();
 
@@ -38,19 +39,19 @@ public class Logger {
 		
 		try {
 			writer = new PrintWriter(filePath, "UTF-8");
-			ssh = System.out;
+			//ssh = System.out;
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// print the error.
 			e.printStackTrace();
 		}
 		
-		
+		setStartTime();
 
 		// getting current date and time using Date class
 		DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		Date today = new Date();
 		writer.println("Log of: " + format.format(today));
-		ssh.println("Connected To Robot: " + format.format(today));
+		//ssh.println("Connected To Robot: " + format.format(today));
 	}
 
 	/**
@@ -66,8 +67,8 @@ public class Logger {
 
 		// verifying that the entry's class has logging enabled.
 		if (visibleLogs.contains(className)) {
-			writer.println("[" + className + "." + methodName + "]: \t" + message);
-			ssh.println("[" + className + "." + methodName + "]: \t" + message);
+			writer.println((System.currentTimeMillis()/1000-startTime)+"-["+ className + "." + methodName + "]: \t" + message);
+			//ssh.println("[" + className + "." + methodName + "]: \t" + message);
 		} else {
 
 			// the entry's caller class was not part of the visibleLogs list,
@@ -99,7 +100,13 @@ public class Logger {
 	
 	public static void close(){
 		Logger.writer.close();
-		Logger.ssh.close();
+		//Logger.ssh.close();
 	}
+	public static void setStartTime(){
+		startTime = System.currentTimeMillis()/1000;
+		log("reset time counter");
+	}
+	
+	
 
 }

@@ -11,6 +11,7 @@ public class LightPoller extends Thread {
 	private SampleProvider sensor1, sensor2;
 	private float[] colorData1, colorData2;
 	public boolean colorChanged, calibrated, newLine;
+	//TODO: are you sure that this value for lineDifference is good ? it seems a little high to me.
 	private double woodValue, lineDifference = 100, currentValue1, currentValue2;
 
 	/**
@@ -33,7 +34,11 @@ public class LightPoller extends Thread {
 	 * reads and process the data from sampler
 	 */
 	public void run() {
-		calibrate();
+		// calibrate only once! not at every reading.
+		if(!this.calibrated){
+			calibrate();
+		}
+		
 		while (true) {
 			sensor1.fetchSample(colorData1, 0);
 			currentValue1 = 100*colorData1[0];
@@ -48,7 +53,12 @@ public class LightPoller extends Thread {
 
 	}
 
+	/** takes in 10 readings and sets the floor (wood) value accordingly.
+	 * @NOTE: this assumes that the sensor is facing wood, and not a line.
+	 * 
+	 */
 	public void calibrate() {
+		
 		int calibrationCounter = 0;
 		double temp = 0;
 		while (calibrationCounter < 10) {
@@ -58,6 +68,7 @@ public class LightPoller extends Thread {
 		}
 		this.woodValue = temp / 10;
 		this.calibrated = true;
+		Logger.log("LightPoller calibrated. Wood light value is "+(int)this.woodValue);
 	}
 
 	/*

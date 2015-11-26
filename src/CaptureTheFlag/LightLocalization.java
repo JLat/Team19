@@ -34,6 +34,7 @@ public class LightLocalization implements TimerListener {
 		LightLocalization.odo = navi.getOdometer();
 		this.display = display;
 		this.timer = new Timer(20, this);
+		Logger.log("Created LightLocalization instance");
 	}
 
 	/**
@@ -45,7 +46,7 @@ public class LightLocalization implements TimerListener {
 	 * @param y
 	 */
 	public void doLightLocalization(int x, int y) {
-		
+		Logger.log("Starting first LightLocalization at corner ("+x+","+y+")");
 		//Start detecting lines by calling TimedOut
 		timer.start();
 	
@@ -69,6 +70,7 @@ public class LightLocalization implements TimerListener {
 	 * @param speed
 	 */
 	public void doLightLocalization2(int speed) {
+		Logger.log("Starting second LightLocalization with speed set at "+speed);
 		navi.setSpeeds(speed, speed);
 		while (!lightPoller.seesLine1() || !lightPoller.seesLine2()) {
 			if (lightPoller.seesLine1()) {
@@ -84,6 +86,7 @@ public class LightLocalization implements TimerListener {
 				navi.setSpeeds(0, 0);
 			}
 		}
+		//TODO: what is this ?
 		int lineY = (int)(odo.getY() + 15)/ 30;
 		odo.setY(lineY * 30 - 5);
 		odo.setTheta(0);
@@ -98,6 +101,7 @@ public class LightLocalization implements TimerListener {
 		
 		//Robot must have crossed 4 lines while turning
 		if (angles.size() < 4){
+			Logger.log("Did not detect 4 lines");
 			return;
 		}
 		//If the last angle wraps-around fix it so all the angles 0 to 4 are in increasing order 
@@ -117,6 +121,7 @@ public class LightLocalization implements TimerListener {
 		Delay.msDelay(400);
 		//Set the position to the newly calculated positions of (x,y)
 		odo.setPosition(position, new boolean[] { true, true, true });
+		Logger.log("Setting new position to ("+odo.getX()+","+odo.getY()+","+odo.getThetaDegrees()+")");
 		
 	}
 	
@@ -132,7 +137,8 @@ public class LightLocalization implements TimerListener {
 			LocalEV3.get().getAudio().systemSound(0);
 			//Record that angle if a line is detected
 			angles.add(currentAngle);
-			display.addInfo("CHANGE: " + currentAngle);
+			//display.addInfo("CHANGE: " + currentAngle);
+			Logger.log("lightPoller detected a line at "+(int)odo.getTheta());
 		}
 	}
 }

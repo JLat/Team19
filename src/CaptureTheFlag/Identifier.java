@@ -62,7 +62,7 @@ public class Identifier extends Thread {
 		colorList.add(yellow);
 		colorList.add(white);
 		colorList.add(wood);
-
+		Logger.log("Created Identifier instance");
 	}
 
 	/**

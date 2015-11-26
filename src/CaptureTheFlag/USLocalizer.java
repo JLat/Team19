@@ -35,7 +35,7 @@ public class USLocalizer {
 		this.nav = nav;
 
 		this.lcd = LCD;
-
+		Logger.log("Created USLocalizer instance");
 	}
 	
 	/**
@@ -45,6 +45,7 @@ public class USLocalizer {
 	 *            the distance at which a wall is considered detected.
 	 */
 	public void doLocalization(int Cap) {
+		Logger.log("Starting USLocalization");
 		// keep the previous parameters of the USSpoller into an int array, in
 		// order to restore them after localization is done.
 		int[] savedParameters = uss.saveParameters();
@@ -55,12 +56,8 @@ public class USLocalizer {
 		
 		lcd.addInfo("distance: ");
 //		pause();
-		// record the start time for testing and future improvements in speed of
-		// operation.
-		double t1 = System.currentTimeMillis() / 1000;
-
 		
-
+		
 		// the distance at which a wall is considered detected.
 		dist = Cap;
 
@@ -87,19 +84,15 @@ public class USLocalizer {
 		nav.turnTo(0, true);
 		
 		
-		// add the total time taken to the display.
-		double t2 = System.currentTimeMillis() / 1000 - t1;
-		lcd.addInfo("t2: ", t2);
-		
-		
-		
 		//pause();
 
 		// restore the settings of the USSsensor.
 		uss.restoreParameters(savedParameters);
+		Logger.log("USLocalization complete");
 	}
 
 	private void locateFromWall() {
+		Logger.log("Facing a wall at start of USLocalization");
 		facingWall = true;
 		// Even if this procedure assumes that the robot is facing a wall, we
 		// make sure here:
@@ -128,6 +121,7 @@ public class USLocalizer {
 	}
 
 	private void locateFromOpen() {
+		Logger.log("Facing open space at start of USLocalization");
 		// travel to a wall, call it A, find the next open space, call it B. If
 		// they appear too close to each other, reset.
 		// assumes that the robot is facing open space.
@@ -189,6 +183,9 @@ public class USLocalizer {
 
 		// correct the odometer's heading.
 		double currentHeading = odo.getThetaDegrees();
+		
+		Logger.log("Angle error is estimated to be "+(int)delta+" degrees");
+		
 		odo.setThetaDegrees(currentHeading + delta);
 
 		// in order to minimize the time required for localization, the
@@ -201,6 +198,7 @@ public class USLocalizer {
 			measureX();
 			measureY();
 		}
+		Logger.log("Approximate position is ("+odo.getX()+","+odo.getY()+")");
 
 	}
 
