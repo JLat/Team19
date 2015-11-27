@@ -35,6 +35,7 @@ public class Initializer {
 	// TODO modify this according to how the info will be received via wifi
 	private static String flag = "";
 	
+	public static StartCorner corner;
 	public static int homeZoneBL_X;
 	public static int homeZoneBL_Y;
 	public static int opponentHomeZoneBL_X =4;

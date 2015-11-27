@@ -48,7 +48,7 @@ public class Search {
 	 *            Starting Y coordinate of search area
 	 * @return true if block is found
 	 */
-	public boolean Snake(int startX, int startY) {
+	public boolean Snake(int startX, int startY, String corner) {
 		Logger.log("Starting snake routine");
 
 		// Search = 0 - If no block is found mark tile as empty and don't search
@@ -59,12 +59,35 @@ public class Search {
 
 		
 		//each tiles position relative to bottom left corner from 0 - 5
-		int pos[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, { startX, startY + 90 - 12, 90 },
-				{ startX + 30, startY + 90 - 12, 90 }, { startX + 60, startY + 60, 180 },
+		int pos[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, { startX, startY + 90, 90 },
+				{ startX + 30, startY + 90, 90 }, { startX + 60, startY + 60, 180 },
 				{ startX + 60, startY + 30, 180 } };
 
 		int result = 0;
+		
+		if (corner.equals("TopRight")){
+			for (int i = 0; i < 3; i ++){
+				int temp [] = new int [3];
+				temp = pos[i];
+				pos[i] = pos[i + 3];
+				pos[i+3] = temp;
+			}
+				
+		}
+		
+		
 		for (int i = 0; i < 6; i++) {
+
+			// Offset for walls;
+			if (pos[i][0] <= -30)
+				pos[i][0] += 12;
+			else if (pos[i][0] >= 330)
+				pos[i][0] -= 12;
+			if (pos[i][1] <= -30)
+				pos[i][2] += 12;
+			else if (pos[i][1] >= 330)
+				pos[i][1] -= 12;
+
 			nav.travelTo(pos[i][0], pos[i][1]);
 			nav.turnToAngle(Math.toRadians(pos[i][3]), true);
 			result = search(pos[i][0], pos[i][1]);
