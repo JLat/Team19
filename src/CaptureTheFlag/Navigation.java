@@ -1,5 +1,7 @@
 package CaptureTheFlag;
 
+import org.freedesktop.dbus.test.profile.Log;
+
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
@@ -153,6 +155,10 @@ public class Navigation extends Thread {
 	}
 
 	public void travelToAxis(double xfinal, double yfinal) {
+		int[] savedParameters = usPoller.saveParameters();
+		usPoller.setParameters(5, 30, 30, 50, 0);
+		
+		
 		Logger.log("Travelling to ("+xfinal+","+yfinal+") parallel to the axes");
 		Navigation.xfinal = xfinal;
 		Navigation.yfinal = yfinal;
@@ -185,7 +191,7 @@ public class Navigation extends Thread {
 			if (xDirection >= 0) {
 				this.turnTo(xDirection, true);
 				sensorMotor.rotateTo(0, false);
-				Delay.msDelay(50);
+				Delay.msDelay(200);
 				xFrontEmptySpace = usPoller.getProcessedDistance();
 				sensorMotor.rotateTo(smallLeftAngle, false);
 				Delay.msDelay(50);
@@ -199,7 +205,7 @@ public class Navigation extends Thread {
 			if (yDirection >= 0) {
 				this.turnTo(yDirection, true);
 				sensorMotor.rotateTo(0, false);
-				Delay.msDelay(50);
+				Delay.msDelay(200);
 				yFrontEmptySpace = usPoller.getProcessedDistance();
 				sensorMotor.rotateTo(smallLeftAngle, false);
 				Delay.msDelay(50);
@@ -211,7 +217,7 @@ public class Navigation extends Thread {
 						Math.min(yLeftEmptySpace * 2 / 1.732, yRightEmptySpace * 2 / 1.732));
 			}
 			Logger.log("xEmptySpace is "+xEmptySpace);
-			Logger.log("xEmptySpace is "+xEmptySpace);
+			Logger.log("yEmptySpace is "+yEmptySpace);
 			Initializer.getDisplay().addInfo("xEmpty", xEmptySpace);
 			Initializer.getDisplay().addInfo("yEmpty", yEmptySpace);
 			sensorMotor.rotateTo(0, false);
@@ -228,9 +234,11 @@ public class Navigation extends Thread {
 				}
 				sensorMotor.setSpeed(sensorHigh);
 				sensorMotor.rotateTo(leftAngle, false);
-				double leftSpace = usPoller.getProcessedDistance();
+				double leftSpace = usPoller.getRawDistance();
 				sensorMotor.rotateTo(rightAngle, false);
-				double rightSpace = usPoller.getProcessedDistance();
+				double rightSpace = usPoller.getRawDistance();
+				Logger.log("---------------------leftSpace:"+ leftSpace);
+				Logger.log("---------------------rightSpace:"+ rightSpace);
 				if (leftSpace > rightSpace) {
 					turnTo((odo.getTheta() - Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI), true);
 					sensorMotor.rotateTo(rightAngle, false);
@@ -240,8 +248,10 @@ public class Navigation extends Thread {
 					sensorMotor.rotateTo(leftAngle, false);
 					this.setSpeeds(motorHigh, motorHigh);
 				}
-
-				while (usPoller.getProcessedDistance() < 25) {
+				while (usPoller.getProcessedDistance()>30)
+				Logger.log("before still sees wooden block " + usPoller.getProcessedDistance());
+				while (usPoller.getProcessedDistance() < 30) {
+					Logger.log("still sees wooden block " + usPoller.getProcessedDistance() );
 				}
 				this.setSpeeds(0, 0);
 				sensorMotor.rotateTo(0);
@@ -258,12 +268,14 @@ public class Navigation extends Thread {
 					this.turnTo(xDirection, true);
 					// this.goStraight(Math.min(Math.abs(xfinal - x),
 					// xEmptySpace));
-					travelTileWithCorrection(Math.min((int) (Math.abs(xfinal - x) / 30), (int) (xEmptySpace / 30)));
+					int lineX = (int) (odo.getX() + 15) / 30;
+					travelTileWithCorrection(Math.min((int) (Math.abs(xfinal - lineX*30) / 30), (int) (xEmptySpace / 30)));
 				} else {
 					this.turnTo(yDirection, true);
 					// this.goStraight(Math.min(Math.abs(yfinal - y),
 					// yEmptySpace));
-					travelTileWithCorrection(Math.min((int) (Math.abs(yfinal - y) / 30), (int) (yEmptySpace / 30)));
+					int lineY = (int) (odo.getY() + 15) / 30;
+					travelTileWithCorrection(Math.min((int) (Math.abs(yfinal - lineY*30) / 30), (int) (yEmptySpace / 30)));
 				}
 				// while (usPoller.getProcessedDistance() > 15 &&
 				// this.isMoving()) {
@@ -276,6 +288,7 @@ public class Navigation extends Thread {
 				break;
 			}
 		}
+		usPoller.restoreParameters(savedParameters);
 	}
 
 	public void travelToReverse(double xfinal, double yfinal) {
@@ -460,16 +473,7 @@ public class Navigation extends Thread {
 		Logger.log("No comments in this method. I have no idea what this does. PLEASE WRITE COMMENTS");
 		for (int i = 0; i < numberOfBlocks; i++) {
 
-			double tempTheta = odo.getTheta();
-			if (tempTheta >= Math.toRadians(45) && tempTheta < Math.toRadians(135)) {
-				tempTheta = Math.toRadians(90);
-			} else if (tempTheta >= Math.toRadians(135) && tempTheta < Math.toRadians(225)) {
-				tempTheta = Math.toRadians(180);
-			} else if (tempTheta >= Math.toRadians(225) && tempTheta < Math.toRadians(315)) {
-				tempTheta = Math.toRadians(270);
-			} else {
-				tempTheta = 0;
-			}
+
 			// correction
 
 			setSpeeds(motorHigh, motorHigh);
@@ -478,8 +482,9 @@ public class Navigation extends Thread {
 					|| !(lightPoller.seesLine1() && rightSeeLineAlready)) {
 				if (lightPoller.seesLine2() && !leftSeeLineAlready) {
 					leftSeeLineAlready = true;
+					setSpeeds(0, motorLow);
 					while (!lightPoller.seesLine1() && !rightSeeLineAlready) {
-						setSpeeds(0, motorLow);
+					
 					}
 					setSpeeds(0, 0);
 					rightSeeLineAlready = true;
@@ -487,8 +492,9 @@ public class Navigation extends Thread {
 
 				if (lightPoller.seesLine1() && !rightSeeLineAlready) {
 					rightSeeLineAlready = true;
+					setSpeeds(motorLow, 0);
 					while (!lightPoller.seesLine2() && !leftSeeLineAlready) {
-						setSpeeds(motorLow, 0);
+
 					}
 					setSpeeds(0, 0);
 					leftSeeLineAlready = true;
@@ -504,8 +510,20 @@ public class Navigation extends Thread {
 			int lineY = (int) (odo.getY() + 15) / 30;
 			int lineX = (int) (odo.getX() + 15) / 30;
 			Logger.log("Correction Complete");
-			odo.setY(lineY * 30);
-			odo.setX(lineX * 30);
+			double tempTheta = odo.getTheta();
+			if (tempTheta >= Math.toRadians(45) && tempTheta < Math.toRadians(135)) {
+				tempTheta = Math.toRadians(90);
+				odo.setX(lineX * 30);
+			} else if (tempTheta >= Math.toRadians(135) && tempTheta < Math.toRadians(225)) {
+				tempTheta = Math.toRadians(180);
+				odo.setY(lineY * 30);
+			} else if (tempTheta >= Math.toRadians(225) && tempTheta < Math.toRadians(315)) {
+				tempTheta = Math.toRadians(270);
+				odo.setX(lineX * 30);
+			} else {
+				tempTheta = 0;
+				odo.setY(lineY * 30);
+			}
 			odo.setTheta(tempTheta);
 			Logger.log("Setting new coordinates:  ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
 

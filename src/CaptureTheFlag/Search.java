@@ -59,9 +59,10 @@ public class Search {
 
 		
 		//each tiles position relative to bottom left corner from 0 - 5
-		int pos[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, { startX, startY + 90, 90 },
-				{ startX + 30, startY + 90, 90 }, { startX + 60, startY + 60, 180 },
-				{ startX + 60, startY + 30, 180 } };
+		//TODO: Don't automatically assume a 2x3 grid
+		int pos[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, 
+				//{ startX, startY + 90, 90 },{ startX + 30, startY + 90, 90 }, 
+				{ startX + 60, startY + 60, 180 },{ startX + 60, startY + 30, 180 } };
 
 		int result = 0;
 		
@@ -89,7 +90,7 @@ public class Search {
 				pos[i][1] -= 12;
 
 			nav.travelTo(pos[i][0], pos[i][1]);
-			nav.turnToAngle(Math.toRadians(pos[i][3]), true);
+			nav.turnToAngle(Math.toRadians(pos[i][2]), true);
 			result = search(pos[i][0], pos[i][1]);
 			if (result == 2)
 				return true;
@@ -222,7 +223,6 @@ public class Search {
 			claw.partialOpen();
 			nav.goForward(-8);
 			claw.close();
-			nav.travelTo(xCorner - 10, yCorner);
 			nav.turnTo(odo.getTheta() + Math.PI, true);
 			claw.open();
 

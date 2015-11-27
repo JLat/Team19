@@ -67,8 +67,6 @@ public class LightLocalization implements TimerListener {
 		//display.addInfo("Angles" + Arrays.toString(angles));
 		
 		//Navigate to that position and turn to (0,0) heading
-		navi.travelTo(x, y);
-		navi.turnTo(0, true);
 		Logger.log("--First LightLocalization complete--");
 		Logger.log("robot is now at coordinates: ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
 		//doLightLocalization2(-100);

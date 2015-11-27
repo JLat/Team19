@@ -30,7 +30,7 @@ public class Initializer {
 	public static UltrasonicPoller usPoller;
 	public static LCDdisplay display;
 
-	private static final String SERVER_IP = "192.168.10.200";
+	private static final String SERVER_IP = "192.168.10.101";
 	private static final int TEAM_NUMBER = 19;
 	// TODO modify this according to how the info will be received via wifi
 	private static String flag = "";
@@ -99,34 +99,35 @@ public class Initializer {
 		String[] flags = { "light blue", "red", "yellow", "white", "dark blue" };
 		Logger.log("Done initializing components!");
 		
+		LocalEV3.get().getAudio().systemSound(2);
+		LocalEV3.get().getAudio().systemSound(3);
 		
-//		
-//
-//		WifiConnection conn = null;
-//		try {
-//			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
-//		} catch (IOException e) {
-//			display.addInfo("Connection failed", 0);
-//			LocalEV3.get().getAudio().systemSound(0);
-//		}
-//
-//		// example usage of Transmission class
-//		Transmission t = conn.getTransmission();
-//		if (t == null) {
-//			display.addInfo("Failed to read transmission", 0);
-//		} else {
-//			StartCorner corner = t.startingCorner;
-//			homeZoneBL_X = t.homeZoneBL_X;
-//			homeZoneBL_Y = t.homeZoneBL_Y;
-//			opponentHomeZoneBL_X = t.opponentHomeZoneBL_X;
-//			opponentHomeZoneBL_Y = t.opponentHomeZoneBL_Y;
-//			dropZone_X = t.dropZone_X;
-//			dropZone_Y = t.dropZone_Y;
-//			flagType = t.flagType;
-//			opponentFlagType = t.opponentFlagType;
-//		}
 
-//		detector.setFlag(flags[flagType - 1]);
+		WifiConnection conn = null;
+		try {
+			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+		} catch (IOException e) {
+			display.addInfo("Connection failed", 0);
+			LocalEV3.get().getAudio().systemSound(0);
+		}
+
+		// example usage of Transmission class
+		Transmission t = conn.getTransmission();
+		if (t == null) {
+			display.addInfo("Failed to read transmission", 0);
+		} else {
+			corner = t.startingCorner;
+			homeZoneBL_X = t.homeZoneBL_X;
+			homeZoneBL_Y = t.homeZoneBL_Y;
+			opponentHomeZoneBL_X = t.opponentHomeZoneBL_X;
+			opponentHomeZoneBL_Y = t.opponentHomeZoneBL_Y;
+			dropZone_X = t.dropZone_X;
+			dropZone_Y = t.dropZone_Y;
+			flagType = t.flagType;
+			opponentFlagType = t.opponentFlagType;
+		}
+
+		detector.setFlag(flags[flagType - 1]);
 //		display.clearAdditionalInfo();
 //		display.addInfo("Connected", 0);
 		// display.addInfo(flags[flagType -1], flagType - 1);

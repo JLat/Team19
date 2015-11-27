@@ -87,7 +87,7 @@ public class UltrasonicPoller extends Thread {
 			processDistance();
 
 			try {
-				Thread.sleep(50);
+				Thread.sleep(70);
 			} catch (Exception e) {
 			} // Poor man's timed sampling
 		}
