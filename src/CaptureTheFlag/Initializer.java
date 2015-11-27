@@ -37,10 +37,10 @@ public class Initializer {
 	
 	public static int homeZoneBL_X;
 	public static int homeZoneBL_Y;
-	public static int opponentHomeZoneBL_X;
-	public static int opponentHomeZoneBL_Y;
-	public static int dropZone_X;
-	public static int dropZone_Y;
+	public static int opponentHomeZoneBL_X =4;
+	public static int opponentHomeZoneBL_Y =4;
+	public static int dropZone_X=6;
+	public static int dropZone_Y=5;
 	public static int opponentFlagType;
 
 	/**
@@ -83,7 +83,7 @@ public class Initializer {
 		odometer.start();
 		usPoller = new UltrasonicPoller(10, 10, 20, 100, 0);
 		usPoller.start();
-		LightPoller colorPoller = new LightPoller(colorPort1, colorPort2, "ColorID");
+		LightPoller colorPoller = new LightPoller(colorPort1, colorPort2, "Red");
 		colorPoller.start();
 		Navigation navigator = new Navigation(odometer, leftMotor, rightMotor, colorPoller);
 		Identifier detector = new Identifier(identifierPort, "RGB", flag);
@@ -147,6 +147,7 @@ public class Initializer {
 		
 		Logger.log("Closing Program");
 		Logger.close();
+		System.exit(0);
 
 	}
 

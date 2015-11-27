@@ -113,7 +113,7 @@ public class UltrasonicPoller extends Thread {
 		this.minusOffset = MinusOffset;
 		this.upperBound = UpperBound;
 		this.lowerBound = LowerBound;
-		Logger.log("Set USPoller parameters to ("+recentListSize+","+PlusOffset+","+MinusOffset+","+UpperBound+","+LowerBound);
+		Logger.log("Set USPoller parameters to ("+recentListSize+","+PlusOffset+","+MinusOffset+","+UpperBound+","+LowerBound+")");
 	}
 
 	/**

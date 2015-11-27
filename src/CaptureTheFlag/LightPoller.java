@@ -12,7 +12,7 @@ public class LightPoller extends Thread {
 	private float[] colorData1, colorData2;
 	public boolean colorChanged, calibrated, newLine;
 	//TODO: are you sure that this value for lineDifference is good ? it seems a little high to me.
-	private double woodValue, lineDifference = 100, currentValue1, currentValue2;
+	private double woodValue, lineDifference = 20, currentValue1, currentValue2;
 
 	/**
 	 * Class constructor : makes a new LightPoller
@@ -27,6 +27,7 @@ public class LightPoller extends Thread {
 		this.colorData1 = new float[sensor1.sampleSize()];
 		this.sensor2 = colorSensor2.getMode(mode);
 		this.colorData2 = new float[sensor2.sampleSize()];
+		Logger.log("Created LightPoller instance");
 	}
 
 	/**
@@ -58,7 +59,7 @@ public class LightPoller extends Thread {
 	 * 
 	 */
 	public void calibrate() {
-		
+		Logger.log("Starting LightPoller calibration");
 		int calibrationCounter = 0;
 		double temp = 0;
 		while (calibrationCounter < 10) {
@@ -78,13 +79,13 @@ public class LightPoller extends Thread {
 	 */
 	public boolean seesLine1() {
 		if (calibrated) {
-			return currentValue1 -woodValue > lineDifference;
+			return woodValue - currentValue1 > lineDifference;
 		}
 		return false;
 	}
 	public boolean seesLine2() {
 		if (calibrated) {
-			return currentValue2 - woodValue > lineDifference;
+			return woodValue - currentValue2 > lineDifference;
 		}
 		return false;
 	}

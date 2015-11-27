@@ -52,6 +52,7 @@ public class Logger {
 		Date today = new Date();
 		writer.println("Log of: " + format.format(today));
 		//ssh.println("Connected To Robot: " + format.format(today));
+		writer.flush();
 	}
 
 	/**
@@ -67,8 +68,19 @@ public class Logger {
 
 		// verifying that the entry's class has logging enabled.
 		if (visibleLogs.contains(className)) {
-			writer.println((System.currentTimeMillis()/1000-startTime)+"-["+ className + "." + methodName + "]: \t" + message);
+			String label = (System.currentTimeMillis()/1000-startTime)+"-["+ className + "." + methodName + "]: ";
+			// adding some characters at the end until the label is long enough (this alligns the calls)
+			
+			
+			// this adds enough whitespaces to alligh the messages in the log file.
+			StringBuffer buffer = new StringBuffer(label);
+			while(buffer.length()<55){
+				buffer.append(" ");
+			}
+			
+			writer.println(buffer.toString() + message);
 			//ssh.println("[" + className + "." + methodName + "]: \t" + message);
+			writer.flush();
 		} else {
 
 			// the entry's caller class was not part of the visibleLogs list,

@@ -10,7 +10,7 @@ import lejos.utility.Delay;
  *         of the robot.
  */
 public class USLocalizer {
-	public static float ROTATION_SPEED = 100;
+	public static int ROTATION_SPEED = 100;
 
 	private Odometer odo;
 	private Navigation nav;
@@ -46,13 +46,14 @@ public class USLocalizer {
 	 */
 	public void doLocalization(int Cap) {
 		Logger.log("Starting USLocalization");
+		Logger.log("Motor speed is currently set at "+ROTATION_SPEED);
 		// keep the previous parameters of the USSpoller into an int array, in
 		// order to restore them after localization is done.
 		int[] savedParameters = uss.saveParameters();
 
 		//Old parameters: uss.setParameters(5, 15, 15, 50, 0);
 		//to speed up the process, use a smaller filter size of 10
-		uss.setParameters(5, 10, 15, 50, 0);
+		uss.setParameters(5, 15, 15, 50, 0);
 		
 		lcd.addInfo("distance: ");
 //		pause();
@@ -64,7 +65,7 @@ public class USLocalizer {
 		// Allowing a small delay for the US sensor to initialize properly
 		// before starting to rotate the robot.
 		Delay.msDelay(150);
-		nav.setSpeeds(100, -100);
+		nav.setSpeeds(ROTATION_SPEED, -ROTATION_SPEED);
 		
 		
 		// if the robot initially faces a wall
@@ -80,7 +81,7 @@ public class USLocalizer {
 		processValues();
 		
 		// Travel to a point.
-		nav.travelTo(0, 3);
+		nav.travelTo(0, 5);
 		nav.turnTo(0, true);
 		
 		
@@ -191,6 +192,9 @@ public class USLocalizer {
 		// in order to minimize the time required for localization, the
 		// coordinate checked is the
 		// closest one to the last position of the robot.
+		int[] savedParameters = uss.saveParameters();
+		uss.setParameters(10,5,5,10,0);
+		
 		if (facingWall) {
 			measureY();
 			measureX();
@@ -199,7 +203,8 @@ public class USLocalizer {
 			measureY();
 		}
 		Logger.log("Approximate position is ("+odo.getX()+","+odo.getY()+")");
-
+		
+		uss.restoreParameters(savedParameters);
 	}
 
 	/**
@@ -209,7 +214,8 @@ public class USLocalizer {
 	public void measureX() {
 		// measure the X.
 		nav.turnToAngle(270, true);
-		Delay.msDelay(250);
+		Delay.msDelay(500);
+		Logger.log("US sensor sees distance :" + uss.getProcessedDistance());
 		odo.setX(-30 + sensorOffset + uss.getProcessedDistance());
 	}
 
@@ -220,7 +226,8 @@ public class USLocalizer {
 	public void measureY() {
 		// Measure the Y.
 		nav.turnToAngle(180, true);
-		Delay.msDelay(250);
+		Delay.msDelay(500);
+		Logger.log("US sensor sees distance :" + uss.getProcessedDistance());
 		odo.setY(-30 + sensorOffset + uss.getProcessedDistance());
 	}
 

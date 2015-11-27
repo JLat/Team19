@@ -1,6 +1,7 @@
 package CaptureTheFlag;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import lejos.hardware.ev3.LocalEV3;
 import lejos.utility.Delay;
@@ -21,6 +22,7 @@ public class LightLocalization implements TimerListener {
 	private Timer timer;
 	private double sensorDistance = 9.6;
 	private ArrayList<Double> angles = new ArrayList<Double>();
+	private boolean sawLine = false;
 
 	/**
 	 * Class constructor: takes in a navigator, a lightPoller (color sensor) and a display
@@ -46,23 +48,30 @@ public class LightLocalization implements TimerListener {
 	 * @param y
 	 */
 	public void doLightLocalization(int x, int y) {
-		Logger.log("Starting first LightLocalization at corner ("+x+","+y+")");
+		Logger.log("--Starting first LightLocalization at corner ("+x+","+y+")--");
+		
+		// turn 45 degrees left in order not to skip the first line.
+		navi.turnToAngle(315,true);
+		
 		//Start detecting lines by calling TimedOut
 		timer.start();
-	
+		
+		
+		
 		//Turn by 360 degrees and stop
 		navi.turnBy(2 * Math.PI, true);
 		timer.stop();
 		
 		//Set the odometer to the robot's actual position
 		processAngles(x,y);
-		display.addInfo("Angles" + angles.toString());
+		//display.addInfo("Angles" + Arrays.toString(angles));
 		
 		//Navigate to that position and turn to (0,0) heading
 		navi.travelTo(x, y);
 		navi.turnTo(0, true);
-		
-		doLightLocalization2(-100);
+		Logger.log("--First LightLocalization complete--");
+		Logger.log("robot is now at coordinates: ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
+		//doLightLocalization2(-100);
 	}
 	
 	/**
@@ -70,7 +79,7 @@ public class LightLocalization implements TimerListener {
 	 * @param speed
 	 */
 	public void doLightLocalization2(int speed) {
-		Logger.log("Starting second LightLocalization with speed set at "+speed);
+		Logger.log("--Starting second LightLocalization with speed set at "+speed+"--");
 		navi.setSpeeds(speed, speed);
 		while (!lightPoller.seesLine1() || !lightPoller.seesLine2()) {
 			if (lightPoller.seesLine1()) {
@@ -90,6 +99,8 @@ public class LightLocalization implements TimerListener {
 		int lineY = (int)(odo.getY() + 15)/ 30;
 		odo.setY(lineY * 30 - 5);
 		odo.setTheta(0);
+		Logger.log("--Second Light Localization complete--");
+		Logger.log("robot is now at coordinates: ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
 	}
 	
 	/**
@@ -101,7 +112,7 @@ public class LightLocalization implements TimerListener {
 		
 		//Robot must have crossed 4 lines while turning
 		if (angles.size() < 4){
-			Logger.log("Did not detect 4 lines");
+			Logger.log("!!!!ERROR! Did not detect 4 lines!!!!");
 			return;
 		}
 		//If the last angle wraps-around fix it so all the angles 0 to 4 are in increasing order 
@@ -131,14 +142,36 @@ public class LightLocalization implements TimerListener {
 	 */
 	@Override
 	public void timedOut() {
-		//gets the current angle reported by the Odometer
 		double currentAngle = odo.getTheta();
-		if (lightPoller.seesLine1()) {
-			LocalEV3.get().getAudio().systemSound(0);
+		
+		// checks if the lightPoller sees a line. The boolean variable is used in order not to detect the same line twice.
+		if (lightPoller.seesLine1() && !sawLine) {
+			sawLine = true;
+			//LocalEV3.get().getAudio().systemSound(0);
 			//Record that angle if a line is detected
 			angles.add(currentAngle);
 			//display.addInfo("CHANGE: " + currentAngle);
-			Logger.log("lightPoller detected a line at "+(int)odo.getTheta());
+			Logger.log("lightPoller detected a line at "+(int)odo.getThetaDegrees());
+		}else if (!lightPoller.seesLine1()){
+			// if the sensor doesnt see a line anymore, then allow for the detection of other lines.
+			sawLine = false;
+		}else{
+			
 		}
+			
+		
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
