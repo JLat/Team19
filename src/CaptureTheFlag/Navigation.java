@@ -474,8 +474,8 @@ public class Navigation extends Thread {
 
 			setSpeeds(motorHigh, motorHigh);
 			boolean leftSeeLineAlready = false, rightSeeLineAlready = false;
-			while (!(lightPoller.seesLine2() || leftSeeLineAlready)
-					|| !(lightPoller.seesLine1() || rightSeeLineAlready)) {
+			while (!(lightPoller.seesLine2() && leftSeeLineAlready)
+					|| !(lightPoller.seesLine1() && rightSeeLineAlready)) {
 				if (lightPoller.seesLine2() && !leftSeeLineAlready) {
 					leftSeeLineAlready = true;
 					while (!lightPoller.seesLine1() && !rightSeeLineAlready) {
@@ -491,7 +491,7 @@ public class Navigation extends Thread {
 						setSpeeds(motorLow, 0);
 					}
 					setSpeeds(0, 0);
-					rightSeeLineAlready = true;
+					leftSeeLineAlready = true;
 				}
 				if (leftSeeLineAlready && rightSeeLineAlready) {
 					Sound.twoBeeps();

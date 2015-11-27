@@ -36,8 +36,8 @@ public class Initializer {
 	private static String flag = "";
 	
 	public static StartCorner corner;
-	public static int homeZoneBL_X;
-	public static int homeZoneBL_Y;
+	public static int homeZoneBL_X = 4;
+	public static int homeZoneBL_Y = 4;
 	public static int opponentHomeZoneBL_X =4;
 	public static int opponentHomeZoneBL_Y =4;
 	public static int dropZone_X=6;
@@ -97,7 +97,6 @@ public class Initializer {
 		Brain controller = new Brain(odometer, navigator, USLoc, Lloc, detector, usPoller, search, claw);
 		int flagType = 3;
 		String[] flags = { "light blue", "red", "yellow", "white", "dark blue" };
-		
 		Logger.log("Done initializing components!");
 		
 		

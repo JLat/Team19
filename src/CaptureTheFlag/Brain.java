@@ -38,7 +38,7 @@ public class Brain {
 				
 		USLoc.doLocalization(30);
 		LLoc.doLightLocalization(0,0);
-		adjustStartPosition();
+		//adjustStartPosition();
 		nav.travelToAxis(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
 		nav.turnTo(0,true);
 		LLoc.doLightLocalization((int)odo.getX(),(int) odo.getY());
