@@ -225,7 +225,18 @@ public class Navigation extends Thread {
 			// way
 			boolean yBlocked = (xfinal > x - 1) && (xfinal < x + 1) && (yEmptySpace < 28) && (yEmptySpace > 0);
 			boolean xBlocked = (yfinal > y - 1) && (yfinal < y + 1) && (xEmptySpace < 28) && (xEmptySpace > 0);
-			if (xBlocked || yBlocked) {
+			if (xEmptySpace<25 && yEmptySpace<25){
+				turnTo(yDirection, true);
+				sensorMotor.rotateTo(rightAngle, false);
+				setSpeeds(-motorLow, -motorLow);
+				while (usPoller.getProcessedDistance()>30)
+				while (usPoller.getProcessedDistance() < 30)
+				this.setSpeeds(0, 0);
+				sensorMotor.rotateTo(0, false);
+				turnTo(xDirection, true);
+				goForward(30);
+			}
+			else if (xBlocked || yBlocked) {
 				Sound.beep();
 				if (xBlocked) {
 					turnTo(xDirection, true);
@@ -283,10 +294,25 @@ public class Navigation extends Thread {
 				// }
 				this.setSpeeds(0, 0);
 			}
-			if ((Math.abs(odo.getX() - xfinal) < 0.5) && (Math.abs(odo.getY() - yfinal) < 0.5)) {
+			
+			if ((Math.abs(odo.getX() - xfinal) < 1) && (Math.abs(odo.getY() - yfinal) < 1)) {
 				Sound.buzz();
 				break;
 			}
+			if ((Math.abs(odo.getX() - xfinal) < 30) && (Math.abs(odo.getY() - yfinal) < 30)) {
+				Sound.buzz();
+				travelTo(xfinal, yfinal);
+				break;
+			}
+			if ((Math.abs(odo.getX() - xfinal) < 30) || (Math.abs(odo.getY() - yfinal) < 30)) {
+				if(Math.abs(odo.getX() - xfinal) < 30){
+					travelTo(xfinal, odo.getY());
+				}else{
+					travelTo(odo.getX(), yfinal);
+				}
+				continue;
+			}
+
 		}
 		usPoller.restoreParameters(savedParameters);
 	}
@@ -482,7 +508,7 @@ public class Navigation extends Thread {
 					|| !(lightPoller.seesLine1() && rightSeeLineAlready)) {
 				if (lightPoller.seesLine2() && !leftSeeLineAlready) {
 					leftSeeLineAlready = true;
-					setSpeeds(0, motorLow);
+					setSpeeds(5, motorLow);
 					while (!lightPoller.seesLine1() && !rightSeeLineAlready) {
 					
 					}
@@ -492,7 +518,7 @@ public class Navigation extends Thread {
 
 				if (lightPoller.seesLine1() && !rightSeeLineAlready) {
 					rightSeeLineAlready = true;
-					setSpeeds(motorLow, 0);
+					setSpeeds(motorLow, 5);
 					while (!lightPoller.seesLine2() && !leftSeeLineAlready) {
 
 					}

@@ -102,7 +102,7 @@ public class Initializer {
 		LocalEV3.get().getAudio().systemSound(2);
 		LocalEV3.get().getAudio().systemSound(3);
 		
-
+/*
 		WifiConnection conn = null;
 		try {
 			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
@@ -126,6 +126,7 @@ public class Initializer {
 			flagType = t.flagType;
 			opponentFlagType = t.opponentFlagType;
 		}
+		*/
 
 		detector.setFlag(flags[flagType - 1]);
 //		display.clearAdditionalInfo();

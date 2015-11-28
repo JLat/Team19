@@ -38,22 +38,24 @@ public class Brain {
 				
 		USLoc.doLocalization(30);
 		LLoc.doLightLocalization(0,0);
-		//adjustStartPosition();
-		nav.travelTo(0, -3);
+		adjustStartPosition();
+		nav.travelTo(0, 0);
 		
 		nav.travelToAxis(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
 		nav.turnTo(0,true);
 		LLoc.doLightLocalization((int)odo.getX(),(int) odo.getY());
+		nav.travelTo(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
+		nav.turnTo(0, true);
 		LLoc.doLightLocalization2(-100);
 		search.Snake(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30,"BottomLeft");
+
 		nav.turnTo(odo.getTheta() + Math.PI, true);
 		claw.partialOpen();
 		nav.goForward(-10);
 		claw.close();
 		nav.travelToAxis(Initializer.dropZone_X*30, Initializer.dropZone_Y*30);
 		claw.open();
-		nav.travelToAxis(120,120);
-		nav.turnTo(0, true);
+
 		
 
 		
