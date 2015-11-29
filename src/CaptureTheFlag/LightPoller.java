@@ -12,7 +12,7 @@ public class LightPoller extends Thread {
 	private float[] colorData1, colorData2;
 	public boolean colorChanged, calibrated, newLine;
 	//TODO: are you sure that this value for lineDifference is good ? it seems a little high to me.
-	private double woodValue, lineDifference = 20, currentValue1, currentValue2;
+	private double woodValue, lineDifference = 25, currentValue1, currentValue2;
 
 	/**
 	 * Class constructor : makes a new LightPoller

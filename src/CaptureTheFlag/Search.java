@@ -61,7 +61,7 @@ public class Search {
 		//each tiles position relative to bottom left corner from 0 - 5
 		//TODO: Don't automatically assume a 2x3 grid
 		int pos[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, 
-				//{ startX, startY + 90, 90 },{ startX + 30, startY + 90, 90 }, 
+				{ startX, startY + 90, 90 },{ startX + 30, startY + 90, 90 }, 
 				{ startX + 60, startY + 60, 180 },{ startX + 60, startY + 30, 180 } };
 
 		int result = 0;
@@ -82,15 +82,18 @@ public class Search {
 			// Offset for walls;
 			if (pos[i][0] <= -30)
 				pos[i][0] += 12;
-			else if (pos[i][0] >= 330)
+			else if (pos[i][0] >= 300)
 				pos[i][0] -= 12;
 			if (pos[i][1] <= -30)
-				pos[i][2] += 12;
+				pos[i][1] += 12;
 			else if (pos[i][1] >= 330)
 				pos[i][1] -= 12;
 
 			nav.travelTo(pos[i][0], pos[i][1]);
-			nav.turnToAngle(Math.toRadians(pos[i][2]), true);
+			nav.turnTo(Math.toRadians(pos[i][2]), true);
+			
+			if (claw.isClosed())
+				claw.open();
 			result = search(pos[i][0], pos[i][1]);
 			if (result == 2)
 				return true;
@@ -98,29 +101,7 @@ public class Search {
 				i--;
 		}
 		return false;
-		
-
-		/*
-		 * 
-		 * for (int i = 0; i < 2; i++) { nav.travelTo(startX, startY + 30 * i);
-		 * nav.turnTo(0,true); result = search(startX, startY + 30 * i); if
-		 * (result == 2) return true; else if (result == 1) i--; }
-		 * 
-		 * // TODO: NOT NEEDED FOR DEMO;
-		 * 
-		 * nav.travelTo(startX, startY + 90 - 12); nav.turnTo(Math.PI / 2,
-		 * true);
-		 * 
-		 * for (int i = 0; i < 2; i++) { if (search(startX+ 30 * i, startY + 90
-		 * - 12) == 2) return true; }
-		 * 
-		 * nav.travelTo(startX + 60, startY + 70); for (int i = 0; i < 2; i++) {
-		 * nav.travelTo(startX + 60, startY + 60 - (30 * i));
-		 * nav.turnTo(Math.PI, true); result = search(startX + 60, startY + 60 -
-		 * (30 * i)); if (result == 2) return true; else if (result == 1) i--; }
-		 */
-
-		
+	
 	}
 
 	/**
@@ -213,18 +194,16 @@ public class Search {
 
 			//In front of block, exit search
 			LocalEV3.get().getAudio().systemSound(1);
-			
+			Logger.log("Flag found in ("+xCorner + "," + yCorner+")");
 			return 2;
 		} else {
 			LocalEV3.get().getAudio().systemSound(0);
-
+			Logger.log("NON Flag found in ("+xCorner + "," + yCorner+")");
 			// Remove block from zone then research zone
 			nav.turnTo(odo.getTheta() + Math.PI, true);
 			claw.partialOpen();
 			nav.goForward(-8);
 			claw.close();
-			nav.turnTo(odo.getTheta() + Math.PI, true);
-			claw.open();
 
 			return 1;
 		}

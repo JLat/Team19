@@ -15,8 +15,8 @@ public class Navigation extends Thread {
 	public static final double WHEEL_RADIUS = 2.1;
 	public static final double TRACK = 9.85, lightSensorOffset = 4.6;
 	// Changed the motorLow to 150 it was previously 100
-	public static final int motorHigh = 300, motorLow = 100, motorLocalize = 150, leftAngle = 250, rightAngle = -250, sensorHigh = 500, turningSpeed = 200,
-			sensorLow = 120, smallLeftAngle = 84, smallRightAngle = -84;
+	public static final int motorHigh = 250, motorLow = 100, motorLocalize = 150, leftAngle = 250, rightAngle = -250,
+			sensorHigh = 500, turningSpeed = 200, sensorLow = 120, smallLeftAngle = 84, smallRightAngle = -84;
 	private static UltrasonicPoller usPoller;
 	private static LightPoller lightPoller;
 	public static boolean isNavigating = false;
@@ -61,12 +61,12 @@ public class Navigation extends Thread {
 	 * @param rSpd
 	 */
 	public synchronized void setSpeeds(float lSpd, float rSpd) {
-		if(lSpd==0 && rSpd==0){
+		if (lSpd == 0 && rSpd == 0) {
 			Logger.log("Stopping motors");
-		}else{
-			Logger.log("Setting motor speeds to ("+lSpd+";"+rSpd+")");
+		} else {
+			Logger.log("Setting motor speeds to (" + lSpd + ";" + rSpd + ")");
 		}
-		
+
 		Navigation.leftMotor.setSpeed(lSpd);
 		Navigation.rightMotor.setSpeed(rSpd);
 		if (lSpd < 0)
@@ -80,10 +80,10 @@ public class Navigation extends Thread {
 	}
 
 	public synchronized void setSpeeds(int lSpd, int rSpd) {
-		if(lSpd==0 && rSpd==0){
+		if (lSpd == 0 && rSpd == 0) {
 			Logger.log("Stopping motors");
-		}else{
-			Logger.log("Setting motor speeds to ("+lSpd+";"+rSpd+")");
+		} else {
+			Logger.log("Setting motor speeds to (" + lSpd + ";" + rSpd + ")");
 		}
 		Navigation.leftMotor.setSpeed(lSpd);
 		Navigation.rightMotor.setSpeed(rSpd);
@@ -106,7 +106,7 @@ public class Navigation extends Thread {
 	 * @param yfinal
 	 */
 	public void travelTo(double xfinal, double yfinal) {
-		Logger.log("Travelling to ("+xfinal+";"+yfinal+")");
+		Logger.log("Travelling to (" + xfinal + ";" + yfinal + ")");
 		isNavigating = true;
 		double x = odo.getX(); // current positions
 		double y = odo.getY();
@@ -156,10 +156,9 @@ public class Navigation extends Thread {
 
 	public void travelToAxis(double xfinal, double yfinal) {
 		int[] savedParameters = usPoller.saveParameters();
-		usPoller.setParameters(5, 30, 30, 50, 0);
-		
-		
-		Logger.log("Travelling to ("+xfinal+","+yfinal+") parallel to the axes");
+		usPoller.setParameters(5, 25, 25, 100, 0);
+
+		Logger.log("Travelling to (" + xfinal + "," + yfinal + ") parallel to the axes");
 		Navigation.xfinal = xfinal;
 		Navigation.yfinal = yfinal;
 		while (true) {
@@ -216,8 +215,8 @@ public class Navigation extends Thread {
 				yEmptySpace = Math.min(yFrontEmptySpace,
 						Math.min(yLeftEmptySpace * 2 / 1.732, yRightEmptySpace * 2 / 1.732));
 			}
-			Logger.log("xEmptySpace is "+xEmptySpace);
-			Logger.log("yEmptySpace is "+yEmptySpace);
+			Logger.log("xEmptySpace is " + xEmptySpace);
+			Logger.log("yEmptySpace is " + yEmptySpace);
 			Initializer.getDisplay().addInfo("xEmpty", xEmptySpace);
 			Initializer.getDisplay().addInfo("yEmpty", yEmptySpace);
 			sensorMotor.rotateTo(0, false);
@@ -225,18 +224,18 @@ public class Navigation extends Thread {
 			// way
 			boolean yBlocked = (xfinal > x - 1) && (xfinal < x + 1) && (yEmptySpace < 28) && (yEmptySpace > 0);
 			boolean xBlocked = (yfinal > y - 1) && (yfinal < y + 1) && (xEmptySpace < 28) && (xEmptySpace > 0);
-			if (xEmptySpace<25 && yEmptySpace<25){
+			/*if (xEmptySpace < 25 && yEmptySpace < 25) {
 				turnTo(yDirection, true);
 				sensorMotor.rotateTo(rightAngle, false);
 				setSpeeds(-motorLow, -motorLow);
-				while (usPoller.getProcessedDistance()>30)
-				while (usPoller.getProcessedDistance() < 30)
-				this.setSpeeds(0, 0);
+				while (usPoller.getProcessedDistance() > 30)
+					while (usPoller.getProcessedDistance() < 30)
+						this.setSpeeds(0, 0);
 				sensorMotor.rotateTo(0, false);
 				turnTo(xDirection, true);
 				goForward(30);
-			}
-			else if (xBlocked || yBlocked) {
+			} else*/ 
+				if (xBlocked || yBlocked) {
 				Sound.beep();
 				if (xBlocked) {
 					turnTo(xDirection, true);
@@ -248,8 +247,8 @@ public class Navigation extends Thread {
 				double leftSpace = usPoller.getRawDistance();
 				sensorMotor.rotateTo(rightAngle, false);
 				double rightSpace = usPoller.getRawDistance();
-				Logger.log("---------------------leftSpace:"+ leftSpace);
-				Logger.log("---------------------rightSpace:"+ rightSpace);
+				Logger.log("---------------------leftSpace:" + leftSpace);
+				Logger.log("---------------------rightSpace:" + rightSpace);
 				if (leftSpace > rightSpace) {
 					turnTo((odo.getTheta() - Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI), true);
 					sensorMotor.rotateTo(rightAngle, false);
@@ -259,10 +258,10 @@ public class Navigation extends Thread {
 					sensorMotor.rotateTo(leftAngle, false);
 					this.setSpeeds(motorHigh, motorHigh);
 				}
-				while (usPoller.getProcessedDistance()>30)
-				Logger.log("before still sees wooden block " + usPoller.getProcessedDistance());
+				while (usPoller.getProcessedDistance() > 30)
+					Logger.log("before still sees wooden block " + usPoller.getProcessedDistance());
 				while (usPoller.getProcessedDistance() < 30) {
-					Logger.log("still sees wooden block " + usPoller.getProcessedDistance() );
+					Logger.log("still sees wooden block " + usPoller.getProcessedDistance());
 				}
 				this.setSpeeds(0, 0);
 				sensorMotor.rotateTo(0);
@@ -280,13 +279,15 @@ public class Navigation extends Thread {
 					// this.goStraight(Math.min(Math.abs(xfinal - x),
 					// xEmptySpace));
 					int lineX = (int) (odo.getX() + 15) / 30;
-					travelTileWithCorrection(Math.min((int) (Math.abs(xfinal - lineX*30) / 30), (int) (xEmptySpace / 30)));
+					travelTileWithCorrection(
+							Math.min((int) (Math.abs(xfinal - lineX * 30) / 30), (int) (xEmptySpace / 30)));
 				} else {
 					this.turnTo(yDirection, true);
 					// this.goStraight(Math.min(Math.abs(yfinal - y),
 					// yEmptySpace));
 					int lineY = (int) (odo.getY() + 15) / 30;
-					travelTileWithCorrection(Math.min((int) (Math.abs(yfinal - lineY*30) / 30), (int) (yEmptySpace / 30)));
+					travelTileWithCorrection(
+							Math.min((int) (Math.abs(yfinal - lineY * 30) / 30), (int) (yEmptySpace / 30)));
 				}
 				// while (usPoller.getProcessedDistance() > 15 &&
 				// this.isMoving()) {
@@ -294,7 +295,7 @@ public class Navigation extends Thread {
 				// }
 				this.setSpeeds(0, 0);
 			}
-			
+
 			if ((Math.abs(odo.getX() - xfinal) < 1) && (Math.abs(odo.getY() - yfinal) < 1)) {
 				Sound.buzz();
 				break;
@@ -305,9 +306,9 @@ public class Navigation extends Thread {
 				break;
 			}
 			if ((Math.abs(odo.getX() - xfinal) < 30) || (Math.abs(odo.getY() - yfinal) < 30)) {
-				if(Math.abs(odo.getX() - xfinal) < 30){
+				if (Math.abs(odo.getX() - xfinal) < 30) {
 					travelTo(xfinal, odo.getY());
-				}else{
+				} else {
 					travelTo(odo.getX(), yfinal);
 				}
 				continue;
@@ -318,7 +319,7 @@ public class Navigation extends Thread {
 	}
 
 	public void travelToReverse(double xfinal, double yfinal) {
-		Logger.log("Travelling to ("+xfinal+","+yfinal+") in reverse");
+		Logger.log("Travelling to (" + xfinal + "," + yfinal + ") in reverse");
 		isNavigating = true;
 		double x = odo.getX(); /* current positions */
 		double y = odo.getY();
@@ -355,7 +356,8 @@ public class Navigation extends Thread {
 	 * @param stop
 	 */
 	public synchronized void turnTo(double thetaInRadians, boolean stop) {
-		Logger.log("Turning to "+Math.toDegrees(thetaInRadians)+" degrees "+ (stop? " with stop":" without stop"));
+		Logger.log(
+				"Turning to " + Math.toDegrees(thetaInRadians) + " degrees " + (stop ? " with stop" : " without stop"));
 		double theta = thetaInRadians;
 		double turnDeg, currentDeg = odo.getTheta(); // initiate variables
 		boolean isTurningClockwise;
@@ -375,7 +377,8 @@ public class Navigation extends Thread {
 		leftMotor.setSpeed(0);
 		rightMotor.setSpeed(0);
 		Delay.msDelay(5);
-		// TODO: this speed cannot be changed. This is most inconvenient when trying to localize fast, for example.
+		// TODO: this speed cannot be changed. This is most inconvenient when
+		// trying to localize fast, for example.
 		leftMotor.setSpeed(turningSpeed);
 		rightMotor.setSpeed(turningSpeed);
 
@@ -421,7 +424,7 @@ public class Navigation extends Thread {
 	 * @param stop
 	 */
 	public void turnDegrees(double angle, boolean stop) {
-		turnToAngle((this.odo.getThetaDegrees()+angle)%360, stop);
+		turnToAngle((this.odo.getThetaDegrees() + angle) % 360, stop);
 	}
 
 	public void turnRadians(double angle, boolean stop) {
@@ -468,7 +471,7 @@ public class Navigation extends Thread {
 	 * @param distance
 	 */
 	public synchronized void goForward(double distance) {
-		Logger.log("Moving forward "+distance+" cm ");
+		Logger.log("Moving forward " + distance + " cm ");
 		leftMotor.setSpeed(0);
 		rightMotor.setSpeed(0);
 		Delay.msDelay(5);
@@ -480,8 +483,8 @@ public class Navigation extends Thread {
 	}
 
 	public synchronized void goStraight(double distance) {
-		//TODO: what is the difference between goStraight and goForward ?!
-		Logger.log("Moving forward "+distance+" cm ");
+		// TODO: what is the difference between goStraight and goForward ?!
+		Logger.log("Moving forward " + distance + " cm ");
 		leftMotor.setSpeed(0);
 		rightMotor.setSpeed(0);
 		Delay.msDelay(5);
@@ -494,11 +497,10 @@ public class Navigation extends Thread {
 	}
 
 	public void travelTileWithCorrection(int numberOfBlocks) {
-		//TODO: Write some comments here please!
-		Logger.log("travelTailsWithCorrection("+numberOfBlocks+")");
-		Logger.log("No comments in this method. I have no idea what this does. PLEASE WRITE COMMENTS");
+		// TODO: Write some comments here please!
+		Logger.log("travelTailsWithCorrection(" + numberOfBlocks + ")");
+		Logger.log("Travelling forward for " + numberOfBlocks + " tiles with correction");
 		for (int i = 0; i < numberOfBlocks; i++) {
-
 
 			// correction
 
@@ -506,11 +508,12 @@ public class Navigation extends Thread {
 			boolean leftSeeLineAlready = false, rightSeeLineAlready = false;
 			while (!(lightPoller.seesLine2() && leftSeeLineAlready)
 					|| !(lightPoller.seesLine1() && rightSeeLineAlready)) {
+
 				if (lightPoller.seesLine2() && !leftSeeLineAlready) {
 					leftSeeLineAlready = true;
 					setSpeeds(5, motorLow);
 					while (!lightPoller.seesLine1() && !rightSeeLineAlready) {
-					
+
 					}
 					setSpeeds(0, 0);
 					rightSeeLineAlready = true;
@@ -531,7 +534,7 @@ public class Navigation extends Thread {
 				}
 
 			}
-			
+
 			goForward(lightSensorOffset);
 			int lineY = (int) (odo.getY() + 15) / 30;
 			int lineX = (int) (odo.getX() + 15) / 30;
@@ -551,9 +554,11 @@ public class Navigation extends Thread {
 				odo.setY(lineY * 30);
 			}
 			odo.setTheta(tempTheta);
-			Logger.log("Setting new coordinates:  ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
+			Logger.log(
+					"Setting new coordinates:  (" + odo.getX() + ";" + odo.getY() + ";" + odo.getThetaDegrees() + ")");
 
 		}
+
 	}
 
 	/**
@@ -565,9 +570,8 @@ public class Navigation extends Thread {
 	 * @param stop
 	 */
 	public void turnBy(double angle, boolean stop) {
-		Logger.log("turning by "+Math.toDegrees(angle)+" degrees");
-		
-		
+		Logger.log("turning by " + Math.toDegrees(angle) + " degrees");
+
 		leftMotor.setSpeed(motorLocalize);
 		rightMotor.setSpeed(motorLocalize);
 		// the 1.055 is there to improve the accuracy of the turns
@@ -580,7 +584,7 @@ public class Navigation extends Thread {
 	}
 
 	public void turn(String direction) {
-		Logger.log("Turning "+ direction);
+		Logger.log("Turning " + direction);
 		leftMotor.setSpeed(motorLocalize);
 		rightMotor.setSpeed(motorLocalize);
 		if (direction.toUpperCase() == "CLOCKWISE") {

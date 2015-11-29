@@ -33,28 +33,31 @@ public class Brain {
 	 */
 		
 	public void search(){
+		
+		
 		Logger.log("Starting Search routine (main program)");
 		Logger.setStartTime();
-				
 		USLoc.doLocalization(30);
 		LLoc.doLightLocalization(0,0);
-		adjustStartPosition();
 		nav.travelTo(0, 0);
+		adjustStartPosition();
+		
 		
 		nav.travelToAxis(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
 		nav.turnTo(0,true);
-		LLoc.doLightLocalization((int)odo.getX(),(int) odo.getY());
-		nav.travelTo(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
-		nav.turnTo(0, true);
+		Logger.log("Prior to search localiztion:  ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
 		LLoc.doLightLocalization2(-100);
+		
+		Logger.log("Starting Searching Algorithm");
 		search.Snake(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30,"BottomLeft");
 
 		nav.turnTo(odo.getTheta() + Math.PI, true);
 		claw.partialOpen();
 		nav.goForward(-10);
 		claw.close();
+		
 		nav.travelToAxis(Initializer.dropZone_X*30, Initializer.dropZone_Y*30);
-		claw.open();
+		nav.turnTo(Math.toRadians(225), true);
 
 		
 
@@ -62,19 +65,17 @@ public class Brain {
 	}
 	
 	public void adjustStartPosition() {
-		odo.setX(Initializer.corner.getX());
-		odo.setY(Initializer.corner.getY());
-		switch (Initializer.corner.getId()) {
-		case 1:
-			odo.setTheta(0);
-		case 2:
-			odo.setTheta(Math.PI / 2);
-		case 3:
-			odo.setTheta(Math.PI);
-		case 4:
-			odo.setTheta(3 * Math.PI / 2);
-		}
-
+		Logger.log("Current coordinates are:  ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
+		odo.setX(odo.getX() + Initializer.corner.getX());
+		odo.setY(odo.getY() + Initializer.corner.getY());
+		if(Initializer.corner.getId() ==2 )
+			odo.setTheta((odo.getTheta() - Math.PI/2  + 2*Math.PI)% (2*Math.PI));
+		else if (Initializer.corner.getId() ==3 )
+			odo.setTheta((odo.getTheta() - Math.PI  + 2*Math.PI)% (2*Math.PI));
+		else if (Initializer.corner.getId() ==4 )
+			odo.setTheta((odo.getTheta()-  3 * Math.PI / 2  + 2*Math.PI)% (2*Math.PI));
+		
+		Logger.log("Setting new coordinates:  ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
 	}
 	
 	

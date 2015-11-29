@@ -82,21 +82,22 @@ public class LightLocalization implements TimerListener {
 		while (!lightPoller.seesLine1() || !lightPoller.seesLine2()) {
 			if (lightPoller.seesLine1()) {
 				while (!lightPoller.seesLine2()) {
-					navi.setSpeeds(speed, 0);
+					navi.setSpeeds(speed, -5);
 				}
 				navi.setSpeeds(0, 0);
 			}
 			if (lightPoller.seesLine2()) {
 				while (!lightPoller.seesLine1()) {
-					navi.setSpeeds(0, speed);
+					navi.setSpeeds(-5, speed);
 				}
 				navi.setSpeeds(0, 0);
 			}
 		}
 		//TODO: what is this ?
-		int lineY = (int)(odo.getY() + 15)/ 30;
-		odo.setY(lineY * 30 - 5);
 		odo.setTheta(0);
+		navi.goForward(4.6);
+		int lineY = (int) (odo.getY() + 15) / 30;
+		odo.setY(lineY*30);
 		Logger.log("--Second Light Localization complete--");
 		Logger.log("robot is now at coordinates: ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
 	}
