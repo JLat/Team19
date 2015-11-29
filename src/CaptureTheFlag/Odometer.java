@@ -7,8 +7,11 @@ package CaptureTheFlag;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.MotorPort;
 
+/**
+ * Odometer class: Extends Thread to update the (x,y) position and heading theta of the robot every 25 ms
+ *
+ */
 public class Odometer extends Thread {
 	// robot position
 	private double x, y, theta, thetaDeg;
@@ -34,7 +37,12 @@ public class Odometer extends Thread {
 	// lock object for mutual exclusion
 	private Object lock;
 
-	// default constructor
+	/**
+	 * Class constructor
+	 * 
+	 * @param leftmotor
+	 * @param rightmotor
+	 */
 	public Odometer(EV3LargeRegulatedMotor leftmotor,
 			EV3LargeRegulatedMotor rightmotor) {
 		x = 0.0; //initializing values to zero
@@ -46,7 +54,9 @@ public class Odometer extends Thread {
 
 	}
 
-	// run method (required for Thread)
+	/**
+	 * run method (required for Thread)
+	 */
 	public void run() {
 		long updateStart, updateEnd;
 		double distL, distR, deltaD, deltaT, dX, dY;
@@ -100,7 +110,12 @@ public class Odometer extends Thread {
 		}
 	}
 
-	// accessors
+	/**
+	 * Get methods to access position (x,y) and heading theta
+	 * 
+	 * @param position
+	 * @param update
+	 */
 	public void getPosition(double[] position, boolean[] update) {
 		// ensure that the values don't change while the odometer is running
 		synchronized (lock) {
@@ -152,7 +167,12 @@ public class Odometer extends Thread {
 		return result;
 	}
 
-	// mutators
+	/**
+	 * Set methods to modify positions (x,y) and heading theta
+	 * 
+	 * @param position
+	 * @param update
+	 */
 	public void setPosition(double[] position, boolean[] update) {
 		// ensure that the values don't change while the odometer is running
 		synchronized (lock) {

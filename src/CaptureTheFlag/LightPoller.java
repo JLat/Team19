@@ -5,6 +5,11 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 
+/**
+ * LightPoller class : Extends Thread and fetches the RGB values from a colorSensor
+ * 					   every 20 ms. 
+ *
+ */
 public class LightPoller extends Thread {
 	private SensorModes colorSensor1;
 	private SensorModes colorSensor2;
@@ -72,10 +77,11 @@ public class LightPoller extends Thread {
 		Logger.log("LightPoller calibrated. Wood light value is "+(int)this.woodValue);
 	}
 
-	/*
+	/**
 	 * Returns the boolean value of whether or not a color change has been
 	 * detected by comparing the previous sample stored in a stack to the
 	 * current one.
+	 * @return
 	 */
 	public boolean seesLine1() {
 		if (calibrated) {

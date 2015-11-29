@@ -7,6 +7,10 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 
+/**
+ * Identifier class: Extends Thread is responsible to identify the wanted flag through its RGB color ratio
+ *
+ */
 public class Identifier extends Thread {
 
 	private SensorModes colorSensor;
@@ -16,7 +20,6 @@ public class Identifier extends Thread {
 	private double error;
 	private Point3D dark_blue, light_blue, red, yellow, white, wood;
 	private ArrayList<Point3D> colorList;
-
 	private String flagType;
 
 	// using 3d Points for the colors.
@@ -205,6 +208,7 @@ public class Identifier extends Thread {
 	public double getBoverR(){
 		return bValue/rValue;
 	}
+	
 	/**
 	 * get method to check if flag is found
 	 * 

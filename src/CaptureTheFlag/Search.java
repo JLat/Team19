@@ -1,6 +1,8 @@
 package CaptureTheFlag;
 
-import lejos.hardware.Sound;
+/**
+ * Search class: responsible for snaking through the tiles to find the flag
+ */
 import lejos.hardware.ev3.LocalEV3;
 
 public class Search {

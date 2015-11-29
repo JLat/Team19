@@ -6,6 +6,10 @@ import lejos.hardware.lcd.TextLCD;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
+/**
+ * LCDdisplay class: responsible for displaying wanted information on the screen
+ *
+ */
 public class LCDdisplay implements TimerListener {
 	public static final int LCD_REFRESH = 100;
 	private Odometer odo;
@@ -32,7 +36,10 @@ public class LCDdisplay implements TimerListener {
 		// start the timer
 		lcdTimer.start();
 	}
-
+	
+	/**
+	 * Inherited from TimerListener: Updates the (x,y) position and the heading every 100 ms
+	 */
 	public void timedOut() {
 		odo.getPosition(pos, new boolean[]{true,true,true});
 		LCD.clear();
@@ -75,14 +82,28 @@ public class LCDdisplay implements TimerListener {
 		}
 	}
 	
-	//Add info to be displayed onto screen
+	/**
+	 *Add info to be displayed onto screen 
+	 * @param label
+	 * @param data
+	 */
 	public void addInfo(String label, double data) {
 		this.additionalInfo.add(label +": "+ formattedDoubleToString(data,2));
 		
 	}
+	
+	/**
+	 * Add info to be displayed onto screen
+	 * @param info
+	 */
 	public void addInfo(String info) {
 		this.additionalInfo.add(info);
 	}
+	
+	/**
+	 *Remove info from the screen 
+	 * @param info
+	 */
 	public void removeInfo(String info){
 		for(String element:this.additionalInfo){
 			if(element.contains(info)){
@@ -91,12 +112,19 @@ public class LCDdisplay implements TimerListener {
 		}
 	}
 
-	//Clear additional information on lcd display
+	/**
+	 * Clear additional information on lcd display
+	 */
 	public void clearAdditionalInfo() {
 		this.additionalInfo.clear();
 	}
 	
-
+	/**
+	 * Format info on screen
+	 * @param x
+	 * @param places
+	 * @return
+	 */
 	private static String formattedDoubleToString(double x, int places) {
 		String result = "";
 		String stack = "";

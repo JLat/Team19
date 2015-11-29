@@ -2,20 +2,18 @@ package CaptureTheFlag;
 
 import java.util.LinkedList;
 
-import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
 
+/**
+ * UltrasonicPoller class: Wrapper for the US sensor, effectively smoothing
+ * out the values and allowing control of the smoothing from an exterior
+ * class, as well as a mean of getting the processed value.
+ */
 public class UltrasonicPoller extends Thread {
 
-	/**
-	 * this class is to be a wrapper for the US sensor, effectively smoothing
-	 * out the values and allowing control of the smoothing from an exterior
-	 * class, as well as a mean of getting the processed value.
-	 * 
-	 */
 	private static Port usPort;
 	private SampleProvider us;
 	private float[] usData;
@@ -74,7 +72,10 @@ public class UltrasonicPoller extends Thread {
 		// usData is the buffer in which data are returned
 		Logger.log("created UltrasonicPoller instance");
 	}
-
+	
+	/**
+	 * Starts polling distance data
+	 */
 	public void run() {
 		this.recent.clear();
 		while (true) {

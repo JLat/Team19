@@ -6,7 +6,11 @@ import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.utility.Delay;
-
+/**
+ * 
+ * Navigation class: manages the motion of the robot: also does obstacle avoidance and odometry correction
+ *
+ */
 public class Navigation extends Thread {
 	private static Odometer odo;
 	private static EV3LargeRegulatedMotor leftMotor, rightMotor;
@@ -21,10 +25,13 @@ public class Navigation extends Thread {
 	private static LightPoller lightPoller;
 	public static boolean isNavigating = false;
 
+
 	/**
-	 * Navigator constructor
+	 * First class constructor:
 	 * 
 	 * @param odo
+	 * @param leftMotor
+	 * @param rightMotor
 	 */
 	public Navigation(Odometer odo, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor) {
 		Navigation.odo = odo;
@@ -37,6 +44,14 @@ public class Navigation extends Thread {
 		Logger.log("Created Navigation instance");
 	}
 
+	/**
+	 * Second class constructor
+	 *  
+	 * @param odo
+	 * @param leftMotor
+	 * @param rightMotor
+	 * @param lightPoller
+	 */
 	public Navigation(Odometer odo, EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
 			LightPoller lightPoller) {
 		Navigation.odo = odo;
@@ -55,7 +70,7 @@ public class Navigation extends Thread {
 	}
 
 	/**
-	 * Functions to set the motor speeds jointly
+	 * Functions to set the motor speeds jointly in float
 	 * 
 	 * @param lSpd
 	 * @param rSpd
@@ -78,7 +93,13 @@ public class Navigation extends Thread {
 		else
 			Navigation.rightMotor.forward();
 	}
-
+	
+	/**
+	 * Functions to set the motor speeds jointly in int
+	 * 
+	 * @param lSpd
+	 * @param rSpd
+	 */
 	public synchronized void setSpeeds(int lSpd, int rSpd) {
 		if (lSpd == 0 && rSpd == 0) {
 			Logger.log("Stopping motors");
@@ -154,6 +175,12 @@ public class Navigation extends Thread {
 		isNavigating = false;
 	}
 
+	/**
+	 * travelTo method with obstacle avoidance
+	 * 
+	 * @param xfinal
+	 * @param yfinal
+	 */
 	public void travelToAxis(double xfinal, double yfinal) {
 		int[] savedParameters = usPoller.saveParameters();
 		usPoller.setParameters(5, 25, 25, 100, 0);
@@ -317,7 +344,12 @@ public class Navigation extends Thread {
 		}
 		usPoller.restoreParameters(savedParameters);
 	}
-
+	
+	/**
+	 * 
+	 * @param xfinal
+	 * @param yfinal
+	 */
 	public void travelToReverse(double xfinal, double yfinal) {
 		Logger.log("Travelling to (" + xfinal + "," + yfinal + ") in reverse");
 		isNavigating = true;
@@ -431,9 +463,16 @@ public class Navigation extends Thread {
 		turnDegrees(Math.toDegrees(angle), stop);
 	}
 
-	/*
+
+	/**
 	 * Based on current and final positions, what is the absolute angle of the
 	 * final position
+	 * 
+	 * @param x
+	 * @param y
+	 * @param dx
+	 * @param dy
+	 * @return
 	 */
 	public double calculateNewAngle(double x, double y, double dx, double dy) {
 		if (dx >= 0) {
@@ -451,6 +490,13 @@ public class Navigation extends Thread {
 		}
 	}
 
+	/**
+	 * convert the distance to the angle needed to turn
+	 * 
+	 * @param radius
+	 * @param distance
+	 * @return
+	 */
 	private int convertDistance(double radius, double distance) { // converts
 																	// distance
 																	// to angle
@@ -482,6 +528,11 @@ public class Navigation extends Thread {
 		rightMotor.rotate(wheelAngle, false);
 	}
 
+	/**
+	 * Moves the robot forward by given distance
+	 * 
+	 * @param distance
+	 */
 	public synchronized void goStraight(double distance) {
 		// TODO: what is the difference between goStraight and goForward ?!
 		Logger.log("Moving forward " + distance + " cm ");
@@ -496,6 +547,10 @@ public class Navigation extends Thread {
 		rightMotor.rotate(wheelAngle, true);
 	}
 
+	/**
+	 * 
+	 * @param numberOfBlocks
+	 */
 	public void travelTileWithCorrection(int numberOfBlocks) {
 		// TODO: Write some comments here please!
 		Logger.log("travelTailsWithCorrection(" + numberOfBlocks + ")");
@@ -583,6 +638,11 @@ public class Navigation extends Thread {
 
 	}
 
+	/**
+	 * Turn robot either clockwise or counter-clockwise
+	 * 
+	 * @param direction
+	 */
 	public void turn(String direction) {
 		Logger.log("Turning " + direction);
 		leftMotor.setSpeed(motorLocalize);
@@ -625,6 +685,11 @@ public class Navigation extends Thread {
 																					// wheel
 	}
 
+	/**
+	 * Get methods for motors and robot specs
+	 * 
+	 * @return
+	 */
 	public static EV3LargeRegulatedMotor getLeftMotor() { // get left and right
 															// motor
 		return leftMotor;

@@ -1,8 +1,11 @@
 package CaptureTheFlag;
 
 import lejos.hardware.Button;
-import lejos.hardware.Sound;
 
+/**
+ * Brain class: responsible for the entire logical process of the routine
+ *
+ */
 public class Brain {
 	
 	private static Odometer odo;
@@ -78,8 +81,9 @@ public class Brain {
 		Logger.log("Setting new coordinates:  ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
 	}
 	
-	
-	
+	/**
+	 *Pauses the logger information 
+	 */
 	public static void pause(){
 		int choice = Button.waitForAnyPress();
 		if(choice == Button.ID_ESCAPE){

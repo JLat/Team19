@@ -14,6 +14,10 @@ import wifi.StartCorner;
 import wifi.Transmission;
 import wifi.WifiConnection;
 
+/**
+ * Initializer class: Responsible to instantiate all objects and distributing the resources before starting the logic 
+ *
+ */
 public class Initializer {
 	private static Port usPort = LocalEV3.get().getPort("S1");
 	private static Port colorPort1 = LocalEV3.get().getPort("S3");

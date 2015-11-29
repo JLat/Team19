@@ -11,7 +11,6 @@ import lejos.utility.TimerListener;
 /**
  * LightLocalization class : Implements timer listener which calls timedOut() every 20ms
  * 							 to check for color changes	in lines
- * @author yyang132
  *
  */
 public class LightLocalization implements TimerListener {

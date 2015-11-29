@@ -58,15 +58,27 @@ public class Claw {
 		Logger.log("Closed claw "+ (hasBlock()? "with" : "without") + " a block");
 		
 	}
-
+	
+	/**
+	 * get tachometer count from claw motor 
+	 * @return
+	 */
 	public int getTachoCount() {
 		return this.clawMotor.getTachoCount();
 	}
-
+	
+	/**
+	 * returns true if claw is closed
+	 * @return
+	 */
 	public boolean isClosed() {
 		return this.clawMotor.getTachoCount() < -350;
 	}
-
+	
+	/**
+	 * returns true if class has block
+	 * @return
+	 */
 	public boolean hasBlock() {
 		return this.clawMotor.getTachoCount() < -350 && this.clawMotor.getTachoCount() > -450
 				&& !this.clawMotor.isMoving();

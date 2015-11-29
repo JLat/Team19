@@ -1,7 +1,6 @@
 package CaptureTheFlag;
 
 import lejos.hardware.Button;
-import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.utility.Delay;
 
