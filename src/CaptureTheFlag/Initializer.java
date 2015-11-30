@@ -86,7 +86,7 @@ public class Initializer {
 		
 		Odometer odometer = new Odometer(leftMotor, rightMotor);
 		odometer.start();
-		usPoller = new UltrasonicPoller(10, 10, 20, 100, 0);
+		usPoller = new UltrasonicPoller(5, 15, 15, 50, 0);
 		usPoller.start();
 		LightPoller colorPoller = new LightPoller(colorPort1, colorPort2, "Red");
 		colorPoller.start();
@@ -103,7 +103,7 @@ public class Initializer {
 		String[] flags = { "light blue", "red", "yellow", "white", "dark blue" };
 		Logger.log("Done initializing components!");
 		
-		LocalEV3.get().getAudio().systemSound(2);
+		
 		
 /*
 		WifiConnection conn = null;

@@ -1,6 +1,7 @@
 package CaptureTheFlag;
 
 import lejos.hardware.Button;
+import lejos.hardware.ev3.LocalEV3;
 
 /**
  * Brain class: responsible for the entire logical process of the routine
@@ -38,18 +39,44 @@ public class Brain {
 	public void search(){
 		
 		
+		// wait until the usPoller cache is full of readings
+		while(!usPoller.isFull());
+		
 		Logger.log("Starting Search routine (main program)");
 		Logger.setStartTime();
-		USLoc.doLocalization(30);
+		LocalEV3.get().getAudio().systemSound(2);
+		
+
+		
+		
+		USLoc.doLocalization(28);
+		nav.travelTo(3,3);
+		
+		Logger.log("Turning the robot to 335 degrees for ideal light sensor placement.");
+		nav.turnToAngle(335, true);
+		
 		LLoc.doLightLocalization(0,0);
+		Logger.log("Travelling to 0,0");
 		nav.travelTo(0, 0);
 		adjustStartPosition();
+		nav.turnToAngle(0, true);
+		
+		// optional pause, used for calibrating the localization.
+		//pause();
 		
 		
 		nav.travelToAxis(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
+		//nav.travelTo(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
 		nav.turnTo(0,true);
-		Logger.log("Prior to search localiztion:  ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
-		LLoc.doLightLocalization2(-100);
+		Logger.log("Prior to search localization:  ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
+		nav.turnToAngle(335, true);
+		LLoc.doLightLocalization(Initializer.homeZoneBL_X*30,Initializer.homeZoneBL_Y*30);
+		nav.travelTo(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
+		nav.turnTo(0, true);
+		//optional pause, used to separate the travel from searching.
+		pause();
+		
+		
 		
 		Logger.log("Starting Searching Algorithm");
 		search.Snake(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30,"BottomLeft");
@@ -82,7 +109,7 @@ public class Brain {
 	}
 	
 	/**
-	 *Pauses the logger information 
+	 *Pauses the program flow
 	 */
 	public static void pause(){
 		int choice = Button.waitForAnyPress();

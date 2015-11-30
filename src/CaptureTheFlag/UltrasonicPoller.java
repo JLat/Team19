@@ -2,6 +2,7 @@ package CaptureTheFlag;
 
 import java.util.LinkedList;
 
+import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorModes;
@@ -58,8 +59,11 @@ public class UltrasonicPoller extends Thread {
 		this.minusOffset = MinusOffset;
 		this.upperBound = UpperBound;
 		this.lowerBound = LowerBound;
-		usPort = Initializer.getUsPort();
-
+		//TODO: THIS IS NOT IDEAL!! THIS CREATES A LOT OF USELESS DEPENDENCIES BETWEEN CLASSES
+		//usPort = Initializer.getUsPort();
+		usPort = LocalEV3.get().getPort("S1");
+		Logger.log("Set USPoller parameters to ("+recentListSize+","+PlusOffset+","+MinusOffset+","+UpperBound+","+LowerBound+")");
+	
 		@SuppressWarnings("resource")
 
 		// usSensor is the instance
@@ -159,7 +163,7 @@ public class UltrasonicPoller extends Thread {
 		this.recent.addLast(processedDistance);
 
 		// the size of the list is controlled.
-		if (recent.size() > recentListSize) {
+		while(recent.size() > recentListSize) {
 			recent.removeFirst();
 		}
 		if (recent.size() == recentListSize) {

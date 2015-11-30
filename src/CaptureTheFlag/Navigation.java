@@ -1,6 +1,6 @@
 package CaptureTheFlag;
 
-import org.freedesktop.dbus.test.profile.Log;
+
 
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -617,21 +617,21 @@ public class Navigation extends Thread {
 	}
 
 	/**
-	 * TurnBy function which takes an angle and boolean as arguments the angle
-	 * determines what degree it should turn and the boolean controls whether or
-	 * not to stop the motors when the turn is completed
+	 * TurnBy function which takes an angle (in radians) and boolean as arguments. The angle
+	 * determines the turning, and the boolean controls whether or
+	 * not to stop the motors once the turn is completed
 	 * 
-	 * @param angle
+	 * @param angleInRadians
 	 * @param stop
 	 */
-	public void turnBy(double angle, boolean stop) {
-		Logger.log("turning by " + Math.toDegrees(angle) + " degrees");
+	public void turnBy(double angleInRadians, boolean stop) {
+		Logger.log("turning by " + Math.toDegrees(angleInRadians) + " degrees");
 
 		leftMotor.setSpeed(motorLocalize);
 		rightMotor.setSpeed(motorLocalize);
 		// the 1.055 is there to improve the accuracy of the turns
-		leftMotor.rotate(convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), true);
-		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angle), false);
+		leftMotor.rotate(convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angleInRadians), true);
+		rightMotor.rotate(-convertAngle(WHEEL_RADIUS, 1.055 * TRACK, angleInRadians), false);
 		if (stop) {
 			this.setSpeeds(0, 0);
 		}

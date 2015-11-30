@@ -47,16 +47,12 @@ public class LightLocalization implements TimerListener {
 	 * @param y
 	 */
 	public void doLightLocalization(int x, int y) {
-		Logger.log("--Starting first LightLocalization at corner ("+x+","+y+")--");
+		Logger.log("----------------Starting first LightLocalization at corner ("+x+","+y+")--------------------");
 		
-		// turn 45 degrees left in order not to skip the first line.
-		navi.turnToAngle(315,true);
+		
 		
 		//Start detecting lines by calling TimedOut
 		timer.start();
-		
-		
-		
 		//Turn by 360 degrees and stop
 		navi.turnBy(2 * Math.PI, true);
 		timer.stop();
@@ -66,7 +62,7 @@ public class LightLocalization implements TimerListener {
 		//display.addInfo("Angles" + Arrays.toString(angles));
 		
 		//Navigate to that position and turn to (0,0) heading
-		Logger.log("--First LightLocalization complete--");
+		Logger.log("----------------LightLocalization complete------------------------");
 		Logger.log("robot is now at coordinates: ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
 		//doLightLocalization2(-100);
 	}
@@ -92,7 +88,6 @@ public class LightLocalization implements TimerListener {
 				navi.setSpeeds(0, 0);
 			}
 		}
-		//TODO: what is this ?
 		odo.setTheta(0);
 		navi.goForward(4.6);
 		int lineY = (int) (odo.getY() + 15) / 30;
