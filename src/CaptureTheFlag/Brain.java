@@ -64,17 +64,22 @@ public class Brain {
 		// optional pause, used for calibrating the localization.
 		//pause();
 		
+		//Choose which corner to travel to
 		int destinationX = 0, destinationY = 0;
 		int corner = 0;
-		if (distanceTo((int)odo.getX(), (int)odo.getY(), Initializer.homeZoneTR_X, Initializer.homeZoneTR_Y) < distanceTo((int)odo.getX(), (int)odo.getY(), Initializer.homeZoneBL_X, Initializer.homeZoneBL_Y)){
+		Logger.log("Top Right Distance:" + distanceTo((int)odo.getX(), (int)odo.getY(), Initializer.homeZoneTR_X * 30, Initializer.homeZoneTR_Y * 30));
+		Logger.log("Bottom Left Distance:" + distanceTo((int)odo.getX(), (int)odo.getY(), Initializer.homeZoneBL_X * 30, Initializer.homeZoneBL_Y * 30));
+		if (distanceTo((int)odo.getX(), (int)odo.getY(), Initializer.homeZoneTR_X *30, Initializer.homeZoneTR_Y* 30) < distanceTo((int)odo.getX(), (int)odo.getY(), Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30)){
 			destinationX = Initializer.homeZoneTR_X;
 			destinationY = Initializer.homeZoneTR_Y;
 			corner  =2 ;
+			Logger.log("Going to top right corner");
 		}
 		else{
 			destinationX = Initializer.homeZoneBL_X;
 			destinationY = Initializer.homeZoneBL_Y;
 			corner = 1;
+			Logger.log("Going to bottom left corner");
 		}
 		
 		
@@ -135,7 +140,7 @@ public class Brain {
 	}
 	
 	public double distanceTo(int x1,int y1, int x2, int y2){
-		return Math.sqrt((x2 - x1)^2 + (y2 - y1)^2);
+		return Math.sqrt(Math.pow(x2 - x1,2) + Math.pow(y2 - y1,2));
 	}
 }
 
