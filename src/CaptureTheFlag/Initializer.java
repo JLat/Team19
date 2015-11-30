@@ -40,12 +40,12 @@ public class Initializer {
 	private static String flag = "";
 	
 	public static StartCorner corner = StartCorner.lookupCorner(1);
-	public static int homeZoneBL_X = 0;
-	public static int homeZoneBL_Y = 1;
+	public static int homeZoneBL_X = 4;
+	public static int homeZoneBL_Y = 4;
 	public static int opponentHomeZoneBL_X =4;
 	public static int opponentHomeZoneBL_Y =4;
-	public static int dropZone_X=6;
-	public static int dropZone_Y=5;
+	public static int dropZone_X=0;
+	public static int dropZone_Y=0;
 	public static int opponentFlagType;
 
 	/**

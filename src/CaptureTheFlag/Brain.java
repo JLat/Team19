@@ -74,7 +74,7 @@ public class Brain {
 		nav.travelTo(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
 		nav.turnTo(0, true);
 		//optional pause, used to separate the travel from searching.
-		pause();
+//		pause();
 		
 		
 		

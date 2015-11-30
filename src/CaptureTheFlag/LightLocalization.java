@@ -20,7 +20,7 @@ public class LightLocalization implements TimerListener {
 	private LCDdisplay display;
 	private Timer timer;
 	private double sensorDistance = 9.6;
-	private ArrayList<Double> angles = new ArrayList<Double>();
+	private ArrayList<Double> angles;
 	private boolean sawLine = false;
 
 	/**
@@ -49,7 +49,7 @@ public class LightLocalization implements TimerListener {
 	public void doLightLocalization(int x, int y) {
 		Logger.log("----------------Starting first LightLocalization at corner ("+x+","+y+")--------------------");
 		
-		
+		angles = new ArrayList<Double>();
 		
 		//Start detecting lines by calling TimedOut
 		timer.start();
