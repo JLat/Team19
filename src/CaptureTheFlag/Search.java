@@ -50,7 +50,7 @@ public class Search {
 	 *            Starting Y coordinate of search area
 	 * @return true if block is found
 	 */
-	public boolean Snake(int startX, int startY, String corner) {
+	public boolean Snake(int startX, int startY, int corner) {
 		Logger.log("Starting snake routine");
 
 		// Search = 0 - If no block is found mark tile as empty and don't search
@@ -59,24 +59,21 @@ public class Search {
 		// that tile]
 		// Search = 2 - If flag take it to final point
 
-		
-		//each tiles position relative to bottom left corner from 0 - 5
-		//TODO: Don't automatically assume a 2x3 grid
-		int pos[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, 
+		int posBL[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, 
 				{ startX, startY + 90, 90 },{ startX + 30, startY + 90, 90 }, 
 				{ startX + 60, startY + 60, 180 },{ startX + 60, startY + 30, 180 } };
+		
+		int posTR[][] = { { startX, startY, 180 }, { startX, startY - 30, 180 }, 
+				{ startX, startY - 90, 270 },{ startX - 30, startY - 90, 270 }, 
+				{ startX - 60, startY - 60, 0 },{ startX - 60, startY - 30, 0 } };
 
 		int result = 0;
 		
-		if (corner.equals("TopRight")){
-			for (int i = 0; i < 3; i ++){
-				int temp [] = new int [3];
-				temp = pos[i];
-				pos[i] = pos[i + 3];
-				pos[i+3] = temp;
-			}
-				
-		}
+		int pos[][];
+		if (corner == 1)
+			pos = posBL;
+		else
+			pos = posTR;
 		
 		
 		for (int i = 0; i < 6; i++) {

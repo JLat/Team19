@@ -42,11 +42,15 @@ public class Initializer {
 	public static StartCorner corner = StartCorner.lookupCorner(1);
 	public static int homeZoneBL_X = 4;
 	public static int homeZoneBL_Y = 4;
+	public static int homeZoneTR_X = 6;
+	public static int homeZoneTR_Y = 6;
 	public static int opponentHomeZoneBL_X =4;
 	public static int opponentHomeZoneBL_Y =4;
 	public static int dropZone_X=0;
 	public static int dropZone_Y=0;
 	public static int opponentFlagType;
+
+	
 
 	/**
 	 * Initializes all the objects in the following order : 1- UltrasonicPoller
@@ -105,7 +109,7 @@ public class Initializer {
 		
 		
 		
-/*
+
 		WifiConnection conn = null;
 		try {
 			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
@@ -122,13 +126,15 @@ public class Initializer {
 			corner = t.startingCorner;
 			homeZoneBL_X = t.homeZoneBL_X;
 			homeZoneBL_Y = t.homeZoneBL_Y;
+			homeZoneTR_X = t.homeZoneTR_X;
+			homeZoneTR_Y = t.homeZoneTR_Y;
 			opponentHomeZoneBL_X = t.opponentHomeZoneBL_X;
 			opponentHomeZoneBL_Y = t.opponentHomeZoneBL_Y;
 			dropZone_X = t.dropZone_X;
 			dropZone_Y = t.dropZone_Y;
 			flagType = t.flagType;
 			opponentFlagType = t.opponentFlagType;
-		}*/
+		}
 		
 
 		detector.setFlag(flags[flagType - 1]);

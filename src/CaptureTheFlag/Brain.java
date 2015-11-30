@@ -64,14 +64,29 @@ public class Brain {
 		// optional pause, used for calibrating the localization.
 		//pause();
 		
+		int destinationX = 0, destinationY = 0;
+		int corner = 0;
+		if (distanceTo((int)odo.getX(), (int)odo.getY(), Initializer.homeZoneTR_X, Initializer.homeZoneTR_Y) < distanceTo((int)odo.getX(), (int)odo.getY(), Initializer.homeZoneBL_X, Initializer.homeZoneBL_Y)){
+			destinationX = Initializer.homeZoneTR_X;
+			destinationY = Initializer.homeZoneTR_Y;
+			corner  =2 ;
+		}
+		else{
+			destinationX = Initializer.homeZoneBL_X;
+			destinationY = Initializer.homeZoneBL_Y;
+			corner = 1;
+		}
 		
-		nav.travelToAxis(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
+		
+		
+		
+		nav.travelToAxis(destinationX * 30,destinationY * 30);
 		//nav.travelTo(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
 		nav.turnTo(0,true);
 		Logger.log("Prior to search localization:  ("+odo.getX()+";"+odo.getY()+";"+odo.getThetaDegrees()+")");
 		nav.turnToAngle(335, true);
-		LLoc.doLightLocalization(Initializer.homeZoneBL_X*30,Initializer.homeZoneBL_Y*30);
-		nav.travelTo(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30);
+		LLoc.doLightLocalization(destinationX * 30,destinationY * 30);
+		nav.travelTo(destinationX * 30,destinationY * 30);
 		nav.turnTo(0, true);
 		//optional pause, used to separate the travel from searching.
 //		pause();
@@ -79,7 +94,7 @@ public class Brain {
 		
 		
 		Logger.log("Starting Searching Algorithm");
-		search.Snake(Initializer.homeZoneBL_X*30, Initializer.homeZoneBL_Y*30,"BottomLeft");
+		search.Snake(destinationX * 30,destinationY * 30,corner);
 
 		nav.turnTo(odo.getTheta() + Math.PI, true);
 		claw.partialOpen();
@@ -117,7 +132,10 @@ public class Brain {
 			Logger.close();
 			System.exit(0);
 		}
-		
+	}
+	
+	public double distanceTo(int x1,int y1, int x2, int y2){
+		return Math.sqrt((x2 - x1)^2 + (y2 - y1)^2);
 	}
 }
 
