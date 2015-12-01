@@ -39,16 +39,18 @@ public class Initializer {
 	// TODO modify this according to how the info will be received via wifi
 	private static String flag = "";
 	
-	public static StartCorner corner = StartCorner.lookupCorner(3);
-	public static int homeZoneBL_X = 4;
-	public static int homeZoneBL_Y = 4;
-	public static int homeZoneTR_X = 9;
+	public static StartCorner corner = StartCorner.lookupCorner(4);
+	public static int homeZoneBL_X = 0;
+	public static int homeZoneBL_Y = 6;
+	public static int homeZoneTR_X = 2;
 	public static int homeZoneTR_Y = 9;
 	public static int opponentHomeZoneBL_X =4;
 	public static int opponentHomeZoneBL_Y =4;
 	public static int dropZone_X=0;
 	public static int dropZone_Y=0;
 	public static int opponentFlagType;
+	public static int mapMaxX = 317;
+	public static int mapMaxY = 317;
 
 	
 
@@ -111,31 +113,31 @@ public class Initializer {
 		String[] flags = { "light blue", "red", "yellow", "white", "dark blue" };
 		
 
-//		WifiConnection conn = null;
-//		try {
-//			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
-//		} catch (IOException e) {
-//			display.addInfo("Connection failed", 0);
-//			LocalEV3.get().getAudio().systemSound(0);
-//		}
-//
-//		// example usage of Transmission class
-//		Transmission t = conn.getTransmission();
-//		if (t == null) {
-//			display.addInfo("Failed to read transmission", 0);
-//		} else {
-//			corner = t.startingCorner;
-//			homeZoneBL_X = t.homeZoneBL_X;
-//			homeZoneBL_Y = t.homeZoneBL_Y;
-//			homeZoneTR_X = t.homeZoneTR_X;
-//			homeZoneTR_Y = t.homeZoneTR_Y;
-//			opponentHomeZoneBL_X = t.opponentHomeZoneBL_X;
-//			opponentHomeZoneBL_Y = t.opponentHomeZoneBL_Y;
-//			dropZone_X = t.dropZone_X;
-//			dropZone_Y = t.dropZone_Y;
-//			flagType = t.flagType;
-//			opponentFlagType = t.opponentFlagType;
-//		}
+		WifiConnection conn = null;
+		try {
+			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+		} catch (IOException e) {
+			display.addInfo("Connection failed", 0);
+			LocalEV3.get().getAudio().systemSound(0);
+		}
+
+		// example usage of Transmission class
+		Transmission t = conn.getTransmission();
+		if (t == null) {
+			display.addInfo("Failed to read transmission", 0);
+		} else {
+			corner = t.startingCorner;
+			homeZoneBL_X = t.homeZoneBL_X;
+			homeZoneBL_Y = t.homeZoneBL_Y;
+			homeZoneTR_X = t.homeZoneTR_X;
+			homeZoneTR_Y = t.homeZoneTR_Y;
+			opponentHomeZoneBL_X = t.opponentHomeZoneBL_X;
+			opponentHomeZoneBL_Y = t.opponentHomeZoneBL_Y;
+			dropZone_X = t.dropZone_X;
+			dropZone_Y = t.dropZone_Y;
+			flagType = t.flagType;
+			opponentFlagType = t.opponentFlagType;
+		}
 		
 
 		detector.setFlag(flags[flagType - 1]);

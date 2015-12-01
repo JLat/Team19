@@ -29,26 +29,16 @@ public class Search {
 		this.claw = claw;
 		Logger.log("Created Search instance");
 	}
-	
+
 	Scanner scan = new Scanner(Initializer.getSensorMotor());
 
 	/**
-	 * Run method for the Thread. Contains the searching algorithm
-	 */
-
-	/**
-	 * Iterate the search algorithm through each tile
+	 * Iterate through all tiles of the search area looking for blocks
 	 * 
-	 * 
-	 * @return Whether the flag was successfully found or not
-	 */
-
-	/**
-	 * @param startX
-	 *            Starting X coordinate of search area
-	 * @param startY
-	 *            Starting Y coordinate of search area
-	 * @return true if block is found
+	 * @param startX Starting X position of search area
+	 * @param startY Starting Y position of search area
+	 * @param corner Starting corner of searching algorithm
+	 * @return True if block is found
 	 */
 	public boolean Snake(int startX, int startY, int corner) {
 		Logger.log("Starting snake routine");
@@ -59,23 +49,33 @@ public class Search {
 		// that tile]
 		// Search = 2 - If flag take it to final point
 
-		int posBL[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, 
-				{ startX, startY + 90, 90 },{ startX + 30, startY + 90, 90 }, 
-				{ startX + 60, startY + 60, 180 },{ startX + 60, startY + 30, 180 } };
+		// BL,BR, TR,TL`
 		
-		int posTR[][] = { { startX, startY, 180 }, { startX, startY - 30, 180 }, 
-				{ startX, startY - 90, 270 },{ startX - 30, startY - 90, 270 }, 
-				{ startX - 60, startY - 60, 0 },{ startX - 60, startY - 30, 0 } };
+		int posBL[][] = { { startX, startY, 0 }, { startX, startY + 30, 0 }, { startX, startY + 90, 90 },
+				{ startX + 30, startY + 90, 90 }, { startX + 60, startY + 60, 180 },
+				{ startX + 60, startY + 30, 180 } };
 
-		int result = 0;
-		
+		int posTR[][] = { { startX, startY, 180 }, { startX, startY - 30, 180 }, { startX, startY - 90, 270 },
+				{ startX - 30, startY - 90, 270 }, { startX - 60, startY - 60, 0 }, { startX - 60, startY - 30, 0 } };
+
+		int posTL[][] = { { startX, startY, 90 }, { startX + 60, startY, 180 }, { startX + 60, startY - 30, 180 },
+				{ startX + 60, startY - 60, 180 }, { startX + 30, startY - 90, 270 }, { startX, startY - 60, 0 } };
+
+		int posBR[][] = { { startX, startY, 270 }, { startX - 60, startY, 0 }, { startX - 60, startY + 30, 0 },
+				{ startX - 60, startY + 60, 0 }, { startX - 30, startY + 90, 90 }, { startX, startY + 60, 180 } };
+
 		int pos[][];
-		if (corner == 1)
+		if (corner == 0)
 			pos = posBL;
-		else
+		else if (corner == 1)
+			pos = posBR;
+		else if (corner == 2)
 			pos = posTR;
+		else 
+			pos = posTL;
 		
-		
+		int result = 0;
+
 		for (int i = 0; i < 6; i++) {
 
 			// Offset for walls;
@@ -90,7 +90,7 @@ public class Search {
 
 			nav.travelTo(pos[i][0], pos[i][1]);
 			nav.turnTo(Math.toRadians(pos[i][2]), true);
-			
+
 			if (claw.isClosed())
 				claw.open();
 			result = search(pos[i][0], pos[i][1]);
@@ -100,7 +100,7 @@ public class Search {
 				i--;
 		}
 		return false;
-	
+
 	}
 
 	/**
@@ -110,13 +110,11 @@ public class Search {
 	 *            Starting X coordinate of square
 	 * @param yCorner
 	 *            Starting Y coordinate of square
-	 * @param wall
-	 *            Whether to account for a wall or not
-	 * @return Whether the flag or NO/Wrong block is found
+	 * @return 0 if no block is flag, 1 if wrong flag is found, 2 if flag is found
 	 * 
 	 */
 	public int search(int xCorner, int yCorner) {
-		Logger.log("Searching at corner ("+xCorner+","+yCorner+")");
+		Logger.log("Searching at corner (" + xCorner + "," + yCorner + ")");
 		nav.goForward(-10);
 
 		// Search function for each tile
@@ -129,8 +127,8 @@ public class Search {
 		double minAngle = 0;
 		double startAngle = 0;
 		double endAngle = 0;
-		
-		//Scan sensor searching for block in front of threshold
+
+		// Scan sensor searching for block in front of threshold
 		for (int i = 0; i <= 90; i += 5) {
 			scan.turnTo(i);
 			if (USS.getProcessedDistance() < minVal) {
@@ -141,12 +139,12 @@ public class Search {
 				endAngle = scan.getAngle();
 			}
 		}
-		//Find average of angles where smallest distance was found
+		// Find average of angles where smallest distance was found
 		if (endAngle > startAngle) {
 			minAngle = (startAngle + endAngle) / 2;
 		}
-		
-		//Block found, turn towards block and approach
+
+		// Block found, turn towards block and approach
 		if (minVal < 28) {
 			double offY = 12 + minVal * Math.cos(Math.toRadians(minAngle));
 			double offX = minVal * Math.sin(Math.toRadians(minAngle));
@@ -158,10 +156,14 @@ public class Search {
 
 		// Stage 2 - Search for non-angled blocks
 
-		//Travel forwards with sensor at 90 deg (right)
-		while (Math.abs(xCorner - odo.getX()) < 30 && Math.abs(yCorner - odo.getY()) < 30) {
+		// Travel forwards with sensor at 90 deg (right)
+
+		// TODO: Make it travel less then 1 tile, just when the sensor reaches
+		// the end of the tile
+		while (Math.abs(xCorner - odo.getX()) < 20 && Math.abs(yCorner - odo.getY()) < 20) {
 			nav.setSpeeds(200, 200);
-		//Block found, move forwards to adjust for sensor offset, then turn 90deg. Approach and check
+			// Block found, move forwards to adjust for sensor offset, then turn
+			// 90deg. Approach and check
 			if (USS.getProcessedDistance() < 25) {
 				nav.setSpeeds(0, 0);
 				nav.goForward(12);
@@ -176,28 +178,28 @@ public class Search {
 	}
 
 	public int approachBlock(int xCorner, int yCorner) {
-		Logger.log("approaching block at ("+xCorner+","+yCorner+")");
+		Logger.log("approaching block at (" + xCorner + "," + yCorner + ")");
 		LocalEV3.get().getAudio().systemSound(0);
 		scan.turnTo(0);
 		nav.setSpeeds(100, 100);
 
-		//Move forward until within 3 cm from block
+		// Move forward until within 3 cm from block
 		while (USS.getProcessedDistance() > 3) {
 
 		}
 		nav.setSpeeds(0, 0);
 		nav.goForward(3);
-		
-		//check which type of flag is in front of robot
+
+		// check which type of flag is in front of robot
 		if (detector.isFlagDetected()) {
 
-			//In front of block, exit search
+			// In front of block, exit search
 			LocalEV3.get().getAudio().systemSound(1);
-			Logger.log("Flag found in ("+xCorner + "," + yCorner+")");
+			Logger.log("Flag found in (" + xCorner + "," + yCorner + ")");
 			return 2;
 		} else {
 			LocalEV3.get().getAudio().systemSound(0);
-			Logger.log("NON Flag found in ("+xCorner + "," + yCorner+")");
+			Logger.log("NON Flag found in (" + xCorner + "," + yCorner + ")");
 			// Remove block from zone then research zone
 			nav.turnTo(odo.getTheta() + Math.PI, true);
 			claw.partialOpen();

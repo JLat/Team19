@@ -1,14 +1,14 @@
 package CaptureTheFlag;
 
-
-
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.utility.Delay;
+
 /**
  * 
- * Navigation class: manages the motion of the robot: also does obstacle avoidance and odometry correction
+ * Navigation class: manages the motion of the robot: also does obstacle
+ * avoidance and odometry correction
  *
  */
 public class Navigation extends Thread {
@@ -24,7 +24,6 @@ public class Navigation extends Thread {
 	private static UltrasonicPoller usPoller;
 	private static LightPoller lightPoller;
 	public static boolean isNavigating = false;
-
 
 	/**
 	 * First class constructor:
@@ -46,7 +45,7 @@ public class Navigation extends Thread {
 
 	/**
 	 * Second class constructor
-	 *  
+	 * 
 	 * @param odo
 	 * @param leftMotor
 	 * @param rightMotor
@@ -93,7 +92,7 @@ public class Navigation extends Thread {
 		else
 			Navigation.rightMotor.forward();
 	}
-	
+
 	/**
 	 * Functions to set the motor speeds jointly in int
 	 * 
@@ -127,6 +126,20 @@ public class Navigation extends Thread {
 	 * @param yfinal
 	 */
 	public void travelTo(double xfinal, double yfinal) {
+
+		if (xfinal > Initializer.mapMaxX) {
+			xfinal = Initializer.mapMaxX;
+		}
+		if (yfinal > Initializer.mapMaxY) {
+			yfinal = Initializer.mapMaxY;
+		}
+		if (xfinal < -13) {
+			xfinal = -13;
+		}
+		if (yfinal < -13) {
+			yfinal = -13;
+		}
+
 		Logger.log("Travelling to (" + xfinal + ";" + yfinal + ")");
 		isNavigating = true;
 		double x = odo.getX(); // current positions
@@ -214,6 +227,7 @@ public class Navigation extends Thread {
 			}
 			// choose which way to go
 			// normal condition
+			sensorMotor.setSpeed(sensorHigh);
 			if (xDirection >= 0) {
 				this.turnTo(xDirection, true);
 				sensorMotor.rotateTo(0, false);
@@ -251,18 +265,16 @@ public class Navigation extends Thread {
 			// way
 			boolean yBlocked = (xfinal > x - 1) && (xfinal < x + 1) && (yEmptySpace < 28) && (yEmptySpace > 0);
 			boolean xBlocked = (yfinal > y - 1) && (yfinal < y + 1) && (xEmptySpace < 28) && (xEmptySpace > 0);
-			/*if (xEmptySpace < 25 && yEmptySpace < 25) {
-				turnTo(yDirection, true);
-				sensorMotor.rotateTo(rightAngle, false);
-				setSpeeds(-motorLow, -motorLow);
-				while (usPoller.getProcessedDistance() > 30)
-					while (usPoller.getProcessedDistance() < 30)
-						this.setSpeeds(0, 0);
-				sensorMotor.rotateTo(0, false);
-				turnTo(xDirection, true);
-				goForward(30);
-			} else*/ 
-				if (xBlocked || yBlocked) {
+			/*
+			 * if (xEmptySpace < 25 && yEmptySpace < 25) { turnTo(yDirection,
+			 * true); sensorMotor.rotateTo(rightAngle, false);
+			 * setSpeeds(-motorLow, -motorLow); while
+			 * (usPoller.getProcessedDistance() > 30) while
+			 * (usPoller.getProcessedDistance() < 30) this.setSpeeds(0, 0);
+			 * sensorMotor.rotateTo(0, false); turnTo(xDirection, true);
+			 * goForward(30); } else
+			 */
+			if (xBlocked || yBlocked) {
 				Sound.beep();
 				if (xBlocked) {
 					turnTo(xDirection, true);
@@ -299,7 +311,38 @@ public class Navigation extends Thread {
 					turnTo(yDirection, true);
 				}
 				goForward(30);
-			} else {
+			} else if (xEmptySpace < 30 && xEmptySpace > 0 && yEmptySpace < 30 && yEmptySpace > 0) {
+				sensorMotor.setSpeed(sensorHigh);
+				sensorMotor.rotateTo(leftAngle, false);
+				double leftSpace = usPoller.getRawDistance();
+				sensorMotor.rotateTo(rightAngle, false);
+				double rightSpace = usPoller.getRawDistance();
+				Logger.log("---------------------leftSpace:" + leftSpace);
+				Logger.log("---------------------rightSpace:" + rightSpace);
+				if (leftSpace > rightSpace) {
+					turnTo((odo.getTheta() - Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI), true);
+					sensorMotor.rotateTo(rightAngle, false);
+					this.setSpeeds(motorHigh, motorHigh);
+				} else {
+					turnTo((odo.getTheta() + Math.PI / 2 + 2 * Math.PI) % (2 * Math.PI), true);
+					sensorMotor.rotateTo(leftAngle, false);
+					this.setSpeeds(motorHigh, motorHigh);
+				}
+				while (usPoller.getProcessedDistance() < 35) {
+					Logger.log("still sees wooden block " + usPoller.getProcessedDistance());
+				}
+				this.setSpeeds(0, 0);
+				sensorMotor.rotateTo(0);
+				goForward(30);
+				if (xBlocked) {
+					turnTo(xDirection, true);
+				} else {
+					turnTo(yDirection, true);
+				}
+				goForward(30);
+			}
+
+			else {
 				Sound.twoBeeps();
 				if (xEmptySpace > yEmptySpace) {
 					this.turnTo(xDirection, true);
@@ -344,7 +387,7 @@ public class Navigation extends Thread {
 		}
 		usPoller.restoreParameters(savedParameters);
 	}
-	
+
 	/**
 	 * 
 	 * @param xfinal
@@ -462,7 +505,6 @@ public class Navigation extends Thread {
 	public void turnRadians(double angle, boolean stop) {
 		turnDegrees(Math.toDegrees(angle), stop);
 	}
-
 
 	/**
 	 * Based on current and final positions, what is the absolute angle of the
@@ -617,9 +659,9 @@ public class Navigation extends Thread {
 	}
 
 	/**
-	 * TurnBy function which takes an angle (in radians) and boolean as arguments. The angle
-	 * determines the turning, and the boolean controls whether or
-	 * not to stop the motors once the turn is completed
+	 * TurnBy function which takes an angle (in radians) and boolean as
+	 * arguments. The angle determines the turning, and the boolean controls
+	 * whether or not to stop the motors once the turn is completed
 	 * 
 	 * @param angleInRadians
 	 * @param stop
