@@ -34,7 +34,7 @@ public class Initializer {
 	public static UltrasonicPoller usPoller;
 	public static LCDdisplay display;
 
-	private static final String SERVER_IP = "192.168.10.113";
+	private static final String SERVER_IP = "192.168.10.200";
 	private static final int TEAM_NUMBER = 19;
 	// TODO modify this according to how the info will be received via wifi
 	private static String flag = "";
@@ -106,13 +106,13 @@ public class Initializer {
 		Search search = new Search(odometer, navigator, usPoller, display, detector, claw);
 		Brain controller = new Brain(odometer, navigator, USLoc, Lloc, detector, usPoller, search, claw);
 		Logger.log("Done initializing components!");
-		
+		LocalEV3.get().getAudio().systemSound(2);
 		
 		
 		int flagType = 3;
 		String[] flags = { "light blue", "red", "yellow", "white", "dark blue" };
 		
-/*
+
 		WifiConnection conn = null;
 		try {
 			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
@@ -138,7 +138,7 @@ public class Initializer {
 			flagType = t.flagType;
 			opponentFlagType = t.opponentFlagType;
 		}
-*/
+
 		detector.setFlag(flags[flagType - 1]);
 	
 		controller.search();

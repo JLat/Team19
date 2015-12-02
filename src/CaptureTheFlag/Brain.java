@@ -147,6 +147,15 @@ public class Brain {
 		}
 	}
 
+	/**
+	 * Calculate the distance between 2 Cartesian coordinates
+	 * 
+	 * @param x1 X coord of 1st point
+	 * @param y1 Y coord of 1st point
+	 * @param x2 X coord of 2nd point
+	 * @param y2 Y coord of 2nd point
+	 * @return Distance between the two points
+	 */
 	public double distanceTo(int x1, int y1, int x2, int y2) {
 		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 	}
