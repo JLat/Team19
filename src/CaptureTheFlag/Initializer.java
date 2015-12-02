@@ -39,11 +39,11 @@ public class Initializer {
 	// TODO modify this according to how the info will be received via wifi
 	private static String flag = "";
 	
-	public static StartCorner corner = StartCorner.lookupCorner(4);
-	public static int homeZoneBL_X = 0;
-	public static int homeZoneBL_Y = 6;
-	public static int homeZoneTR_X = 2;
-	public static int homeZoneTR_Y = 9;
+	public static StartCorner corner = StartCorner.lookupCorner(1);
+	public static int homeZoneBL_X = 4;
+	public static int homeZoneBL_Y = 4;
+	public static int homeZoneTR_X = 6;
+	public static int homeZoneTR_Y = 7;
 	public static int opponentHomeZoneBL_X =4;
 	public static int opponentHomeZoneBL_Y =4;
 	public static int dropZone_X=0;
@@ -109,10 +109,10 @@ public class Initializer {
 		
 		
 		
-		int flagType = 2;
+		int flagType = 3;
 		String[] flags = { "light blue", "red", "yellow", "white", "dark blue" };
 		
-
+/*
 		WifiConnection conn = null;
 		try {
 			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
@@ -138,8 +138,7 @@ public class Initializer {
 			flagType = t.flagType;
 			opponentFlagType = t.opponentFlagType;
 		}
-		
-
+*/
 		detector.setFlag(flags[flagType - 1]);
 	
 		controller.search();

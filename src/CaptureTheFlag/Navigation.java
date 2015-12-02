@@ -297,14 +297,14 @@ public class Navigation extends Thread {
 					sensorMotor.rotateTo(leftAngle, false);
 					this.setSpeeds(motorHigh, motorHigh);
 				}
-				while (usPoller.getProcessedDistance() > 30)
+				while (usPoller.getProcessedDistance() > 35)
 					Logger.log("before still sees wooden block " + usPoller.getProcessedDistance());
-				while (usPoller.getProcessedDistance() < 30) {
+				while (usPoller.getProcessedDistance() <= 35) {
 					Logger.log("still sees wooden block " + usPoller.getProcessedDistance());
 				}
 				this.setSpeeds(0, 0);
 				sensorMotor.rotateTo(0);
-				goForward(30);
+				goForward(27);
 				if (xBlocked) {
 					turnTo(xDirection, true);
 				} else {
@@ -333,7 +333,7 @@ public class Navigation extends Thread {
 				}
 				this.setSpeeds(0, 0);
 				sensorMotor.rotateTo(0);
-				goForward(30);
+				goForward(27);
 				if (xBlocked) {
 					turnTo(xDirection, true);
 				} else {

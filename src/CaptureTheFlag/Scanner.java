@@ -2,7 +2,7 @@ package CaptureTheFlag;
 
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 
-public class Scanner extends Thread{
+public class Scanner{
 
 	private int SPEED = 100;
 	public double angleRatio = -90./300;
@@ -13,21 +13,6 @@ public class Scanner extends Thread{
 		this.scannerMotor = scannerMotor;
 		this.scannerMotor.resetTachoCount();
 		Logger.log("Created Scanner instance");
-	}
-
-	public void run(){
-		while(true){
-			if(radarMode){
-				scannerMotor.setSpeed(500);
-				// TODO: -Fabrice: are you accounting for the gear reduction here ?
-				scannerMotor.rotateTo(40, true);
-				while(scannerMotor.getPosition()<40){
-				}
-				scannerMotor.rotateTo(-40, true);
-				while(scannerMotor.getPosition()>-40){
-				}
-			}
-		}
 	}
 	
 	/**
